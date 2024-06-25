@@ -17,68 +17,68 @@ import java.util.Arrays;
 @EnableScheduling
 public class TurfDailyIncreaseApplication {
 
-	Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
+    Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
 
-	public static void main(String[] args) {
-		SpringApplication.run(TurfDailyIncreaseApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TurfDailyIncreaseApplication.class, args);
+    }
 
-	@Bean
-	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-		return args -> {
-			// arguments passed through -Dspring-boot.run.arguments="test1 test2"
-			logArray("Program arguments:", "No program arguments.", args);
-			//printContextBeans(ctx);
-		};
-	}
+    @Bean
+    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+        return args -> {
+            // arguments passed through -Dspring-boot.run.arguments="test1 test2"
+            logArray("Program arguments:", "No program arguments.", args);
+            //printContextBeans(ctx);
+        };
+    }
 
-	private void printContextBeans(ApplicationContext ctx) {
-		String[] beanNames = ctx.getBeanDefinitionNames();
-		Arrays.sort(beanNames);
-		logArray("Provided beans:", "No beans provided.", beanNames);
-	}
+    private void printContextBeans(ApplicationContext ctx) {
+        String[] beanNames = ctx.getBeanDefinitionNames();
+        Arrays.sort(beanNames);
+        logArray("Provided beans:", "No beans provided.", beanNames);
+    }
 
-	private void logArray(String hasElements, String noElements, String[] strings) {
-		if (strings.length > 0) {
-			logger.info(hasElements);
-			int maxLength = String.valueOf(strings.length).length();
-			String format = String.format("  [%%%dd] %%s", maxLength);
-			for (int i = 0; i < strings.length; i += 1) {
-				logger.info(String.format(format, i, strings[i]));
-			}
-		} else {
-			logger.info(noElements);
-		}
-	}
+    private void logArray(String hasElements, String noElements, String[] strings) {
+        if (strings.length > 0) {
+            logger.info(hasElements);
+            int maxLength = String.valueOf(strings.length).length();
+            String format = String.format("  [%%%dd] %%s", maxLength);
+            for (int i = 0; i < strings.length; i += 1) {
+                logger.info(String.format(format, i, strings[i]));
+            }
+        } else {
+            logger.info(noElements);
+        }
+    }
 
-	//@Bean
-	public CommandLineRunner demo(CustomerRepository repository) {
-		return (args) -> {
-			// save a few customers
-			repository.save(new Customer("Jack", "Bauer"));
-			repository.save(new Customer("Chloe", "O'Brian"));
-			repository.save(new Customer("Kim", "Bauer"));
-			repository.save(new Customer("David", "Palmer"));
-			repository.save(new Customer("Michelle", "Dessler"));
+    //@Bean
+    public CommandLineRunner demo(CustomerRepository repository) {
+        return (args) -> {
+            // save a few customers
+            repository.save(new Customer("Jack", "Bauer"));
+            repository.save(new Customer("Chloe", "O'Brian"));
+            repository.save(new Customer("Kim", "Bauer"));
+            repository.save(new Customer("David", "Palmer"));
+            repository.save(new Customer("Michelle", "Dessler"));
 
-			// fetch all customers
-			logger.info("Customers found with findAll():");
-			logger.info("-------------------------------");
-			repository.findAll().forEach(customer -> logger.info(customer.toString()));
-			logger.info("");
+            // fetch all customers
+            logger.info("Customers found with findAll():");
+            logger.info("-------------------------------");
+            repository.findAll().forEach(customer -> logger.info(customer.toString()));
+            logger.info("");
 
-			// fetch an individual customer by ID
-			Customer customer = repository.findById(1L);
-			logger.info("Customer found with findById(1L):");
-			logger.info("--------------------------------");
-			logger.info(customer.toString());
-			logger.info("");
+            // fetch an individual customer by ID
+            Customer customer = repository.findById(1L);
+            logger.info("Customer found with findById(1L):");
+            logger.info("--------------------------------");
+            logger.info(customer.toString());
+            logger.info("");
 
-			// fetch customers by last name
-			logger.info("Customer found with findByLastName('Bauer'):");
-			logger.info("--------------------------------------------");
-			repository.findByLastName("Bauer").forEach(bauer -> logger.info(bauer.toString()));
-			logger.info("");
-		};
-	}
+            // fetch customers by last name
+            logger.info("Customer found with findByLastName('Bauer'):");
+            logger.info("--------------------------------------------");
+            repository.findByLastName("Bauer").forEach(bauer -> logger.info(bauer.toString()));
+            logger.info("");
+        };
+    }
 }
