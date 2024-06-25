@@ -1,8 +1,7 @@
 package org.joelson.turf.dailyinc.service;
 
-import org.joelson.turf.dailyinc.model.Assist;
 import org.joelson.turf.dailyinc.model.User;
-import org.joelson.turf.dailyinc.model.Visit;
+import org.joelson.turf.dailyinc.model.VisitType;
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.turfgame.FeedObject;
 import org.joelson.turf.turfgame.apiv5.FeedChat;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Service
@@ -85,21 +85,14 @@ public class FeedImporterService {
 
     private void handleTakeover(FeedTakeover feedTakeover, Instant time) {
         Zone zone = getUpdateOrCreate(feedTakeover.getZone(), time);
-        Visit visit = visitService.getVisit(zone, time);
-        if (visit == null) {
-            User user = getUpdateOrCreate(feedTakeover.getZone().getCurrentOwner(), time);
-            User previousUser = getUpdateOrCreate(feedTakeover.getZone().getPreviousOwner(), time);
-            boolean takeover = previousUser == null || !Objects.equals(user.getId(), previousUser.getId());
-            visit = visitService.createVisit(zone, user, time, takeover);
-            logger.trace(String.format("Added visit %s", visit));
-            if (feedTakeover.getAssists() != null) {
-                logger.info(String.format("assister to add: %d", feedTakeover.getAssists().length));
-                for (org.joelson.turf.turfgame.apiv5.User assisterV5 : feedTakeover.getAssists()) {
-                    User assister = getUpdateOrCreate(assisterV5, time);
-                    Assist assist = visitService.addAssist(visit, assister);
-                    logger.info(String.format("Added assist %s", assist));
-                }
-            }
+        User user = getUpdateOrCreate(feedTakeover.getZone().getCurrentOwner(), time);
+        User previousUser = getUpdateOrCreate(feedTakeover.getZone().getPreviousOwner(), time);
+        VisitType type = (previousUser == null || !Objects.equals(user.getId(), previousUser.getId()))
+                ? VisitType.TAKEOVER : VisitType.REVISIT;
+        logger.trace(String.format("Handled visit %s", visitService.getOrCreate(zone, user, time, type)));
+        if (feedTakeover.getAssists() != null) {
+            Arrays.stream(feedTakeover.getAssists()).map(a -> getUpdateOrCreate(a, time)).forEach(a -> logger.trace(
+                    String.format("Handled assist %s", visitService.getOrCreate(zone, a, time, VisitType.ASSIST))));
         }
     }
 }

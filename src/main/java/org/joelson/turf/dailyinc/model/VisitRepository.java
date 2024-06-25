@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface VisitRepository extends JpaRepository<Visit, Long> {
 
-    Optional<Visit> findByZoneAndTime(Zone zone, Instant time);
+    Optional<Visit> findByZoneAndUserAndTime(Zone zone, User user, Instant time);
 }
