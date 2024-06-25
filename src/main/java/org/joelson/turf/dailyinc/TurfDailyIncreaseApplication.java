@@ -2,8 +2,10 @@ package org.joelson.turf.dailyinc;
 
 import org.joelson.turf.dailyinc.model.Customer;
 import org.joelson.turf.dailyinc.model.CustomerRepository;
+import org.joelson.turf.dailyinc.service.FeedImporterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,8 +21,21 @@ public class TurfDailyIncreaseApplication {
 
     Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
 
+    @Autowired
+    FeedImporterService feedImporterService;
+
     public static void main(String[] args) {
         SpringApplication.run(TurfDailyIncreaseApplication.class, args);
+    }
+
+    @Bean
+    public CommandLineRunner argumentHandler(ApplicationContext ctx) {
+        return args -> {
+            for (String filename : args) {
+                logger.info(String.format("Importing data from '%s'", filename));
+                feedImporterService.importFeed(filename);
+            }
+        };
     }
 
     @Bean
