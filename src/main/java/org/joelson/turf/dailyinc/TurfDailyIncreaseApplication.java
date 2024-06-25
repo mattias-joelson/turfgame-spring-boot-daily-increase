@@ -24,10 +24,14 @@ public class TurfDailyIncreaseApplication {
 		return args -> {
 			// arguments passed through -Dspring-boot.run.arguments="test1 test2"
 			logArray("Program arguments:", "No program arguments.", args);
-			//String[] beanNames = ctx.getBeanDefinitionNames();
-			//Arrays.sort(beanNames);
-			//logArray("Provided beans:", "No beans provided.", beanNames);
+			//printContextBeans(ctx);
 		};
+	}
+
+	private void printContextBeans(ApplicationContext ctx) {
+		String[] beanNames = ctx.getBeanDefinitionNames();
+		Arrays.sort(beanNames);
+		logArray("Provided beans:", "No beans provided.", beanNames);
 	}
 
 	private void logArray(String hasElements, String noElements, String[] strings) {
