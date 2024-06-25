@@ -9,8 +9,8 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(name = "zones")
-public class Zone {
+@Table(name = "users")
+public class User {
 
     @Id
     @Column(updatable = false, nullable = false)
@@ -22,10 +22,10 @@ public class Zone {
     @Column(nullable = false)
     private Instant time;
 
-    protected Zone() {
+    protected User() {
     }
 
-    public Zone(Long id, String name, Instant time) {
+    public User(Long id, String name, Instant time) {
         this.id = Objects.requireNonNull(id);
         setName(name);
         setTime(time);
@@ -56,8 +56,8 @@ public class Zone {
         if (this == o) {
             return true;
         }
-        if (o instanceof Zone zone) {
-            return Objects.equals(id, zone.id) && Objects.equals(name, zone.name) && Objects.equals(time, zone.time);
+        if (o instanceof User user) {
+            return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(time, user.time);
         }
         return false;
     }
@@ -69,6 +69,6 @@ public class Zone {
 
     @Override
     public String toString() {
-        return String.format("Zone[id=%d, name='%s', time=%s]", id, name, time);
+        return String.format("User[id=%d, name='%s', time=%s]", id, name, time);
     }
 }

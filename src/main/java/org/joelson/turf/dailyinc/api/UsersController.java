@@ -1,7 +1,7 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.Zone;
-import org.joelson.turf.dailyinc.service.ZoneService;
+import org.joelson.turf.dailyinc.model.User;
+import org.joelson.turf.dailyinc.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +14,13 @@ import java.util.Comparator;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/zones")
-public class ZonesController {
+@RequestMapping("/api/users")
+public class UsersController {
 
-    Logger logger = LoggerFactory.getLogger(ZonesController.class);
+    Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     @Autowired
-    ZoneService zoneService;
+    UserService userService;
 
     private static Long toLong(String identifier) {
         try {
@@ -32,25 +32,25 @@ public class ZonesController {
     }
 
     @GetMapping("/")
-    public List<Zone> getZones() {
-        logger.trace("getZones()");
-        return zoneService.getZones().stream().sorted(Comparator.comparing(Zone::getId)).toList();
+    public List<User> getUsers() {
+        logger.trace("getUsers()");
+        return userService.getUsers().stream().sorted(Comparator.comparing(User::getId)).toList();
     }
 
     @GetMapping("/{identifier}")
-    public Object getZoneByIdentifier(@PathVariable String identifier) {
-        logger.trace(String.format("getZoneByIdentifier(%s)", identifier));
-        Zone zone;
+    public Object getUserByIdentifier(@PathVariable String identifier) {
+        logger.trace(String.format("getUserByIdentifier(%s)", identifier));
+        User user;
         Long id = toLong(identifier);
         if (id != null) {
-            zone = zoneService.getZoneById(id);
+            user = userService.getUserById(id);
         } else {
-            zone = zoneService.getZoneByName(identifier);
+            user = userService.getUserByName(identifier);
         }
-        if (zone != null) {
-            return zone;
+        if (user != null) {
+            return user;
         }
-        return new JsonError("/errors/invalid-zone-identifier", "Incorrect zone identifier", 404, "",
-                "/api/zones/" + identifier);
+        return new JsonError("/errors/invalid-user-identifier", "Incorrect user identifier", 404, "",
+                "/api/users/" + identifier);
     }
 }
