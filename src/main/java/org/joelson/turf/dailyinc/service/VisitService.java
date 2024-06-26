@@ -2,6 +2,7 @@ package org.joelson.turf.dailyinc.service;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Visit;
+import org.joelson.turf.dailyinc.model.VisitId;
 import org.joelson.turf.dailyinc.model.VisitRepository;
 import org.joelson.turf.dailyinc.model.VisitType;
 import org.joelson.turf.dailyinc.model.Zone;
@@ -49,7 +50,7 @@ public class VisitService {
     }
 
     public Visit getVisit(Zone zone, User user, Instant time) {
-        return visitRepository.findByZoneAndUserAndTime(zone, user, time).orElse(null);
+        return visitRepository.findById(new VisitId(zone.getId(), user.getId(), time)).orElse(null);
     }
 
     public Visit create(Zone zone, User user, Instant time, VisitType type) {

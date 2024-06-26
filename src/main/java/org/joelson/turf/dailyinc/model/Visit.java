@@ -2,37 +2,34 @@ package org.joelson.turf.dailyinc.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import java.time.Instant;
 import java.util.Objects;
 
 @Entity
+@IdClass(VisitId.class)
 @Table(name = "visits", indexes = { @Index(name = "index_visits_zone_id", columnList = "zone_id"),
         @Index(name = "index_visits_user_id", columnList = "user_id"),
-        @Index(name = "index_visits_time", columnList = "time") }, uniqueConstraints = {
-        @UniqueConstraint(name = "unique_zone_and_user_and_time", columnNames = { "zone_id", "user_id", "time" }) })
+        @Index(name = "index_visits_time", columnList = "time") })
 public class Visit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
-
     @ManyToOne
     @JoinColumn(name = "zone_id", updatable = false, nullable = false)
     private Zone zone;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "user_id", updatable = false, nullable = false)
     private User user;
 
+    @Id
     @Column(updatable = false, nullable = false)
     private Instant time;
 
@@ -47,10 +44,6 @@ public class Visit {
         setUser(user);
         setTime(time);
         setType(type);
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Zone getZone() {
@@ -91,7 +84,7 @@ public class Visit {
             return true;
         }
         if (o instanceof Visit visit) {
-            return Objects.equals(id, visit.id) && Objects.equals(zone, visit.zone) && Objects.equals(user, visit.user)
+            return Objects.equals(zone, visit.zone) && Objects.equals(user, visit.user)
                     && Objects.equals(time, visit.time) && type == visit.type;
         }
         return false;
@@ -99,11 +92,11 @@ public class Visit {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(zone, user, time);
     }
 
     @Override
     public String toString() {
-        return String.format("Visit[id=%d, zone=%s, user=%s, time=%s, type=%s]", id, zone, user, time, type);
+        return String.format("Visit[zone=%s, user=%s, time=%s, type=%s]", zone, user, time, type);
     }
 }
