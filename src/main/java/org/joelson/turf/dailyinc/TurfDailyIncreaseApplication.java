@@ -35,6 +35,9 @@ public class TurfDailyIncreaseApplication {
                 logger.info(String.format("Importing data from '%s'", filename));
                 feedImporterService.importFeed(filename);
             }
+            if (args.length > 0) {
+                logger.info("Done importing data.");
+            }
         };
     }
 

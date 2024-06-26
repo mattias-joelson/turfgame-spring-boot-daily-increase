@@ -3,13 +3,14 @@ package org.joelson.turf.dailyinc.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(name = "zones")
+@Table(name = "zones", indexes = { @Index(columnList = "name") })
 public class Zone {
 
     @Id
