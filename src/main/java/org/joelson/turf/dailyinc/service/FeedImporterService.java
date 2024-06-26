@@ -1,6 +1,7 @@
 package org.joelson.turf.dailyinc.service;
 
 import org.joelson.turf.dailyinc.model.User;
+import org.joelson.turf.dailyinc.model.Visit;
 import org.joelson.turf.dailyinc.model.VisitType;
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.turfgame.FeedObject;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -30,6 +32,9 @@ public class FeedImporterService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserVisitsService userVisitsService;
 
     @Autowired
     VisitService visitService;
@@ -84,15 +89,28 @@ public class FeedImporterService {
     }
 
     private void handleTakeover(FeedTakeover feedTakeover, Instant time) {
+        Instant date = time.truncatedTo(ChronoUnit.DAYS);
         Zone zone = getUpdateOrCreate(feedTakeover.getZone(), time);
         User user = getUpdateOrCreate(feedTakeover.getZone().getCurrentOwner(), time);
         User previousUser = getUpdateOrCreate(feedTakeover.getZone().getPreviousOwner(), time);
         VisitType type = (previousUser == null || !Objects.equals(user.getId(), previousUser.getId()))
                 ? VisitType.TAKEOVER : VisitType.REVISIT;
-        logger.trace(String.format("Handled visit %s", visitService.getOrCreate(zone, user, time, type)));
-        if (feedTakeover.getAssists() != null) {
-            Arrays.stream(feedTakeover.getAssists()).map(a -> getUpdateOrCreate(a, time)).forEach(a -> logger.trace(
-                    String.format("Handled assist %s", visitService.getOrCreate(zone, a, time, VisitType.ASSIST))));
+        Visit existingVisit = visitService.getVisit(zone, user, time);
+        if (existingVisit != null) {
+            logger.trace(String.format("Skipping exisiting visit %s...", existingVisit));
+            return;
         }
+        addVisit(zone, user, time, type, date);
+        if (feedTakeover.getAssists() != null) {
+            Arrays.stream(feedTakeover.getAssists()).map(a -> getUpdateOrCreate(a, time))
+                    .forEach(a -> addVisit(zone, a, time, VisitType.ASSIST, date));
+        }
+    }
+
+    private void addVisit(Zone zone, User user, Instant time, VisitType type, Instant date) {
+        Visit visit = visitService.create(zone, user, time, type);
+        logger.trace(String.format("Added visit %s", visit));
+        int visitsOfDate = userVisitsService.increaseUserVisits(user, date);
+        logger.trace(String.format("Visits %d @ %s", visitsOfDate, date));
     }
 }
