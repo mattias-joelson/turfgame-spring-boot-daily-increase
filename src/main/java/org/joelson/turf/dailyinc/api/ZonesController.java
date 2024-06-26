@@ -1,6 +1,7 @@
 package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.Zone;
+import org.joelson.turf.dailyinc.service.VisitService;
 import org.joelson.turf.dailyinc.service.ZoneService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +21,10 @@ public class ZonesController {
     Logger logger = LoggerFactory.getLogger(ZonesController.class);
 
     @Autowired
-    ZoneService zoneService;
+    VisitService visitService;
 
-    private static Long toLong(String identifier) {
-        try {
-            Long id = Long.parseLong(identifier);
-            return (String.valueOf(id).equals(identifier)) ? id : null;
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
+    @Autowired
+    ZoneService zoneService;
 
     @GetMapping("/")
     public List<Zone> getZones() {
@@ -40,17 +35,31 @@ public class ZonesController {
     @GetMapping("/{identifier}")
     public Object getZoneByIdentifier(@PathVariable String identifier) {
         logger.trace(String.format("getZoneByIdentifier(%s)", identifier));
-        Zone zone;
-        Long id = toLong(identifier);
-        if (id != null) {
-            zone = zoneService.getZoneById(id);
-        } else {
-            zone = zoneService.getZoneByName(identifier);
-        }
+        Zone zone = lookupZoneByIdentifier(identifier);
         if (zone != null) {
             return zone;
         }
         return new JsonError("/errors/invalid-zone-identifier", "Incorrect zone identifier", 404, "",
                 "/api/zones/" + identifier);
+    }
+
+    @GetMapping("/{identifier}/visits")
+    public Object getZoneVisitsByIdentifier(@PathVariable String identifier) {
+        logger.trace(String.format("getZoneVisitsByIdentifier(%s)", identifier));
+        Zone zone = lookupZoneByIdentifier(identifier);
+        if (zone != null) {
+            return visitService.getSortedVisitsByZone(zone);
+        }
+        return new JsonError("/errors/invalid-zone-identifier", "Incorrect zone identifier", 404, "",
+                "/api/zones/" + identifier + "/visits");
+    }
+
+    private Zone lookupZoneByIdentifier(String identifier) {
+        Long id = ControllerUtil.toLong(identifier);
+        if (id != null) {
+            return zoneService.getZoneById(id);
+        } else {
+            return zoneService.getZoneByName(identifier);
+        }
     }
 }

@@ -2,6 +2,7 @@ package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.service.UserService;
+import org.joelson.turf.dailyinc.service.VisitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,8 @@ public class UsersController {
     @Autowired
     UserService userService;
 
-    private static Long toLong(String identifier) {
-        try {
-            Long id = Long.parseLong(identifier);
-            return (String.valueOf(id).equals(identifier)) ? id : null;
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
+    @Autowired
+    VisitService visitService;
 
     @GetMapping("/")
     public List<User> getUsers() {
@@ -40,17 +35,31 @@ public class UsersController {
     @GetMapping("/{identifier}")
     public Object getUserByIdentifier(@PathVariable String identifier) {
         logger.trace(String.format("getUserByIdentifier(%s)", identifier));
-        User user;
-        Long id = toLong(identifier);
-        if (id != null) {
-            user = userService.getUserById(id);
-        } else {
-            user = userService.getUserByName(identifier);
-        }
+        User user = lookupUserByIdentifier(identifier);
         if (user != null) {
             return user;
         }
         return new JsonError("/errors/invalid-user-identifier", "Incorrect user identifier", 404, "",
                 "/api/users/" + identifier);
+    }
+
+    @GetMapping("/{identifier}/visits")
+    public Object getZoneVisitsByIdentifier(@PathVariable String identifier) {
+        logger.trace(String.format("getZoneVisitsByIdentifier(%s)", identifier));
+        User user = lookupUserByIdentifier(identifier);
+        if (user != null) {
+            return visitService.getSortedVisitsByUser(user);
+        }
+        return new JsonError("/errors/invalid-zone-identifier", "Incorrect zone identifier", 404, "",
+                "/api/users/" + identifier + "/visits");
+    }
+
+    private User lookupUserByIdentifier(String identifier) {
+        Long id = ControllerUtil.toLong(identifier);
+        if (id != null) {
+            return userService.getUserById(id);
+        } else {
+            return userService.getUserByName(identifier);
+        }
     }
 }
