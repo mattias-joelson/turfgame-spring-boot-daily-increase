@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(name = "zones", indexes = { @Index(name = "index_name", columnList = "name") })
+@Table(name = "zones", indexes = { @Index(name = "index_zones_name", columnList = "name") })
 public class Zone {
 
     @Id
