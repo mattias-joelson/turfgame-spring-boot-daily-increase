@@ -1,6 +1,7 @@
 package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
+import org.joelson.turf.dailyinc.service.UserProgressService;
 import org.joelson.turf.dailyinc.service.UserService;
 import org.joelson.turf.dailyinc.service.UserVisitsService;
 import org.joelson.turf.dailyinc.service.VisitService;
@@ -23,6 +24,9 @@ public class UsersController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserProgressService userProgressService;
 
     @Autowired
     UserVisitsService userVisitsService;
@@ -56,6 +60,17 @@ public class UsersController {
         }
         return new JsonError("/errors/invalid-user-identifier", "Incorrect user identifier", 404, "",
                 "/api/users/" + identifier + "/visits");
+    }
+
+    @GetMapping("/{identifier}/user-progress")
+    public Object getUserProgressByIdentifier(@PathVariable String identifier) {
+        logger.trace(String.format("getUserProgressByIdentifier(%s)", identifier));
+        User user = lookupUserByIdentifier(identifier);
+        if (user != null) {
+            return userProgressService.getSortedUserProgressByUser(user);
+        }
+        return new JsonError("/errors/invalid-user-identifier", "Incorrect user identifier", 404, "",
+                "/api/users/" + identifier + "/user-progress");
     }
 
     @GetMapping("/{identifier}/user-visits")
