@@ -2,6 +2,7 @@ package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.service.UserService;
+import org.joelson.turf.dailyinc.service.UserVisitsService;
 import org.joelson.turf.dailyinc.service.VisitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,9 @@ public class UsersController {
     UserService userService;
 
     @Autowired
+    UserVisitsService userVisitsService;
+
+    @Autowired
     VisitService visitService;
 
     @GetMapping("/")
@@ -44,14 +48,25 @@ public class UsersController {
     }
 
     @GetMapping("/{identifier}/visits")
-    public Object getZoneVisitsByIdentifier(@PathVariable String identifier) {
-        logger.trace(String.format("getZoneVisitsByIdentifier(%s)", identifier));
+    public Object getVisitsByIdentifier(@PathVariable String identifier) {
+        logger.trace(String.format("getVisitsByIdentifier(%s)", identifier));
         User user = lookupUserByIdentifier(identifier);
         if (user != null) {
             return visitService.getSortedVisitsByUser(user);
         }
-        return new JsonError("/errors/invalid-zone-identifier", "Incorrect zone identifier", 404, "",
+        return new JsonError("/errors/invalid-user-identifier", "Incorrect user identifier", 404, "",
                 "/api/users/" + identifier + "/visits");
+    }
+
+    @GetMapping("/{identifier}/user-visits")
+    public Object getUserVisitsByIdentifier(@PathVariable String identifier) {
+        logger.trace(String.format("getUserVisitsByIdentifier(%s)", identifier));
+        User user = lookupUserByIdentifier(identifier);
+        if (user != null) {
+            return userVisitsService.getSortedUserVisitsByUser(user);
+        }
+        return new JsonError("/errors/invalid-user-identifier", "Incorrect user identifier", 404, "",
+                "/api/users/" + identifier + "/user-visits");
     }
 
     private User lookupUserByIdentifier(String identifier) {
