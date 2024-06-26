@@ -15,10 +15,10 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(name = "visits",
-        indexes = { @Index(columnList = "zone_id", name = "idx_zone_id"), @Index(columnList = "user_id"),
-                @Index(columnList = "time") }, uniqueConstraints = {
-        @UniqueConstraint(name = "unique_zone_user_and_time", columnNames = { "zone_id", "user_id", "time" }) })
+@Table(name = "visits", indexes = { @Index(name = "index_zone_id", columnList = "zone_id"),
+        @Index(name = "index_user_id", columnList = "user_id"), @Index(name = "index_time", columnList = "time") },
+        uniqueConstraints = { @UniqueConstraint(name = "unique_zone_and_user_and_time",
+                columnNames = { "zone_id", "user_id", "time" }) })
 public class Visit {
 
     @Id
