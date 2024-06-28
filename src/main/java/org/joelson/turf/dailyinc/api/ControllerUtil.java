@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
-class ControllerUtil {
+final class ControllerUtil {
 
     private ControllerUtil() throws InstantiationException {
         throw new InstantiationException("Should not be instantiated.");
