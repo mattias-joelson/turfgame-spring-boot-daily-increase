@@ -16,7 +16,9 @@ import java.util.Objects;
 @IdClass(UserProgressId.class)
 @Table(name = "user_progress", indexes = { @Index(name = "index_user_progress_user_id", columnList = "user_id"),
         @Index(name = "index_user_progress_type", columnList = "type"),
-        @Index(name = "index_user_progress_date", columnList = "date") })
+        @Index(name = "index_user_progress_date", columnList = "date"),
+        @Index(name = "index_user_progress_day_completed", columnList = "day_completed"),
+        @Index(name = "index_user_progress_time_completed", columnList = "time_completed") })
 public class UserProgress {
 
     @Id

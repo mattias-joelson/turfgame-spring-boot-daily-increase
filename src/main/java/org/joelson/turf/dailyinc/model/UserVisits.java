@@ -16,7 +16,8 @@ import java.util.Objects;
 @Entity
 @IdClass(UserVisitsId.class)
 @Table(name = "user_visits", indexes = { @Index(name = "index_user_visits_user_id", columnList = "user_id"),
-        @Index(name = "index_user_visits_date", columnList = "date") })
+        @Index(name = "index_user_visits_date", columnList = "date"),
+        @Index(name = "index_user_visits_visits", columnList = "visits") })
 public class UserVisits {
 
     @Id
