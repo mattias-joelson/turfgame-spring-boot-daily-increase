@@ -6,8 +6,8 @@ import org.joelson.turf.dailyinc.model.VisitType;
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.turfgame.FeedObject;
 import org.joelson.turf.turfgame.apiv5.FeedTakeover;
-import org.joelson.turf.turfgame.apiv5util.FeedsReader;
 import org.joelson.turf.turfgame.util.FeedsPathComparator;
+import org.joelson.turf.turfgame.util.FeedsReader;
 import org.joelson.turf.util.FilesUtil;
 import org.joelson.turf.util.TimeUtil;
 import org.slf4j.Logger;
@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -27,6 +28,7 @@ public class FeedImporterService {
 
     Logger logger = LoggerFactory.getLogger(FeedImporterService.class);
     private int filesHandled = 0;
+    private final FeedsReader feedsReader;
 
     @Autowired
     UserService userService;
@@ -43,6 +45,10 @@ public class FeedImporterService {
     @Autowired
     ZoneService zoneService;
 
+    public FeedImporterService() {
+        feedsReader = new FeedsReader(Map.of("takeover", FeedTakeover.class));
+    }
+
     public void importFeed(String filename) {
         try {
             FilesUtil.forEachFile(Path.of(filename), true, new FeedsPathComparator(), this::addFeedObjects);
@@ -52,7 +58,7 @@ public class FeedImporterService {
     }
 
     private void addFeedObjects(Path path) {
-        new FeedsReader().handleFeedObjectFile(path, this::logEvery100thPath, this::handleFeedObject);
+        feedsReader.handleFeedObjectFile(path, this::logEvery100thPath, this::handleFeedObject);
     }
 
     private void logEvery100thPath(Path path) {
