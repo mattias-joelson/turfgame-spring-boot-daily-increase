@@ -20,7 +20,7 @@ public class UserVisitsController {
     @Autowired
     UserVisitsService userVisitsService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<UserVisits> getUserVisits() {
         logger.trace("getUserVisits()");
         return userVisitsService.getSortedUserVisits();

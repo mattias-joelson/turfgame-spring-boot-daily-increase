@@ -20,7 +20,7 @@ public class UserProgressController {
     @Autowired
     UserProgressService userProgressService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<UserProgress> getUserProgress() {
         logger.trace("getUserProgress()");
         return userProgressService.getSortedUserProgress();

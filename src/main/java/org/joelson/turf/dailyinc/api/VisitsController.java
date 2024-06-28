@@ -20,7 +20,7 @@ public class VisitsController {
     @Autowired
     VisitService visitService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<Visit> getVisits() {
         logger.trace("getVisits()");
         return visitService.getSortedVisits();
