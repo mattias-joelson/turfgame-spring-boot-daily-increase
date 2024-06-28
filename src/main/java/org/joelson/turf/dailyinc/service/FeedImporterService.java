@@ -5,10 +5,7 @@ import org.joelson.turf.dailyinc.model.Visit;
 import org.joelson.turf.dailyinc.model.VisitType;
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.turfgame.FeedObject;
-import org.joelson.turf.turfgame.apiv5.FeedChat;
-import org.joelson.turf.turfgame.apiv5.FeedMedal;
 import org.joelson.turf.turfgame.apiv5.FeedTakeover;
-import org.joelson.turf.turfgame.apiv5.FeedZone;
 import org.joelson.turf.turfgame.apiv5util.FeedsReader;
 import org.joelson.turf.turfgame.util.FeedsPathComparator;
 import org.joelson.turf.util.FilesUtil;
@@ -29,6 +26,7 @@ import java.util.Objects;
 public class FeedImporterService {
 
     Logger logger = LoggerFactory.getLogger(FeedImporterService.class);
+    private int filesHandled = 0;
 
     @Autowired
     UserService userService;
@@ -54,25 +52,20 @@ public class FeedImporterService {
     }
 
     private void addFeedObjects(Path path) {
-        new FeedsReader().handleFeedObjectFile(path, p -> {
-        }, this::handleFeedObject);
+        new FeedsReader().handleFeedObjectFile(path, this::logEvery100thPath, this::handleFeedObject);
+    }
+
+    private void logEvery100thPath(Path path) {
+        if (filesHandled % 100 == 0) {
+            logger.info(String.format("Reading path %s", path));
+        }
+        filesHandled += 1;
     }
 
     private void handleFeedObject(FeedObject feedObject) {
-        Instant time = TimeUtil.turfAPITimestampToInstant(feedObject.getTime());
-        switch (feedObject) {
-            case FeedZone feedZone -> addZone(feedZone.getZone(), time);
-            case FeedChat feedChat -> addUser(feedChat.getSender(), time);
-            case FeedMedal feedMedal -> addUser(feedMedal.getUser(), time);
-            case FeedTakeover feedTakeover -> handleTakeover(feedTakeover, time);
-            default -> throw new IllegalArgumentException(
-                    String.format("Unknown FeedObject type %s.", feedObject.getType()));
+        if (feedObject instanceof FeedTakeover feedTakeover) {
+            handleTakeover(feedTakeover);
         }
-    }
-
-    private void addUser(org.joelson.turf.turfgame.apiv5.User userV5, Instant instant) {
-        User user = getUpdateOrCreate(userV5, instant);
-        logger.trace(String.format("Added user %s", user));
     }
 
     private User getUpdateOrCreate(org.joelson.turf.turfgame.apiv5.User userV5, Instant time) {
@@ -82,16 +75,12 @@ public class FeedImporterService {
         return userService.getUpdateOrCreate((long) userV5.getId(), userV5.getName(), time);
     }
 
-    private void addZone(org.joelson.turf.turfgame.apiv5.Zone zoneV5, Instant instant) {
-        Zone zone = getUpdateOrCreate(zoneV5, instant);
-        logger.trace(String.format("Added zone %s", zone));
+    private Zone getUpdateOrCreate(org.joelson.turf.turfgame.apiv5.Zone zoneV5, Instant time) {
+        return zoneService.getUpdateOrCreate((long) zoneV5.getId(), zoneV5.getName(), time);
     }
 
-    private Zone getUpdateOrCreate(org.joelson.turf.turfgame.apiv5.Zone zoneV5, Instant instant) {
-        return zoneService.getUpdateOrCreate((long) zoneV5.getId(), zoneV5.getName(), instant);
-    }
-
-    private void handleTakeover(FeedTakeover feedTakeover, Instant time) {
+    private void handleTakeover(FeedTakeover feedTakeover) {
+        Instant time = TimeUtil.turfAPITimestampToInstant(feedTakeover.getTime());
         Instant date = time.truncatedTo(ChronoUnit.DAYS);
         Zone zone = getUpdateOrCreate(feedTakeover.getZone(), time);
         User user = getUpdateOrCreate(feedTakeover.getZone().getCurrentOwner(), time);
