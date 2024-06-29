@@ -74,8 +74,10 @@ public class UserProgressTest {
                 () -> new UserProgress(USER, TYPE, DATE, PREVIOUS_DAY_COMPLETED, 0, TIME));
         assertThrows(IllegalArgumentException.class,
                 () -> new UserProgress(USER, TYPE, DATE, PREVIOUS_DAY_COMPLETED, -1, TIME));
+        assertThrows(IllegalArgumentException.class,
+                () -> new UserProgress(USER, TYPE, DATE, PREVIOUS_DAY_COMPLETED, 7, TIME));
 
-        Integer dayCompleted = DAY_COMPLETED + 3;
+        Integer dayCompleted = DAY_COMPLETED + 4;
         assertNotEquals(DAY_COMPLETED, dayCompleted);
         UserProgress userProgress = new UserProgress(USER, TYPE, DATE, PREVIOUS_DAY_COMPLETED, dayCompleted, TIME);
         assertEquals(dayCompleted, userProgress.getDayCompleted());
