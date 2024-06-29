@@ -31,12 +31,12 @@ public class UserVisitsService {
     public int increaseUserVisits(User user, Instant date) {
         UserVisits userVisits = findByUserAndDate(user, date);
         if (userVisits == null) {
-            userVisitsRepository.saveAndFlush(new UserVisits(user, date, 1));
+            userVisitsRepository.save(new UserVisits(user, date, 1));
             return 1;
         } else {
             int visits = userVisits.getVisits() + 1;
             userVisits.setVisits(visits);
-            userVisitsRepository.saveAndFlush(userVisits);
+            userVisitsRepository.save(userVisits);
             return visits;
         }
     }
