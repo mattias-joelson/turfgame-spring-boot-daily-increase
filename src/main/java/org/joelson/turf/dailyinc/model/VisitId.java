@@ -23,7 +23,7 @@ public class VisitId {
     }
 
     public void setZone(Long zone) {
-        this.zone = Objects.requireNonNull(zone);
+        this.zone = ModelConstraintsUtil.isAboveZero(zone);
     }
 
     public Long getUser() {
@@ -31,7 +31,7 @@ public class VisitId {
     }
 
     public void setUser(Long user) {
-        this.user = Objects.requireNonNull(user);
+        this.user = ModelConstraintsUtil.isAboveZero(user);
     }
 
     public Instant getTime() {
@@ -39,7 +39,7 @@ public class VisitId {
     }
 
     public void setTime(Instant time) {
-        this.time = Objects.requireNonNull(time);
+        this.time = ModelConstraintsUtil.isTruncatedToSeconds(time);
     }
 
     @Override

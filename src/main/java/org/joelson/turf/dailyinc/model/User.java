@@ -27,7 +27,7 @@ public class User {
     }
 
     public User(Long id, String name, Instant time) {
-        this.id = Objects.requireNonNull(id);
+        this.id = ModelConstraintsUtil.isAboveZero(id);
         setName(name);
         setTime(time);
     }
@@ -49,7 +49,7 @@ public class User {
     }
 
     public void setTime(Instant time) {
-        this.time = Objects.requireNonNull(time);
+        this.time = ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isTruncatedToSeconds(time), this.time);
     }
 
     @Override

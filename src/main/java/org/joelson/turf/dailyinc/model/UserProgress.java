@@ -49,10 +49,10 @@ public class UserProgress {
     public UserProgress(
             User user, UserProgressType type, Instant date, Integer previousDayCompleted, Integer dayCompleted,
             Instant timeCompleted) {
-        setUser(user);
-        setType(type);
-        setDate(date);
-        setPreviousDayCompleted(previousDayCompleted);
+        this.user = Objects.requireNonNull(user);
+        this.type = Objects.requireNonNull(type);
+        this.date = ModelConstraintsUtil.isTruncatedToDays(date);
+        this.previousDayCompleted = ModelConstraintsUtil.isEqualOrAboveZero(previousDayCompleted);
         setDayCompleted(dayCompleted);
         setTimeCompleted(timeCompleted);
     }
@@ -61,32 +61,16 @@ public class UserProgress {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = Objects.requireNonNull(user);
-    }
-
     public UserProgressType getType() {
         return type;
-    }
-
-    public void setType(UserProgressType type) {
-        this.type = Objects.requireNonNull(type);
     }
 
     public Instant getDate() {
         return date;
     }
 
-    public void setDate(Instant date) {
-        this.date = Objects.requireNonNull(date);
-    }
-
     public Integer getPreviousDayCompleted() {
         return previousDayCompleted;
-    }
-
-    public void setPreviousDayCompleted(Integer previousDayCompleted) {
-        this.previousDayCompleted = Objects.requireNonNull(previousDayCompleted);
     }
 
     public Integer getDayCompleted() {
@@ -94,7 +78,9 @@ public class UserProgress {
     }
 
     public void setDayCompleted(Integer dayCompleted) {
-        this.dayCompleted = Objects.requireNonNull(dayCompleted);
+        this.dayCompleted = ModelConstraintsUtil.isEqualOrBelow(
+                ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isAboveZero(dayCompleted), this.dayCompleted),
+                this.previousDayCompleted + 1);
     }
 
     public Instant getTimeCompleted() {
@@ -102,7 +88,8 @@ public class UserProgress {
     }
 
     public void setTimeCompleted(Instant timeCompleted) {
-        this.timeCompleted = Objects.requireNonNull(timeCompleted);
+        this.timeCompleted =
+                ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isTruncatedToSeconds(timeCompleted), this.timeCompleted);
     }
 
     @Override

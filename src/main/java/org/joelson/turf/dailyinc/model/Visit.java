@@ -40,42 +40,26 @@ public class Visit {
     }
 
     public Visit(Zone zone, User user, Instant time, VisitType type) {
-        setZone(zone);
-        setUser(user);
-        setTime(time);
-        setType(type);
+        this.zone = Objects.requireNonNull(zone);
+        this.user = Objects.requireNonNull(user);
+        this.time = ModelConstraintsUtil.isTruncatedToSeconds(time);
+        this.type = Objects.requireNonNull(type);
     }
 
     public Zone getZone() {
         return zone;
     }
 
-    public void setZone(Zone zone) {
-        this.zone = Objects.requireNonNull(zone);
-    }
-
     public User getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = Objects.requireNonNull(user);
     }
 
     public Instant getTime() {
         return time;
     }
 
-    public void setTime(Instant time) {
-        this.time = Objects.requireNonNull(time);
-    }
-
     public VisitType getType() {
         return type;
-    }
-
-    public void setType(VisitType type) {
-        this.type = Objects.requireNonNull(type);
     }
 
     @Override

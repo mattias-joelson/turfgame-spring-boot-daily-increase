@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Entity
@@ -36,32 +35,17 @@ public class UserVisits {
     }
 
     public UserVisits(User user, Instant date, Integer visits) {
-        setUser(user);
-        setDate(date);
+        this.user = Objects.requireNonNull(user);
+        this.date = ModelConstraintsUtil.isTruncatedToDays(date);
         setVisits(visits);
-    }
-
-    private static Instant instantTruncatedToDate(Instant instant) {
-        if (!instant.truncatedTo(ChronoUnit.DAYS).equals(instant)) {
-            throw new IllegalArgumentException(String.format("Instant %s not truncated to date.", instant));
-        }
-        return instant;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = Objects.requireNonNull(user);
-    }
-
     public Instant getDate() {
         return date;
-    }
-
-    public void setDate(Instant date) {
-        this.date = instantTruncatedToDate(Objects.requireNonNull(date));
     }
 
     public Integer getVisits() {
@@ -69,10 +53,7 @@ public class UserVisits {
     }
 
     public void setVisits(Integer visits) {
-        this.visits = Objects.requireNonNull(visits);
-        if (visits <= 0) {
-            throw new IllegalArgumentException("Visits equal to or below 0: " + visits);
-        }
+        this.visits = ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isAboveZero(visits), this.visits);
     }
 
     @Override

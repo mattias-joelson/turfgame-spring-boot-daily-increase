@@ -21,7 +21,7 @@ public class UserVisitsId {
     }
 
     public void setUser(Long user) {
-        this.user = Objects.requireNonNull(user);
+        this.user = ModelConstraintsUtil.isAboveZero(user);
     }
 
     public Instant getDate() {
@@ -29,7 +29,7 @@ public class UserVisitsId {
     }
 
     public void setDate(Instant date) {
-        this.date = Objects.requireNonNull(date);
+        this.date = ModelConstraintsUtil.isTruncatedToDays(date);
     }
 
     @Override
