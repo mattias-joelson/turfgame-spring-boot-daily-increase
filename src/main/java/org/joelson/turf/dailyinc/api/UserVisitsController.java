@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.UserVisits;
+import org.joelson.turf.dailyinc.projection.UserIdAndNameVisits;
 import org.joelson.turf.dailyinc.service.UserVisitsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ public class UserVisitsController {
     UserVisitsService userVisitsService;
 
     @GetMapping("")
-    public List<UserVisits> getUserVisits() {
+    public List<UserIdAndNameVisits> getUserVisits() {
         logger.trace("getUserVisits()");
-        return userVisitsService.getSortedUserVisits();
+        return userVisitsService.getSortedUserVisits(UserIdAndNameVisits.class);
     }
 }

@@ -18,35 +18,16 @@ public class VisitService {
     @Autowired
     VisitRepository visitRepository;
 
-    private static int compareVisits(Visit o1, Visit o2) {
-        int timeDiff = o1.getTime().compareTo(o2.getTime());
-        if (timeDiff != 0) {
-            return timeDiff;
-        }
-        int zoneIdDiff = o1.getZone().getId().compareTo(o2.getZone().getId());
-        if (zoneIdDiff != 0) {
-            return zoneIdDiff;
-        }
-        if (o1.getType() != o2.getType()) {
-            return (o2.getType() == VisitType.ASSIST) ? -1 : 1;
-        }
-        return o1.getUser().getId().compareTo(o2.getUser().getId());
+    public <T> List<T> getSortedVisits(Class<T> type) {
+        return visitRepository.findAllSorted(type);
     }
 
-    private static List<Visit> sortedByTimeAndZoneAndTypeAndUser(List<Visit> visits) {
-        return visits.stream().sorted(VisitService::compareVisits).toList();
+    public <T,U> List<T> getSortedVisitsByUser(Long userId, Class<T> type) {
+        return visitRepository.findAllSortedByUser(userId, type);
     }
 
-    public List<Visit> getSortedVisits() {
-        return sortedByTimeAndZoneAndTypeAndUser(visitRepository.findAll());
-    }
-
-    public List<Visit> getSortedVisitsByUser(User user) {
-        return sortedByTimeAndZoneAndTypeAndUser(visitRepository.findAllByUser(user));
-    }
-
-    public List<Visit> getSortedVisitsByZone(Zone zone) {
-        return sortedByTimeAndZoneAndTypeAndUser(visitRepository.findAllByZone(zone));
+    public <T,Z> List<T> getSortedVisitsByZone(Long zoneId, Class<T> type) {
+        return visitRepository.findAllSortedByZone(zoneId, type);
     }
 
     public Visit getVisit(Zone zone, User user, Instant time) {

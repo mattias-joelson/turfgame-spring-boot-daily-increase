@@ -14,16 +14,16 @@ public class ZoneService {
     @Autowired
     ZoneRepository zoneRepository;
 
-    public List<Zone> getZones() {
-        return zoneRepository.findAll();
+    public <T> List<T> getSortedZones(Class<T> type) {
+        return zoneRepository.findAllSorted(type);
     }
 
-    public Zone getZoneById(Long id) {
-        return zoneRepository.findById(id).orElse(null);
+    public <T> T getZoneById(Long id, Class<T> type) {
+        return zoneRepository.findById(id, type).orElse(null);
     }
 
-    public Zone getZoneByName(String name) {
-        return zoneRepository.findByName(name).orElse(null);
+    public <T> T getZoneByName(String name, Class<T> type) {
+        return zoneRepository.findByName(name, type).orElse(null);
     }
 
     public Zone getUpdateOrCreate(Long id, String name, Instant time) {

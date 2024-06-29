@@ -1,7 +1,7 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.Visit;
-import org.joelson.turf.dailyinc.model.Zone;
+import org.joelson.turf.dailyinc.projection.UserIdAndNameVisit;
+import org.joelson.turf.dailyinc.projection.ZoneIdAndName;
 import org.joelson.turf.dailyinc.service.VisitService;
 import org.joelson.turf.dailyinc.service.ZoneService;
 import org.slf4j.Logger;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -29,15 +28,15 @@ public class ZonesController {
     ZoneService zoneService;
 
     @GetMapping("")
-    public List<Zone> getZones() {
+    public List<ZoneIdAndName> getZones() {
         logger.trace("getZones()");
-        return zoneService.getZones().stream().sorted(Comparator.comparing(Zone::getId)).toList();
+        return zoneService.getSortedZones(ZoneIdAndName.class);
     }
 
     @GetMapping({ "/", "/{zoneId}" })
-    public ResponseEntity<Zone> getZoneByIdentifier(@PathVariable(required = false) String zoneId) {
+    public ResponseEntity<ZoneIdAndName> getZoneByIdentifier(@PathVariable(required = false) String zoneId) {
         logger.trace(String.format("getZoneByIdentifier(%s)", zoneId));
-        Zone zone = lookupZoneByIdentifier(zoneId);
+        ZoneIdAndName zone = lookupZoneIdAndNameByIdentifier(zoneId);
         if (zone == null) {
             return ControllerUtil.respondNotFound();
         }
@@ -45,21 +44,22 @@ public class ZonesController {
     }
 
     @GetMapping({ "//visits", "/{zoneId}/visits" })
-    public ResponseEntity<List<Visit>> getZoneVisitsByIdentifier(@PathVariable(required = false) String zoneId) {
+    public ResponseEntity<List<UserIdAndNameVisit>> getZoneVisitsByIdentifier(
+            @PathVariable(required = false) String zoneId) {
         logger.trace(String.format("getZoneVisitsByIdentifier(%s)", zoneId));
-        Zone zone = lookupZoneByIdentifier(zoneId);
+        ZoneIdAndName zone = lookupZoneIdAndNameByIdentifier(zoneId);
         if (zone == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(visitService.getSortedVisitsByZone(zone));
+        return ControllerUtil.respondOk(visitService.getSortedVisitsByZone(zone.getId(), UserIdAndNameVisit.class));
     }
 
-    private Zone lookupZoneByIdentifier(String identifier) {
+    private ZoneIdAndName lookupZoneIdAndNameByIdentifier(String identifier) {
         Long id = ControllerUtil.toLong(identifier);
         if (id != null) {
-            return zoneService.getZoneById(id);
+            return zoneService.getZoneById(id, ZoneIdAndName.class);
         } else {
-            return zoneService.getZoneByName(identifier);
+            return zoneService.getZoneByName(identifier, ZoneIdAndName.class);
         }
     }
 }

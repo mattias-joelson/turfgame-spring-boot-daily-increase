@@ -16,27 +16,15 @@ public class UserVisitsService {
     @Autowired
     UserVisitsRepository userVisitsRepository;
 
-    private static int compareUserVisits(UserVisits o1, UserVisits o2) {
-        int userDiff = o1.getUser().getId().compareTo(o2.getUser().getId());
-        if (userDiff != 0) {
-            return userDiff;
-        }
-        return o1.getDate().compareTo(o2.getDate());
+    public <T> List<T> getSortedUserVisits(Class<T> type) {
+        return userVisitsRepository.findAllSorted(type);
     }
 
-    private static List<UserVisits> getSortedByUserAndDate(List<UserVisits> userVisits) {
-        return userVisits.stream().sorted(UserVisitsService::compareUserVisits).toList();
+    public <T> List<T> getSortedUserVisitsByUser(Long userId, Class<T> type) {
+        return userVisitsRepository.findAllSortedByUser(userId, type);
     }
 
-    public List<UserVisits> getSortedUserVisits() {
-        return getSortedByUserAndDate(userVisitsRepository.findAll());
-    }
-
-    public List<UserVisits> getSortedUserVisitsByUser(User user) {
-        return getSortedByUserAndDate(userVisitsRepository.findAllByUser(user));
-    }
-
-    public UserVisits findByUserAndDate(User user, Instant date) {
+    private UserVisits findByUserAndDate(User user, Instant date) {
         return userVisitsRepository.findById(new UserVisitsId(user.getId(), date)).orElse(null);
     }
 

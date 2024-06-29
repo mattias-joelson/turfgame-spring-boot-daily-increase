@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.Visit;
+import org.joelson.turf.dailyinc.projection.ZoneIdAndNameUserIdAndNameVisit;
 import org.joelson.turf.dailyinc.service.VisitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ public class VisitsController {
     VisitService visitService;
 
     @GetMapping("")
-    public List<Visit> getVisits() {
+    public List<ZoneIdAndNameUserIdAndNameVisit> getVisits() {
         logger.trace("getVisits()");
-        return visitService.getSortedVisits();
+        return visitService.getSortedVisits(ZoneIdAndNameUserIdAndNameVisit.class);
     }
 }

@@ -14,16 +14,16 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public <T> List<T> getSortedUsers(Class<T> type) {
+        return userRepository.findAllSorted(type);
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public <T> T getUserById(Long id, Class<T> type) {
+        return userRepository.findById(id, type).orElse(null);
     }
 
-    public User getUserByName(String name) {
-        return userRepository.findByName(name).orElse(null);
+    public <T> T getUserByName(String name, Class<T> type) {
+        return userRepository.findByName(name, type).orElse(null);
     }
 
     public User getUpdateOrCreate(Long id, String name, Instant time) {

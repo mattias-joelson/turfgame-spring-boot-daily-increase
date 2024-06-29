@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.UserProgress;
+import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
 import org.joelson.turf.dailyinc.service.UserProgressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +21,9 @@ public class UserProgressController {
     UserProgressService userProgressService;
 
     @GetMapping("")
-    public List<UserProgress> getUserProgress() {
+    public List<UserIdAndNameProgress> getUserProgress() {
         logger.trace("getUserProgress()");
-        return userProgressService.getSortedUserProgress();
+        return userProgressService.getSortedUserProgress(UserIdAndNameProgress.class);
     }
 
 }

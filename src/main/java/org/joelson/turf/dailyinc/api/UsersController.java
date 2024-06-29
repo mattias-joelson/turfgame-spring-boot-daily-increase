@@ -1,9 +1,9 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.User;
-import org.joelson.turf.dailyinc.model.UserProgress;
-import org.joelson.turf.dailyinc.model.UserVisits;
-import org.joelson.turf.dailyinc.model.Visit;
+import org.joelson.turf.dailyinc.projection.UserIdAndName;
+import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
+import org.joelson.turf.dailyinc.projection.UserIdAndNameVisits;
+import org.joelson.turf.dailyinc.projection.ZoneIdAndNameVisit;
 import org.joelson.turf.dailyinc.service.UserProgressService;
 import org.joelson.turf.dailyinc.service.UserService;
 import org.joelson.turf.dailyinc.service.UserVisitsService;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -39,59 +38,62 @@ public class UsersController {
     VisitService visitService;
 
     @GetMapping("")
-    public List<User> getUsers() {
+    public List<UserIdAndName> getUsers() {
         logger.trace("getUsers()");
-        return userService.getUsers().stream().sorted(Comparator.comparing(User::getId)).toList();
+        return userService.getSortedUsers(UserIdAndName.class);
     }
 
     @GetMapping({ "/", "/{userId}" })
-    public ResponseEntity<User> getUserByIdentifier(@PathVariable(required = false) String userId) {
+    public ResponseEntity<UserIdAndName> getUserByIdentifier(@PathVariable(required = false) String userId) {
         logger.trace(String.format("getUserByIdentifier(%s)", userId));
-        User user = lookupUserByIdentifier(userId);
+        UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
         return ControllerUtil.respondOk(user);
     }
 
-    @GetMapping({ "//visits", "/{userId}/visits" })
-    public ResponseEntity<List<Visit>> getVisitsByIdentifier(@PathVariable(required = false) String userId) {
-        logger.trace(String.format("getVisitsByIdentifier(%s)", userId));
-        User user = lookupUserByIdentifier(userId);
-        if (user == null) {
-            return ControllerUtil.respondNotFound();
-        }
-        return ControllerUtil.respondOk(visitService.getSortedVisitsByUser(user));
-    }
-
     @GetMapping({ "//user-progress", "/{userId}/user-progress" })
-    public ResponseEntity<List<UserProgress>> getUserProgressByIdentifier(
+    public ResponseEntity<List<UserIdAndNameProgress>> getUserProgressByIdentifier(
             @PathVariable(required = false) String userId) {
         logger.trace(String.format("getUserProgressByIdentifier(%s)", userId));
-        User user = lookupUserByIdentifier(userId);
+        UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(userProgressService.getSortedUserProgressByUser(user));
+        return ControllerUtil.respondOk(
+                userProgressService.getSortedUserProgressByUser(user.getId(), UserIdAndNameProgress.class));
     }
 
     @GetMapping({ "//user-visits", "/{userId}/user-visits" })
-    public ResponseEntity<List<UserVisits>> getUserVisitsByIdentifier(
+    public ResponseEntity<List<UserIdAndNameVisits>> getUserVisitsByIdentifier(
             @PathVariable(required = false) String userId) {
         logger.trace(String.format("getUserVisitsByIdentifier(%s)", userId));
-        User user = lookupUserByIdentifier(userId);
+        UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(userVisitsService.getSortedUserVisitsByUser(user));
+        return ControllerUtil.respondOk(
+                userVisitsService.getSortedUserVisitsByUser(user.getId(), UserIdAndNameVisits.class));
     }
 
-    private User lookupUserByIdentifier(String identifier) {
+    @GetMapping({ "//visits", "/{userId}/visits" })
+    public ResponseEntity<List<ZoneIdAndNameVisit>> getVisitsByIdentifier(
+            @PathVariable(required = false) String userId) {
+        logger.trace(String.format("getVisitsByIdentifier(%s)", userId));
+        UserIdAndName user = lookupUserByIdentifier(userId);
+        if (user == null) {
+            return ControllerUtil.respondNotFound();
+        }
+        return ControllerUtil.respondOk(visitService.getSortedVisitsByUser(user.getId(), ZoneIdAndNameVisit.class));
+    }
+
+    private UserIdAndName lookupUserByIdentifier(String identifier) {
         Long id = ControllerUtil.toLong(identifier);
         if (id != null) {
-            return userService.getUserById(id);
+            return userService.getUserById(id, UserIdAndName.class);
         } else {
-            return userService.getUserByName(identifier);
+            return userService.getUserByName(identifier, UserIdAndName.class);
         }
     }
 }

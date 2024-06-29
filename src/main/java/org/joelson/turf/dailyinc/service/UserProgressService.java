@@ -18,31 +18,15 @@ public class UserProgressService {
     @Autowired
     UserProgressRepository userProgressRepository;
 
-    private static int compareUserProgress(UserProgress o1, UserProgress o2) {
-        int userDiff = o1.getUser().getId().compareTo(o2.getUser().getId());
-        if (userDiff != 0) {
-            return userDiff;
-        }
-        int typeDiff = o1.getType().compareTo(o2.getType());
-        if (typeDiff != 0) {
-            return typeDiff;
-        }
-        return o1.getDate().compareTo(o2.getDate());
+    public <T> List<T> getSortedUserProgress(Class<T> type) {
+        return userProgressRepository.findAllSorted(type);
     }
 
-    private static List<UserProgress> getSortedByUserAndTypeAndDate(List<UserProgress> userProgresses) {
-        return userProgresses.stream().sorted(UserProgressService::compareUserProgress).toList();
+    public <T> List<T> getSortedUserProgressByUser(Long userId, Class<T> type) {
+        return userProgressRepository.findAllSortedByUser(userId, type);
     }
 
-    public List<UserProgress> getSortedUserProgress() {
-        return getSortedByUserAndTypeAndDate(userProgressRepository.findAll());
-    }
-
-    public List<UserProgress> getSortedUserProgressByUser(User user) {
-        return getSortedByUserAndTypeAndDate(userProgressRepository.findAllByUser(user));
-    }
-
-    public UserProgress getUserProgress(User user, UserProgressType type, Instant date) {
+    private UserProgress getUserProgress(User user, UserProgressType type, Instant date) {
         return userProgressRepository.findById(new UserProgressId(user.getId(), type, date)).orElse(null);
     }
 
