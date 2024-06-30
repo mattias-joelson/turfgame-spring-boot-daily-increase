@@ -92,7 +92,7 @@ public class FeedImporterService {
         User user = getUpdateOrCreate(feedTakeover.getZone().getCurrentOwner(), time);
         User previousUser = getUpdateOrCreate(feedTakeover.getZone().getPreviousOwner(), time);
         VisitType type = (previousUser == null || !Objects.equals(user.getId(), previousUser.getId()))
-                ? VisitType.TAKEOVER : VisitType.REVISIT;
+                ? VisitType.TAKE : VisitType.REVISIT;
         Visit existingVisit = visitService.getVisit(zone, user, time);
         if (existingVisit != null) {
             logger.trace(String.format("Skipping existing visit %s...", existingVisit));

@@ -20,7 +20,7 @@ public class VisitRepositoryIntegrationTest {
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     private static final Zone ZONE = new Zone(1L, "Zone", TIME);
     private static final User TAKER = new User(1001L, "Taker", TIME);
-    public static final Visit TAKE = new Visit(ZONE, TAKER, TIME, VisitType.TAKEOVER);
+    public static final Visit TAKE = new Visit(ZONE, TAKER, TIME, VisitType.TAKE);
     private static final User ASSISTER = new User(1002L, "Assister", TIME);
     public static final Visit ASSIST = new Visit(ZONE, ASSISTER, TIME, VisitType.ASSIST);
 

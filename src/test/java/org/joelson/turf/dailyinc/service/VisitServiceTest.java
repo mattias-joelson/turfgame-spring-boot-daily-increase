@@ -50,15 +50,15 @@ public class VisitServiceTest {
     private static final User USER_FOUR = new User(1004L, "UserFour", TIME);
     private static final User USER_FIVE = new User(1005L, "UserFive", TIME);
 
-    private static final Visit TAKE_ZONE_ONE_BY_USER_ONE = new Visit(ZONE_ONE, USER_ONE, TIME, VisitType.TAKEOVER);
+    private static final Visit TAKE_ZONE_ONE_BY_USER_ONE = new Visit(ZONE_ONE, USER_ONE, TIME, VisitType.TAKE);
     private static final Visit ASSIST_ZONE_ONE_BY_USER_TWO = new Visit(ZONE_ONE, USER_TWO, TIME, VisitType.ASSIST);
     private static final Visit REVISIT_ZONE_TWO_BY_USER_THREE = new Visit(ZONE_TWO, USER_THREE, TIME, VisitType.REVISIT);
     private static final Visit ASSIST_ZONE_TWO_BY_USER_FOUR = new Visit(ZONE_TWO, USER_FOUR, TIME, VisitType.ASSIST);
 
-    private static final Visit TAKE_ZONE_TWO_BY_USER_FOUR_LATER = new Visit(ZONE_TWO, USER_FOUR, TIME_LATER, VisitType.TAKEOVER);
+    private static final Visit TAKE_ZONE_TWO_BY_USER_FOUR_LATER = new Visit(ZONE_TWO, USER_FOUR, TIME_LATER, VisitType.TAKE);
     private static final Visit ASSIST_ZONE_TWO_BY_USER_ONE_LATER = new Visit(ZONE_TWO, USER_ONE, TIME_LATER, VisitType.ASSIST);
     private static final Visit ASSIST_ZONE_TWO_BY_USER_TWO_LATER = new Visit(ZONE_TWO, USER_TWO, TIME_LATER, VisitType.ASSIST);
-    private static final Visit TAKE_ZONE_ONE_BY_USER_THREE_LATER = new Visit(ZONE_ONE, USER_THREE, TIME_LATER, VisitType.TAKEOVER);
+    private static final Visit TAKE_ZONE_ONE_BY_USER_THREE_LATER = new Visit(ZONE_ONE, USER_THREE, TIME_LATER, VisitType.TAKE);
 
     private static final List<Visit> SORTED_VISITS_LIST = List.of(TAKE_ZONE_ONE_BY_USER_ONE,
             ASSIST_ZONE_ONE_BY_USER_TWO, REVISIT_ZONE_TWO_BY_USER_THREE, ASSIST_ZONE_TWO_BY_USER_FOUR,
@@ -148,14 +148,14 @@ public class VisitServiceTest {
     public void createVisitTest() {
         when(visitRepository.save(any(Visit.class))).then(returnsFirstArg());
 
-        assertEquals(TAKE_ZONE_ONE_BY_USER_ONE, visitService.create(ZONE_ONE, USER_ONE, TIME, VisitType.TAKEOVER));
+        assertEquals(TAKE_ZONE_ONE_BY_USER_ONE, visitService.create(ZONE_ONE, USER_ONE, TIME, VisitType.TAKE));
         assertEquals(ASSIST_ZONE_ONE_BY_USER_TWO, visitService.create(ZONE_ONE, USER_TWO, TIME, VisitType.ASSIST));
         assertEquals(REVISIT_ZONE_TWO_BY_USER_THREE, visitService.create(ZONE_TWO, USER_THREE, TIME, VisitType.REVISIT));
         assertEquals(ASSIST_ZONE_TWO_BY_USER_FOUR, visitService.create(ZONE_TWO, USER_FOUR, TIME, VisitType.ASSIST));
-        assertEquals(TAKE_ZONE_TWO_BY_USER_FOUR_LATER, visitService.create(ZONE_TWO, USER_FOUR, TIME_LATER, VisitType.TAKEOVER));
+        assertEquals(TAKE_ZONE_TWO_BY_USER_FOUR_LATER, visitService.create(ZONE_TWO, USER_FOUR, TIME_LATER, VisitType.TAKE));
         assertEquals(ASSIST_ZONE_TWO_BY_USER_ONE_LATER, visitService.create(ZONE_TWO, USER_ONE, TIME_LATER, VisitType.ASSIST));
         assertEquals(ASSIST_ZONE_TWO_BY_USER_TWO_LATER, visitService.create(ZONE_TWO, USER_TWO, TIME_LATER, VisitType.ASSIST));
-        assertEquals(TAKE_ZONE_ONE_BY_USER_THREE_LATER, visitService.create(ZONE_ONE, USER_THREE, TIME_LATER, VisitType.TAKEOVER));
+        assertEquals(TAKE_ZONE_ONE_BY_USER_THREE_LATER, visitService.create(ZONE_ONE, USER_THREE, TIME_LATER, VisitType.TAKE));
         verify(visitRepository, times(8)).save(any(Visit.class));
     }
 }

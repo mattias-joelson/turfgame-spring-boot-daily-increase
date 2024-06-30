@@ -14,7 +14,7 @@ public class VisitTest {
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     private static final Zone ZONE = new Zone(1L, "Zone", TIME);
     private static final User USER = new User(1L, "User", TIME);
-    private static final VisitType TYPE = VisitType.TAKEOVER;
+    private static final VisitType TYPE = VisitType.TAKE;
 
     @Test
     public void testZone() {
