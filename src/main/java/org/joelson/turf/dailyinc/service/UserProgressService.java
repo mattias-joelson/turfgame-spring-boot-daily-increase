@@ -10,21 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 public class UserProgressService {
 
     @Autowired
     UserProgressRepository userProgressRepository;
-
-    public <T> List<T> getSortedUserProgress(Class<T> type) {
-        return userProgressRepository.findAllSorted(type);
-    }
-
-    public <T> List<T> getSortedUserProgressByUser(Long userId, Class<T> type) {
-        return userProgressRepository.findAllSortedByUser(userId, type);
-    }
 
     private UserProgress getUserProgress(User user, UserProgressType type, Instant date) {
         return userProgressRepository.findById(new UserProgressId(user.getId(), type, date)).orElse(null);

@@ -2,8 +2,6 @@ package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.projection.UserIdAndNameVisit;
 import org.joelson.turf.dailyinc.projection.ZoneIdAndName;
-import org.joelson.turf.dailyinc.service.VisitService;
-import org.joelson.turf.dailyinc.service.ZoneService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +15,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/zones")
-public class ZonesController {
+public class ZoneController {
 
-    private final Logger logger = LoggerFactory.getLogger(ZonesController.class);
-
-    @Autowired
-    VisitService visitService;
+    private final Logger logger = LoggerFactory.getLogger(ZoneController.class);
 
     @Autowired
-    ZoneService zoneService;
+    VisitAPIService visitAPIService;
+
+    @Autowired
+    ZoneAPIService zoneAPIService;
 
     @GetMapping("")
     public List<ZoneIdAndName> getZones() {
         logger.trace("getZones()");
-        return zoneService.getSortedZones(ZoneIdAndName.class);
+        return zoneAPIService.getSortedZones(ZoneIdAndName.class);
     }
 
     @GetMapping({ "/", "/{zoneId}" })
@@ -51,15 +49,15 @@ public class ZonesController {
         if (zone == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(visitService.getSortedVisitsByZone(zone.getId(), UserIdAndNameVisit.class));
+        return ControllerUtil.respondOk(visitAPIService.getSortedVisitsByZone(zone.getId(), UserIdAndNameVisit.class));
     }
 
     private ZoneIdAndName lookupZoneIdAndNameByIdentifier(String identifier) {
         Long id = ControllerUtil.toLong(identifier);
         if (id != null) {
-            return zoneService.getZoneById(id, ZoneIdAndName.class);
+            return zoneAPIService.getZoneById(id, ZoneIdAndName.class);
         } else {
-            return zoneService.getZoneByName(identifier, ZoneIdAndName.class);
+            return zoneAPIService.getZoneByName(identifier, ZoneIdAndName.class);
         }
     }
 }
