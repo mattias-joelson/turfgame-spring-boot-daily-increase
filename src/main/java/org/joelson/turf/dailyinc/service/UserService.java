@@ -26,6 +26,14 @@ public class UserService {
         return userRepository.findByName(name, type).orElse(null);
     }
 
+    public <T> List<T> getSortedUsers(Long minId, Long maxId, Class<T> type) {
+        return userRepository.findAllSorted(minId, maxId, 100, type);
+    }
+
+    public <T> List<T> getLastSortedUsers(int count, Class<T> type) {
+        return userRepository.findLastSorted(Math.min(count, 100), type).reversed();
+    }
+
     public User getUpdateOrCreate(Long id, String name, Instant time) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) {
