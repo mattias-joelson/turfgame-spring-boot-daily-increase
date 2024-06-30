@@ -85,7 +85,7 @@ public class FeedImporterService {
         return zoneService.getUpdateOrCreate((long) zoneV5.getId(), zoneV5.getName(), time);
     }
 
-    private void handleTakeover(FeedTakeover feedTakeover) {
+    void handleTakeover(FeedTakeover feedTakeover) {
         Instant time = TimeUtil.turfAPITimestampToInstant(feedTakeover.getTime());
         Instant date = time.truncatedTo(ChronoUnit.DAYS);
         Zone zone = getUpdateOrCreate(feedTakeover.getZone(), time);
