@@ -1,11 +1,9 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -32,19 +30,5 @@ public class UserAPIService {
 
     public <T> List<T> getLastSortedUsers(int count, Class<T> type) {
         return userRepository.findLastSorted(Math.min(count, 100), type).reversed();
-    }
-
-    public User getUpdateOrCreate(Long id, String name, Instant time) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return userRepository.save(new User(id, name, time));
-        } else if (time.isAfter(user.getTime())) {
-            if (!user.getName().equals(name)) {
-                user.setName(name);
-            }
-            user.setTime(time);
-            return userRepository.save(user);
-        }
-        return user;
     }
 }

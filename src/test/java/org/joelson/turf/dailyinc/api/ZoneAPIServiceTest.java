@@ -15,12 +15,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -82,71 +79,5 @@ public class ZoneAPIServiceTest {
         assertNull(zoneAPIService.getZoneByName("hej", Zone.class));
         verify(zoneRepository).findByName(null, Zone.class);
         verify(zoneRepository, times(5)).findByName(anyString(), eq(Zone.class));
-    }
-
-    private static final Long ID = 1L;
-    private static final String NAME = "Zone";
-    private static final String NAME_OTHER = "ZoneOther";
-    private static final Instant TIME_LATER = TIME.plusSeconds(60);
-
-    private static final Zone ZONE = new Zone(ID, NAME, TIME);
-    private static final Zone ZONE_UPDATED_TIME = new Zone(ID, NAME, TIME_LATER);
-    private static final Zone ZONE_UPDATED_NAME_AND_TIME = new Zone(ID, NAME_OTHER, TIME_LATER);
-
-    private static Zone copyOf(Zone zone) {
-        return new Zone(zone.getId(), zone.getName(), zone.getTime());
-    }
-
-    @Test
-    public void givenEmptyRepository_whenGetUpdateOrCreate_thenZoneCreated() {
-        when(zoneRepository.findById(anyLong())).thenReturn(Optional.empty());
-        when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
-
-        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME, TIME);
-        assertEquals(ZONE, zone);
-        verify(zoneRepository).findById(ID);
-        verify(zoneRepository).save(ZONE);
-    }
-
-    @Test
-    public void givenEqualZone_whenGetUpdateOrCreate_thenZoneNotUpdated() {
-        when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
-
-        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME, TIME);
-        assertEquals(ZONE, zone);
-        verify(zoneRepository).findById(ID);
-        verify(zoneRepository, never()).save(any(Zone.class));
-    }
-
-    @Test
-    public void givenOlderZone_whenGetUpdateOrCreate_thenZoneNotUpdated() {
-        when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE_UPDATED_TIME)));
-
-        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
-        assertEquals(ZONE_UPDATED_TIME, zone);
-        verify(zoneRepository).findById(ID);
-        verify(zoneRepository, never()).save(any(Zone.class));
-    }
-
-    @Test
-    public void givenUpdatedZone_whenGetUpdateOrCreate_thenZoneUpdated() {
-        when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
-        when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
-
-        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME_OTHER, TIME_LATER);
-        assertEquals(ZONE_UPDATED_NAME_AND_TIME, zone);
-        verify(zoneRepository).findById(ID);
-        verify(zoneRepository).save(ZONE_UPDATED_NAME_AND_TIME);
-    }
-
-    @Test
-    public void givenLaterZone_whenGetUpdateOrCreate_thenZoneUpdated() {
-        when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
-        when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
-
-        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME, TIME_LATER);
-        assertEquals(ZONE_UPDATED_TIME, zone);
-        verify(zoneRepository).findById(ID);
-        verify(zoneRepository).save(ZONE_UPDATED_TIME);
     }
 }

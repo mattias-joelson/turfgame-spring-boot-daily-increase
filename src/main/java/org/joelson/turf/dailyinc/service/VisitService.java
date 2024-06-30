@@ -10,25 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Service
 public class VisitService {
 
     @Autowired
     VisitRepository visitRepository;
-
-    public <T> List<T> getSortedVisits(Class<T> type) {
-        return visitRepository.findAllSorted(type);
-    }
-
-    public <T,U> List<T> getSortedVisitsByUser(Long userId, Class<T> type) {
-        return visitRepository.findAllSortedByUser(userId, type);
-    }
-
-    public <T,Z> List<T> getSortedVisitsByZone(Long zoneId, Class<T> type) {
-        return visitRepository.findAllSortedByZone(zoneId, type);
-    }
 
     public Visit getVisit(Zone zone, User user, Instant time) {
         return visitRepository.findById(new VisitId(zone.getId(), user.getId(), time)).orElse(null);
