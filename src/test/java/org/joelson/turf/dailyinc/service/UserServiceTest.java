@@ -36,9 +36,9 @@ public class UserServiceTest {
 
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 
-    private static final User USER_ONE = new User(1L, "UserOne", TIME);
-    private static final User USER_TWO = new User(2L, "UserTwo", TIME);
-    private static final User USER_THREE = new User(3L, "UserThree", TIME);
+    private static final User USER_ONE = new User(1001L, "UserOne", TIME);
+    private static final User USER_TWO = new User(1002L, "UserTwo", TIME);
+    private static final User USER_THREE = new User(1003L, "UserThree", TIME);
 
     private static final List<User> SORTED_USERS_LIST = List.of(USER_ONE, USER_TWO, USER_THREE);
 
@@ -84,7 +84,7 @@ public class UserServiceTest {
         verify(userRepository, times(5)).findByName(anyString(), eq(User.class));
     }
 
-    private static final Long ID = 1L;
+    private static final Long ID = 1001L;
     private static final String NAME = "User";
     private static final String NAME_OTHER = "UserOther";
     private static final Instant TIME_LATER = TIME.plusSeconds(60);
@@ -98,7 +98,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenEmptyRepository_whenGetUpdateOrCreate_thenSaveUser() {
+    public void givenEmptyRepository_whenGetUpdateOrCreate_thenUserCreated() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 
@@ -109,7 +109,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenEqualUser_whenGetUpdateOrCreate_thenSaveNotCalled() {
+    public void givenEqualUser_whenGetUpdateOrCreate_thenUserNotUpdated() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER)));
 
         User user = userService.getUpdateOrCreate(ID, NAME, TIME);
@@ -119,7 +119,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenOlderUser_whenGetUpdateOrCreate_thenSaveNotCalled() {
+    public void givenOlderUser_whenGetUpdateOrCreate_thenUserNotUpdated() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER_UPDATED_TIME)));
 
         User user = userService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
@@ -129,7 +129,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUpdatedUser_whenGetUpdateOrCreate_thenSaveCalled() {
+    public void givenUpdatedUser_whenGetUpdateOrCreate_thenUserUpdated() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER)));
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 
@@ -140,7 +140,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenLaterUser_whenGetUpdateOrCreate_thenSaveCalled() {
+    public void givenLaterUser_whenGetUpdateOrCreate_thenUserUpdated() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER)));
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 

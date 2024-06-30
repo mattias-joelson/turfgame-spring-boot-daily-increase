@@ -18,8 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserRepositoryIntegrationTest {
 
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-    public static final User USER_ONE = new User(1L, "UserOne", TIME);
-    public static final User USER_TWO = new User(2L, "UserTwo", TIME);
+    private static final User USER_ONE = new User(1001L, "UserOne", TIME);
+    private static final User USER_TWO = new User(1002L, "UserTwo", TIME);
+    private static final List<User> SORTED_USERS = List.of(USER_ONE, USER_TWO);
 
     @Autowired
     UserRepository userRepository;
@@ -28,17 +29,16 @@ public class UserRepositoryIntegrationTest {
     TestEntityManager entityManager;
 
     @Test
-    public void givenUsers_whenFindByIdRaw_thenSuccess() {
+    public void givenUsers_whenFindByIdRaw_thenExistingReturned() {
         entityManager.persist(USER_TWO);
         entityManager.persist(USER_ONE);
 
-        User foundUser = userRepository.findById(USER_TWO.getId()).orElse(null);
-        assertEquals(USER_TWO, foundUser);
+        assertEquals(USER_TWO, userRepository.findById(USER_TWO.getId()).orElse(null));
         assertNull(userRepository.findById(4711L).orElse(null));
     }
 
     @Test
-    public void givenNewUser_whenSave_thenSuccess() {
+    public void givenNewUser_whenSave_thenSaved() {
         User savedUser = userRepository.save(USER_ONE);
         assertEquals(USER_ONE, entityManager.find(User.class, savedUser.getId()));
 
@@ -46,7 +46,7 @@ public class UserRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenUserCreated_whenUpdate_thenSuccess() {
+    public void givenUserCreated_whenUpdate_thenUpdated() {
         User newUser = new User(1L, "User", TIME);
         entityManager.persist(newUser);
 
@@ -59,32 +59,30 @@ public class UserRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenUsers_whenFindAllSorted_thenSuccess() {
+    public void givenUsers_whenFindAllSorted_thenAllReturned() {
         entityManager.persist(USER_TWO);
         entityManager.persist(USER_ONE);
 
-        List<User> sortedUsers = userRepository.findAllSorted(User.class);
-        assertEquals(USER_ONE, sortedUsers.getFirst());
-        assertEquals(USER_TWO, sortedUsers.getLast());
+        assertEquals(SORTED_USERS, userRepository.findAllSorted(User.class));
     }
 
     @Test
-    public void givenUsers_whenFindById_thenSuccess() {
+    public void givenUsers_whenFindById_thenExistingReturned() {
         entityManager.persist(USER_TWO);
         entityManager.persist(USER_ONE);
 
-        User foundUser = userRepository.findById(USER_TWO.getId(), User.class).orElse(null);
-        assertEquals(USER_TWO, foundUser);
+        assertEquals(USER_ONE, userRepository.findById(USER_ONE.getId(), User.class).orElse(null));
+        assertEquals(USER_TWO, userRepository.findById(USER_TWO.getId(), User.class).orElse(null));
         assertNull(userRepository.findById(4711L, User.class).orElse(null));
     }
 
     @Test
-    public void givenUsers_whenFindByName_thenSuccess() {
+    public void givenUsers_whenFindByName_thenExistingReturned() {
         entityManager.persist(USER_TWO);
         entityManager.persist(USER_ONE);
 
-        User foundUser = userRepository.findByName(USER_TWO.getName(), User.class).orElse(null);
-        assertEquals(USER_TWO, foundUser);
+        assertEquals(USER_ONE, userRepository.findByName(USER_ONE.getName(), User.class).orElse(null));
+        assertEquals(USER_TWO, userRepository.findByName(USER_TWO.getName(), User.class).orElse(null));
         assertNull(userRepository.findByName("TestUser", User.class).orElse(null));
     }
 }

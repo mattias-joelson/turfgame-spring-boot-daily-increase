@@ -20,6 +20,7 @@ public class ZoneRepositoryIntegrationTest {
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     private static final Zone ZONE_ONE = new Zone(1L, "ZoneOne", TIME);
     private static final Zone ZONE_TWO = new Zone(2L, "ZoneTwo", TIME);
+    private static final List<Zone> SORTED_ZONES = List.of(ZONE_ONE, ZONE_TWO);
 
     @Autowired
     ZoneRepository zoneRepository;
@@ -28,17 +29,16 @@ public class ZoneRepositoryIntegrationTest {
     TestEntityManager entityManager;
 
     @Test
-    public void givenZones_whenFindByIdRaw_thenSuccess() {
+    public void givenZones_whenFindByIdRaw_thenExistingReturned() {
         entityManager.persist(ZONE_TWO);
         entityManager.persist(ZONE_ONE);
 
-        Zone foundZone = zoneRepository.findById(ZONE_TWO.getId()).orElse(null);
-        assertEquals(ZONE_TWO, foundZone);
+        assertEquals(ZONE_TWO, zoneRepository.findById(ZONE_TWO.getId()).orElse(null));
         assertNull(zoneRepository.findById(4711L).orElse(null));
     }
 
     @Test
-    public void givenNewZone_whenSave_thenSuccess() {
+    public void givenNewZone_whenSave_thenSaved() {
         Zone savedZone = zoneRepository.save(ZONE_ONE);
         assertEquals(ZONE_ONE, entityManager.find(Zone.class, savedZone.getId()));
 
@@ -46,7 +46,7 @@ public class ZoneRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenZoneCreated_whenUpdate_thenSuccess() {
+    public void givenZoneCreated_whenUpdate_thenUpdated() {
         Zone newZone = new Zone(1L, "Zone", TIME);
         entityManager.persist(newZone);
 
@@ -59,32 +59,30 @@ public class ZoneRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenZones_whenFindAllSorted_thenSuccess() {
+    public void givenZones_whenFindAllSorted_thenAllReturned() {
         entityManager.persist(ZONE_TWO);
         entityManager.persist(ZONE_ONE);
 
-        List<Zone> sortedZones = zoneRepository.findAllSorted(Zone.class);
-        assertEquals(ZONE_ONE, sortedZones.getFirst());
-        assertEquals(ZONE_TWO, sortedZones.getLast());
+        assertEquals(SORTED_ZONES, zoneRepository.findAllSorted(Zone.class));
     }
 
     @Test
-    public void givenZones_whenFindById_thenSuccess() {
+    public void givenZones_whenFindById_thenExistingReturned() {
         entityManager.persist(ZONE_TWO);
         entityManager.persist(ZONE_ONE);
 
-        Zone foundZone = zoneRepository.findById(ZONE_TWO.getId(), Zone.class).orElse(null);
-        assertEquals(ZONE_TWO, foundZone);
+        assertEquals(ZONE_ONE, zoneRepository.findById(ZONE_ONE.getId(), Zone.class).orElse(null));
+        assertEquals(ZONE_TWO, zoneRepository.findById(ZONE_TWO.getId(), Zone.class).orElse(null));
         assertNull(zoneRepository.findById(4711L, Zone.class).orElse(null));
     }
 
     @Test
-    public void givenZones_whenFindByName_thenSuccess() {
+    public void givenZones_whenFindByName_thenExistingReturned() {
         entityManager.persist(ZONE_TWO);
         entityManager.persist(ZONE_ONE);
 
-        Zone foundZone = zoneRepository.findByName(ZONE_TWO.getName(), Zone.class).orElse(null);
-        assertEquals(ZONE_TWO, foundZone);
+        assertEquals(ZONE_ONE, zoneRepository.findByName(ZONE_ONE.getName(), Zone.class).orElse(null));
+        assertEquals(ZONE_TWO, zoneRepository.findByName(ZONE_TWO.getName(), Zone.class).orElse(null));
         assertNull(zoneRepository.findByName("TestZone", Zone.class).orElse(null));
     }
 }

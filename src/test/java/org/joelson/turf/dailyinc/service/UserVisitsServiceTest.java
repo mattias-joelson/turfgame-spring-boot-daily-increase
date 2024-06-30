@@ -46,10 +46,10 @@ public class UserVisitsServiceTest {
     private static final UserVisits USER_TWO_VISITS = new UserVisits(USER_TWO, DATE, 3);
     private static final UserVisits USER_TWO_NEXT_VISITS = new UserVisits(USER_TWO, NEXT_DATE, 23);
 
-    public static final List<UserVisits> SORTED_USER_VISITS
+    private static final List<UserVisits> SORTED_USER_VISITS
             = List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS, USER_TWO_VISITS, USER_TWO_NEXT_VISITS);
-    public static final List<UserVisits> USER_ONE_SORTED_USER_VISITS = List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS);
-    public static final List<UserVisits> USER_TWO_SORTED_USER_VISITS = List.of(USER_TWO_VISITS, USER_TWO_NEXT_VISITS);
+    private static final List<UserVisits> USER_ONE_SORTED_USER_VISITS = List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS);
+    private static final List<UserVisits> USER_TWO_SORTED_USER_VISITS = List.of(USER_TWO_VISITS, USER_TWO_NEXT_VISITS);
 
     @Test
     public void getSortedUserVisitsTest() {
@@ -84,7 +84,7 @@ public class UserVisitsServiceTest {
     }
 
     @Test
-    public void givenEmptyRepository_whenIncreaseUserVisits_thenSuccess() {
+    public void givenEmptyRepository_whenIncreaseUserVisits_thenVisitsCreated() {
         when(userVisitsRepository.findById(any(UserVisitsId.class))).thenReturn(Optional.empty());
         when(userVisitsRepository.save(any(UserVisits.class))).then(returnsFirstArg());
 
@@ -95,7 +95,7 @@ public class UserVisitsServiceTest {
     }
 
     @Test
-    public void givenUserVisits_whenIncreaseUserVisits_thenSuccess() {
+    public void givenUserVisits_whenIncreaseUserVisits_thenVisitsUpdated() {
         when(userVisitsRepository.findById(any(UserVisitsId.class))).thenReturn(Optional.empty());
         when(userVisitsRepository.findById(USER_VISITS_ID)).thenReturn(Optional.of(copyOf(USER_VISITS)))
                 .thenReturn(Optional.of(copyOf(NEXT_USER_VISITS)));

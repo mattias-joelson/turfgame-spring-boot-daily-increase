@@ -48,7 +48,7 @@ public class UserProgressServiceTest {
     private static final Instant DATE = TIME.truncatedTo(ChronoUnit.DAYS);
     private static final Instant NEXT_DATE = DATE.plus(1, ChronoUnit.DAYS);
 
-    private static final User USER_ONE = new User(1L, "UserOne", NEXT_TIME);
+    private static final User USER_ONE = new User(1001L, "UserOne", NEXT_TIME);
     private static final UserProgress USER_ONE_INC_PROGRESS = new UserProgress(USER_ONE,
             UserProgressType.DAILY_INCREASE, DATE, 0, 1, TIME);
     private static final UserProgress USER_ONE_NEXT_PROGRESS = new UserProgress(USER_ONE,
@@ -56,18 +56,18 @@ public class UserProgressServiceTest {
     private static final UserProgress USER_ONE_ADD_PROGRESS = new UserProgress(USER_ONE, UserProgressType.DAILY_ADD,
             DATE, 0, 1, TIME);
 
-    private static final User USER_TWO = new User(2L, "UserTwo", NEXT_TIME);
+    private static final User USER_TWO = new User(1002L, "UserTwo", NEXT_TIME);
     private static final UserProgress USER_TWO_INC_PROGRESS = new UserProgress(USER_TWO,
             UserProgressType.DAILY_INCREASE, DATE, 10, 10, TIME);
     private static final UserProgress USER_TWO_NEXT_PROGRESS = new UserProgress(USER_TWO,
             UserProgressType.DAILY_INCREASE, NEXT_DATE, 11, 12, TIME);
 
-    public static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS, USER_ONE_NEXT_PROGRESS,
-            USER_ONE_ADD_PROGRESS, USER_TWO_INC_PROGRESS, USER_TWO_NEXT_PROGRESS);
+    private static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS,
+            USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS, USER_TWO_INC_PROGRESS, USER_TWO_NEXT_PROGRESS);
 
-    public static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS,
+    private static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS,
             USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS);
-    public static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS = List.of(USER_TWO_INC_PROGRESS,
+    private static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS = List.of(USER_TWO_INC_PROGRESS,
             USER_TWO_NEXT_PROGRESS);
 
     @Test
@@ -87,7 +87,7 @@ public class UserProgressServiceTest {
 
         assertEquals(USER_ONE_SORTED_USER_PROGRESS, userProgressService.getSortedUserProgressByUser(USER_ONE.getId(), UserProgress.class));
         assertEquals(USER_TWO_SORTED_USER_PROGRESS, userProgressService.getSortedUserProgressByUser(USER_TWO.getId(), UserProgress.class));
-        assertEquals(List.of(), userProgressService.getSortedUserProgressByUser(3L, UserProgress.class));
+        assertEquals(List.of(), userProgressService.getSortedUserProgressByUser(1003L, UserProgress.class));
         verify(userProgressRepository,times(3)).findAllSortedByUser(anyLong(), eq(UserProgress.class));
     }
 
@@ -127,7 +127,7 @@ public class UserProgressServiceTest {
     }
 
     @Test
-    public void givenEmptyRepository_whenIncreaseUserProgress_thenSuccess() {
+    public void givenEmptyRepository_whenIncreaseUserProgress_thenProgressCreated() {
         when(userProgressRepository.findById(any(UserProgressId.class))).thenReturn(Optional.empty());
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, DATE, 1, TIME);
@@ -143,7 +143,7 @@ public class UserProgressServiceTest {
     }
 
     @Test
-    public void givenDateUserProgress_whenIncreaseUserProgress_thenSuccess() {
+    public void givenDateUserProgress_whenIncreaseUserProgress_thenProgressNotUpdated() {
         when(userProgressRepository.findById(any(UserProgressId.class))).thenReturn(Optional.empty());
         when(userProgressRepository.findById(USER_INC_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_INC_PROGRESS)));
         when(userProgressRepository.findById(USER_ADD_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_ADD_PROGRESS)));
@@ -160,7 +160,7 @@ public class UserProgressServiceTest {
     }
 
     @Test
-    public void givenDateUserProgressButNoNextDateUserProgress_whenIncreaseUserProgress_thenSuccess() {
+    public void givenDateUserProgressButNoNextDateUserProgress_whenIncreaseUserProgress_thenProgressCreated() {
         when(userProgressRepository.findById(any(UserProgressId.class))).thenReturn(Optional.empty());
         when(userProgressRepository.findById(USER_INC_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_INC_PROGRESS)));
         when(userProgressRepository.findById(USER_ADD_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_ADD_PROGRESS)));
@@ -196,7 +196,7 @@ public class UserProgressServiceTest {
     }
 
     @Test
-    public void givenNextDateUserProgress_whenIncreaseUserProgress_thenSuccess() {
+    public void givenNextDateUserProgress_whenIncreaseUserProgress_thenProgressUpdated() {
         when(userProgressRepository.findById(any(UserProgressId.class))).thenReturn(Optional.empty());
         when(userProgressRepository.findById(NEXT_USER_INC_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_USER_INC_PROGRESS)));
         when(userProgressRepository.findById(NEXT_USER_ADD_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_USER_ADD_PROGRESS)));
@@ -214,7 +214,7 @@ public class UserProgressServiceTest {
     }
 
     @Test
-    public void givenNextDateLaterUserProgress_whenIncreaseUserProgress_thenSuccess() {
+    public void givenNextDateLaterUserProgress_whenIncreaseUserProgress_thenProgressUpdated() {
         when(userProgressRepository.findById(any(UserProgressId.class))).thenReturn(Optional.empty());
         when(userProgressRepository.findById(NEXT_USER_INC_PROGRESS_ID)).thenReturn(Optional.of(copyOf(LATER_USER_INC_PROGRESS)));
         when(userProgressRepository.findById(NEXT_USER_ADD_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_USER_ADD_PROGRESS)));

@@ -20,13 +20,19 @@ public class VisitRepositoryIntegrationTest {
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     private static final Zone ZONE = new Zone(1L, "Zone", TIME);
     private static final User TAKER = new User(1001L, "Taker", TIME);
-    public static final Visit TAKE = new Visit(ZONE, TAKER, TIME, VisitType.TAKE);
+    private static final Visit TAKE = new Visit(ZONE, TAKER, TIME, VisitType.TAKE);
     private static final User ASSISTER = new User(1002L, "Assister", TIME);
-    public static final Visit ASSIST = new Visit(ZONE, ASSISTER, TIME, VisitType.ASSIST);
+    private static final Visit ASSIST = new Visit(ZONE, ASSISTER, TIME, VisitType.ASSIST);
 
     private static final Instant NEXT_TIME = TIME.plusSeconds(60);
     private static final Zone NEXT_ZONE = new Zone(2L, "ZoneTwo", NEXT_TIME);
     private static final Visit REVISIT = new Visit(NEXT_ZONE, TAKER, NEXT_TIME, VisitType.REVISIT);
+
+    private static final List<Visit> SORTED_VISITS = List.of(TAKE, ASSIST, REVISIT);
+    private static final List<Visit> TAKER_SORTED_VISITS = List.of(TAKE, REVISIT);
+    private static final List<Visit> ASSISTER_SORTED_VISITS = List.of(ASSIST);
+    private static final List<Visit> ZONE_SORTED_VISITS = List.of(TAKE, ASSIST);
+    private static final List<Visit> NEXT_ZONE_SORTED_VISITS = List.of(REVISIT);
 
     @Autowired
     VisitRepository visitRepository;
@@ -35,7 +41,7 @@ public class VisitRepositoryIntegrationTest {
     TestEntityManager entityManager;
 
     @Test
-    public void givenVisits_whenFindById_thenSuccess() {
+    public void givenVisits_whenFindById_thenExistingReturned() {
         entityManager.persist(ZONE);
         entityManager.persist(TAKER);
         entityManager.persist(ASSISTER);
@@ -53,7 +59,7 @@ public class VisitRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenNewVisit_whenSave_thenSuccess() {
+    public void givenNewVisit_whenSave_thenSaved() {
         entityManager.persist(ZONE);
         entityManager.persist(TAKER);
 
@@ -66,7 +72,7 @@ public class VisitRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenVisits_whenFindAllSorted_thenSuccess() {
+    public void givenVisits_whenFindAllSorted_thenAllReturned() {
         entityManager.persist(NEXT_ZONE);
         entityManager.persist(TAKER);
         entityManager.persist(REVISIT);
@@ -75,14 +81,11 @@ public class VisitRepositoryIntegrationTest {
         entityManager.persist(ASSIST);
         entityManager.persist(TAKE);
 
-        List<Visit> visits = visitRepository.findAllSorted(Visit.class);
-        assertEquals(TAKE, visits.getFirst());
-        assertEquals(ASSIST, visits.get(1));
-        assertEquals(REVISIT, visits.getLast());
+        assertEquals(SORTED_VISITS, visitRepository.findAllSorted(Visit.class));
     }
 
     @Test
-    public void givenVisits_whenFindAllSortedByUser_thenSuccess() {
+    public void givenVisits_whenFindAllSortedByUser_thenListReturned() {
         entityManager.persist(NEXT_ZONE);
         entityManager.persist(TAKER);
         entityManager.persist(REVISIT);
@@ -91,13 +94,13 @@ public class VisitRepositoryIntegrationTest {
         entityManager.persist(ASSIST);
         entityManager.persist(TAKE);
 
-        List<Visit> visits = visitRepository.findAllSortedByUser(TAKER.getId(), Visit.class);
-        assertEquals(TAKE, visits.getFirst());
-        assertEquals(REVISIT, visits.getLast());
+        assertEquals(TAKER_SORTED_VISITS, visitRepository.findAllSortedByUser(TAKER.getId(), Visit.class));
+        assertEquals(ASSISTER_SORTED_VISITS, visitRepository.findAllSortedByUser(ASSISTER.getId(), Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedByUser(1003L, Visit.class));
     }
 
     @Test
-    public void givenVisits_whenFindAllSortedByZone_thenSuccess() {
+    public void givenVisits_whenFindAllSortedByZone_thenListReturned() {
         entityManager.persist(NEXT_ZONE);
         entityManager.persist(TAKER);
         entityManager.persist(REVISIT);
@@ -106,8 +109,8 @@ public class VisitRepositoryIntegrationTest {
         entityManager.persist(ASSIST);
         entityManager.persist(TAKE);
 
-        List<Visit> visits = visitRepository.findAllSortedByZone(ZONE.getId(), Visit.class);
-        assertEquals(TAKE, visits.getFirst());
-        assertEquals(ASSIST, visits.getLast());
+        assertEquals(ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(ZONE.getId(), Visit.class));
+        assertEquals(NEXT_ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(NEXT_ZONE.getId(), Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedByUser(3L, Visit.class));
     }
 }

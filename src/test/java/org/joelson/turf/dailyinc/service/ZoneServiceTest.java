@@ -98,7 +98,7 @@ public class ZoneServiceTest {
     }
 
     @Test
-    public void givenEmptyRepository_whenGetUpdateOrCreate_thenSaveZone() {
+    public void givenEmptyRepository_whenGetUpdateOrCreate_thenZoneCreated() {
         when(zoneRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
 
@@ -109,7 +109,7 @@ public class ZoneServiceTest {
     }
 
     @Test
-    public void givenEqualZone_whenGetUpdateOrCreate_thenSaveNotCalled() {
+    public void givenEqualZone_whenGetUpdateOrCreate_thenZoneNotUpdated() {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
 
         Zone zone = zoneService.getUpdateOrCreate(ID, NAME, TIME);
@@ -119,7 +119,7 @@ public class ZoneServiceTest {
     }
 
     @Test
-    public void givenOlderZone_whenGetUpdateOrCreate_thenSaveNotCalled() {
+    public void givenOlderZone_whenGetUpdateOrCreate_thenZoneNotUpdated() {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE_UPDATED_TIME)));
 
         Zone zone = zoneService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
@@ -129,7 +129,7 @@ public class ZoneServiceTest {
     }
 
     @Test
-    public void givenUpdatedZone_whenGetUpdateOrCreate_thenSaveCalled() {
+    public void givenUpdatedZone_whenGetUpdateOrCreate_thenZoneUpdated() {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
         when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
 
@@ -140,7 +140,7 @@ public class ZoneServiceTest {
     }
 
     @Test
-    public void givenLaterZone_whenGetUpdateOrCreate_thenSaveCalled() {
+    public void givenLaterZone_whenGetUpdateOrCreate_thenZoneUpdated() {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
         when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
 
