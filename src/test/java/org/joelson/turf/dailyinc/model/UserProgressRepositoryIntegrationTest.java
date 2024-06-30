@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -38,6 +36,14 @@ public class UserProgressRepositoryIntegrationTest {
             UserProgressType.DAILY_INCREASE, DATE, 10, 10, TIME);
     private static final UserProgress USER_TWO_NEXT_PROGRESS = new UserProgress(USER_TWO,
             UserProgressType.DAILY_INCREASE, NEXT_DATE, 11, 12, TIME);
+
+    public static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS, USER_ONE_NEXT_PROGRESS,
+            USER_ONE_ADD_PROGRESS, USER_TWO_INC_PROGRESS, USER_TWO_NEXT_PROGRESS);
+
+    public static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS,
+            USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS);
+    public static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS = List.of(USER_TWO_INC_PROGRESS,
+            USER_TWO_NEXT_PROGRESS);
 
     @Autowired
     UserProgressRepository userProgressRepository;
@@ -110,9 +116,7 @@ public class UserProgressRepositoryIntegrationTest {
         entityManager.persist(USER_ONE_INC_PROGRESS);
 
         List<UserProgress> userProgresses = userProgressRepository.findAllSorted(UserProgress.class);
-        assertEquals(
-                List.of(USER_ONE_INC_PROGRESS, USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS, USER_TWO_INC_PROGRESS,
-                        USER_TWO_NEXT_PROGRESS), userProgresses);
+        assertEquals(SORTED_USER_PROGRESS, userProgresses);
     }
 
     @Test
@@ -125,9 +129,9 @@ public class UserProgressRepositoryIntegrationTest {
 
         List<UserProgress> userOneProgresses = userProgressRepository.findAllSortedByUser(USER_ONE.getId(),
                 UserProgress.class);
-        assertEquals(List.of(USER_ONE_INC_PROGRESS, USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS), userOneProgresses);
+        assertEquals(USER_ONE_SORTED_USER_PROGRESS, userOneProgresses);
         List<UserProgress> userTwoProgresses = userProgressRepository.findAllSortedByUser(USER_TWO.getId(),
                 UserProgress.class);
-        assertEquals(List.of(USER_TWO_INC_PROGRESS, USER_TWO_NEXT_PROGRESS), userTwoProgresses);
+        assertEquals(USER_TWO_SORTED_USER_PROGRESS, userTwoProgresses);
     }
 }

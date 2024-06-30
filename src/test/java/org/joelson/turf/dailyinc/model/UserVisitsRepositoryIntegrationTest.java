@@ -30,6 +30,11 @@ public class UserVisitsRepositoryIntegrationTest {
     private static final UserVisits USER_TWO_VISITS = new UserVisits(USER_TWO, DATE, 3);
     private static final UserVisits USER_TWO_NEXT_VISITS = new UserVisits(USER_TWO, NEXT_DATE, 23);
 
+    public static final List<UserVisits> SORTED_USER_VISITS = List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS,
+            USER_TWO_VISITS, USER_TWO_NEXT_VISITS);
+    public static final List<UserVisits> USER_ONE_SORTED_USER_VISITS = List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS);
+    public static final List<UserVisits> USER_TWO_SORTED_USER_VISITS = List.of(USER_TWO_VISITS, USER_TWO_NEXT_VISITS);
+
     @Autowired
     UserVisitsRepository userVisitsRepository;
 
@@ -87,7 +92,7 @@ public class UserVisitsRepositoryIntegrationTest {
         entityManager.persist(USER_ONE_VISITS);
 
         List<UserVisits> userVisits = userVisitsRepository.findAllSorted(UserVisits.class);
-        assertEquals(List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS, USER_TWO_VISITS, USER_TWO_NEXT_VISITS), userVisits);
+        assertEquals(SORTED_USER_VISITS, userVisits);
     }
 
     @Test
@@ -97,9 +102,9 @@ public class UserVisitsRepositoryIntegrationTest {
         entityManager.persist(USER_ONE_NEXT_VISITS);
         entityManager.persist(USER_ONE_VISITS);
 
-        assertEquals(List.of(USER_ONE_VISITS, USER_ONE_NEXT_VISITS),
+        assertEquals(USER_ONE_SORTED_USER_VISITS,
                 userVisitsRepository.findAllSortedByUser(USER_ONE.getId(), UserVisits.class));
-        assertEquals(List.of(USER_TWO_VISITS, USER_TWO_NEXT_VISITS),
+        assertEquals(USER_TWO_SORTED_USER_VISITS,
                 userVisitsRepository.findAllSortedByUser(USER_TWO.getId(), UserVisits.class));
     }
 }
