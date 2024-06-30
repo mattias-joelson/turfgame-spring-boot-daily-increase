@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/zones")
 public class ZonesController {
 
-    Logger logger = LoggerFactory.getLogger(ZonesController.class);
+    private final Logger logger = LoggerFactory.getLogger(ZonesController.class);
 
     @Autowired
     VisitService visitService;

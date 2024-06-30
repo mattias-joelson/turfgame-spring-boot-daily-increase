@@ -26,7 +26,7 @@ import java.util.Objects;
 @Service
 public class FeedImporterService {
 
-    Logger logger = LoggerFactory.getLogger(FeedImporterService.class);
+    private final Logger logger = LoggerFactory.getLogger(FeedImporterService.class);
     private int filesHandled = 0;
     private final FeedsReader feedsReader;
 
