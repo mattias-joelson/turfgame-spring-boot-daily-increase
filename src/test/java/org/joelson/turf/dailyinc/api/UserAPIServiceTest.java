@@ -1,4 +1,4 @@
-package org.joelson.turf.dailyinc.service;
+package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserRepository;
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserAPIServiceTest {
 
     @Mock
     UserRepository userRepository;
 
     @InjectMocks
-    UserService userService;
+    UserAPIService userAPIService;
 
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -46,7 +46,7 @@ public class UserServiceTest {
     public void testGetSortedUsers() {
         when(userRepository.findAllSorted(User.class)).thenReturn(SORTED_USERS_LIST);
 
-        List<User> sortedUsers = userService.getSortedUsers(User.class);
+        List<User> sortedUsers = userAPIService.getSortedUsers(User.class);
         assertEquals(SORTED_USERS_LIST, sortedUsers);
         verify(userRepository).findAllSorted(User.class);
     }
@@ -58,12 +58,12 @@ public class UserServiceTest {
         when(userRepository.findById(USER_TWO.getId(), User.class)).thenReturn(Optional.of(USER_TWO));
         when(userRepository.findById(USER_THREE.getId(), User.class)).thenReturn(Optional.of(USER_THREE));
 
-        assertNull(userService.getUserById(0L, User.class));
-        assertEquals(USER_ONE, userService.getUserById(USER_ONE.getId(), User.class));
-        assertEquals(USER_TWO, userService.getUserById(USER_TWO.getId(), User.class));
-        assertEquals(USER_THREE, userService.getUserById(USER_THREE.getId(), User.class));
-        assertNull(userService.getUserById(4L, User.class));
-        assertNull(userService.getUserById(5L, User.class));
+        assertNull(userAPIService.getUserById(0L, User.class));
+        assertEquals(USER_ONE, userAPIService.getUserById(USER_ONE.getId(), User.class));
+        assertEquals(USER_TWO, userAPIService.getUserById(USER_TWO.getId(), User.class));
+        assertEquals(USER_THREE, userAPIService.getUserById(USER_THREE.getId(), User.class));
+        assertNull(userAPIService.getUserById(4L, User.class));
+        assertNull(userAPIService.getUserById(5L, User.class));
         verify(userRepository, times(6)).findById(anyLong(), eq(User.class));
     }
 
@@ -74,12 +74,12 @@ public class UserServiceTest {
         when(userRepository.findByName(USER_TWO.getName(), User.class)).thenReturn(Optional.of(USER_TWO));
         when(userRepository.findByName(USER_THREE.getName(), User.class)).thenReturn(Optional.of(USER_THREE));
 
-        assertNull(userService.getUserByName("", User.class));
-        assertEquals(USER_ONE, userService.getUserByName(USER_ONE.getName(), User.class));
-        assertEquals(USER_TWO, userService.getUserByName(USER_TWO.getName(), User.class));
-        assertEquals(USER_THREE, userService.getUserByName(USER_THREE.getName(), User.class));
-        assertNull(userService.getUserByName(null, User.class));
-        assertNull(userService.getUserByName("hej", User.class));
+        assertNull(userAPIService.getUserByName("", User.class));
+        assertEquals(USER_ONE, userAPIService.getUserByName(USER_ONE.getName(), User.class));
+        assertEquals(USER_TWO, userAPIService.getUserByName(USER_TWO.getName(), User.class));
+        assertEquals(USER_THREE, userAPIService.getUserByName(USER_THREE.getName(), User.class));
+        assertNull(userAPIService.getUserByName(null, User.class));
+        assertNull(userAPIService.getUserByName("hej", User.class));
         verify(userRepository).findByName(null, User.class);
         verify(userRepository, times(5)).findByName(anyString(), eq(User.class));
     }
@@ -102,7 +102,7 @@ public class UserServiceTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 
-        User user = userService.getUpdateOrCreate(ID, NAME, TIME);
+        User user = userAPIService.getUpdateOrCreate(ID, NAME, TIME);
         assertEquals(USER, user);
         verify(userRepository).findById(ID);
         verify(userRepository).save(USER);
@@ -112,7 +112,7 @@ public class UserServiceTest {
     public void givenEqualUser_whenGetUpdateOrCreate_thenUserNotUpdated() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER)));
 
-        User user = userService.getUpdateOrCreate(ID, NAME, TIME);
+        User user = userAPIService.getUpdateOrCreate(ID, NAME, TIME);
         assertEquals(USER, user);
         verify(userRepository).findById(ID);
         verify(userRepository, never()).save(any(User.class));
@@ -122,7 +122,7 @@ public class UserServiceTest {
     public void givenOlderUser_whenGetUpdateOrCreate_thenUserNotUpdated() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER_UPDATED_TIME)));
 
-        User user = userService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
+        User user = userAPIService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
         assertEquals(USER_UPDATED_TIME, user);
         verify(userRepository).findById(ID);
         verify(userRepository, never()).save(any(User.class));
@@ -133,7 +133,7 @@ public class UserServiceTest {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER)));
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 
-        User user = userService.getUpdateOrCreate(ID, NAME_OTHER, TIME_LATER);
+        User user = userAPIService.getUpdateOrCreate(ID, NAME_OTHER, TIME_LATER);
         assertEquals(USER_UPDATED_NAME_AND_TIME, user);
         verify(userRepository).findById(ID);
         verify(userRepository).save(USER_UPDATED_NAME_AND_TIME);
@@ -144,7 +144,7 @@ public class UserServiceTest {
         when(userRepository.findById(ID)).thenReturn(Optional.of(copyOf(USER)));
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 
-        User user = userService.getUpdateOrCreate(ID, NAME, TIME_LATER);
+        User user = userAPIService.getUpdateOrCreate(ID, NAME, TIME_LATER);
         assertEquals(USER_UPDATED_TIME, user);
         verify(userRepository).findById(ID);
         verify(userRepository).save(USER_UPDATED_TIME);

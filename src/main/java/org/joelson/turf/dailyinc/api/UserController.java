@@ -4,10 +4,6 @@ import org.joelson.turf.dailyinc.projection.UserIdAndName;
 import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
 import org.joelson.turf.dailyinc.projection.UserIdAndNameVisits;
 import org.joelson.turf.dailyinc.projection.ZoneIdAndNameVisit;
-import org.joelson.turf.dailyinc.service.UserProgressService;
-import org.joelson.turf.dailyinc.service.UserService;
-import org.joelson.turf.dailyinc.service.UserVisitsService;
-import org.joelson.turf.dailyinc.service.VisitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,69 +21,69 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/users")
-public class UsersController {
+public class UserController {
 
-    private final Logger logger = LoggerFactory.getLogger(UsersController.class);
-
-    @Autowired
-    UserService userService;
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    UserProgressService userProgressService;
+    UserAPIService userAPIService;
 
     @Autowired
-    UserVisitsService userVisitsService;
+    UserProgressAPIService userProgressAPIService;
 
     @Autowired
-    VisitService visitService;
+    UserVisitsAPIService userVisitsAPIService;
 
-//    @GetMapping("")
-//    public List<UserIdAndName> getUsers() {
-//        logger.trace("getUsers()");
-//        return userService.getSortedUsers(UserIdAndName.class);
-//    }
+    @Autowired
+    VisitAPIService visitAPIService;
 
     @GetMapping("")
-    public ResponseEntity<List<UserIdAndName>> getUsers(
-            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
+    public List<UserIdAndName> getUsers() {
         logger.trace("getUsers()");
-        logger.info("Range: " + range);
-        Long minId = null;
-        Long maxId = null;
-        if (range != null) {
-            if (range.startsWith("users=")) {
-                int hyphenIndex = range.indexOf('-');
-                if (hyphenIndex >= 0) {
-                    String minIdString = range.substring(6, hyphenIndex);
-                    minId = ControllerUtil.toLong(minIdString);
-                    String maxIdString = range.substring(hyphenIndex + 1);
-                    maxId = ControllerUtil.toLong(maxIdString);
-                }
-            }
-            if ((minId == null && maxId == null) || (minId != null && maxId != null && minId.compareTo(maxId) > 0)) {
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.add(HttpHeaders.ACCEPT_RANGES, "users");
-                return new ResponseEntity<>(httpHeaders, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
-            }
-        }
-        logger.info("minId=" + minId + ", maxId=" + maxId);
-        List<UserIdAndName> users;
-        if (minId != null) {
-            users = userService.getSortedUsers(minId, Objects.requireNonNullElse(maxId, Long.MAX_VALUE), UserIdAndName.class);
-        } else if (maxId != null) {
-            users = userService.getLastSortedUsers(maxId.intValue(), UserIdAndName.class);
-        } else {
-            users = userService.getSortedUsers(0L, Long.MAX_VALUE, UserIdAndName.class);
-        }
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.ACCEPT_RANGES, "users");
-        if (users.isEmpty()) {
-            return new ResponseEntity<>(httpHeaders, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
-        }
-        httpHeaders.add(HttpHeaders.CONTENT_RANGE,
-                String.format("users %d-%d/*", users.getFirst().getId(), users.getLast().getId()));
-        return new ResponseEntity<>(users, httpHeaders, (range == null) ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
+        return userAPIService.getSortedUsers(UserIdAndName.class);
     }
+
+//    @GetMapping("")
+//    public ResponseEntity<List<UserIdAndName>> getUsers(
+//            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
+//        logger.trace("getUsers()");
+//        logger.info("Range: " + range);
+//        Long minId = null;
+//        Long maxId = null;
+//        if (range != null) {
+//            if (range.startsWith("users=")) {
+//                int hyphenIndex = range.indexOf('-');
+//                if (hyphenIndex >= 0) {
+//                    String minIdString = range.substring(6, hyphenIndex);
+//                    minId = ControllerUtil.toLong(minIdString);
+//                    String maxIdString = range.substring(hyphenIndex + 1);
+//                    maxId = ControllerUtil.toLong(maxIdString);
+//                }
+//            }
+//            if ((minId == null && maxId == null) || (minId != null && maxId != null && minId.compareTo(maxId) > 0)) {
+//                HttpHeaders httpHeaders = new HttpHeaders();
+//                httpHeaders.add(HttpHeaders.ACCEPT_RANGES, "users");
+//                return new ResponseEntity<>(httpHeaders, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+//            }
+//        }
+//        logger.info("minId=" + minId + ", maxId=" + maxId);
+//        List<UserIdAndName> users;
+//        if (minId != null) {
+//            users = userAPIService.getSortedUsers(minId, Objects.requireNonNullElse(maxId, Long.MAX_VALUE), UserIdAndName.class);
+//        } else if (maxId != null) {
+//            users = userAPIService.getLastSortedUsers(maxId.intValue(), UserIdAndName.class);
+//        } else {
+//            users = userAPIService.getSortedUsers(0L, Long.MAX_VALUE, UserIdAndName.class);
+//        }
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(HttpHeaders.ACCEPT_RANGES, "users");
+//        if (users.isEmpty()) {
+//            return new ResponseEntity<>(httpHeaders, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+//        }
+//        httpHeaders.add(HttpHeaders.CONTENT_RANGE,
+//                String.format("users %d-%d/*", users.getFirst().getId(), users.getLast().getId()));
+//        return new ResponseEntity<>(users, httpHeaders, (range == null) ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
+//    }
 
     @GetMapping({ "/", "/{userId}" })
     public ResponseEntity<UserIdAndName> getUserByIdentifier(@PathVariable(required = false) String userId) {
@@ -108,7 +104,7 @@ public class UsersController {
             return ControllerUtil.respondNotFound();
         }
         return ControllerUtil.respondOk(
-                userProgressService.getSortedUserProgressByUser(user.getId(), UserIdAndNameProgress.class));
+                userProgressAPIService.getSortedUserProgressByUser(user.getId(), UserIdAndNameProgress.class));
     }
 
     @GetMapping({ "//user-visits", "/{userId}/user-visits" })
@@ -120,7 +116,7 @@ public class UsersController {
             return ControllerUtil.respondNotFound();
         }
         return ControllerUtil.respondOk(
-                userVisitsService.getSortedUserVisitsByUser(user.getId(), UserIdAndNameVisits.class));
+                userVisitsAPIService.getSortedUserVisitsByUser(user.getId(), UserIdAndNameVisits.class));
     }
 
     @GetMapping({ "//visits", "/{userId}/visits" })
@@ -131,15 +127,15 @@ public class UsersController {
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(visitService.getSortedVisitsByUser(user.getId(), ZoneIdAndNameVisit.class));
+        return ControllerUtil.respondOk(visitAPIService.getSortedVisitsByUser(user.getId(), ZoneIdAndNameVisit.class));
     }
 
     private UserIdAndName lookupUserByIdentifier(String identifier) {
         Long id = ControllerUtil.toLong(identifier);
         if (id != null) {
-            return userService.getUserById(id, UserIdAndName.class);
+            return userAPIService.getUserById(id, UserIdAndName.class);
         } else {
-            return userService.getUserByName(identifier, UserIdAndName.class);
+            return userAPIService.getUserByName(identifier, UserIdAndName.class);
         }
     }
 }

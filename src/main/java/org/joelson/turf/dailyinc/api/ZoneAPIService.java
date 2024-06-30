@@ -1,4 +1,4 @@
-package org.joelson.turf.dailyinc.service;
+package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.dailyinc.model.ZoneRepository;
@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class ZoneService {
+public class ZoneAPIService {
 
     @Autowired
     ZoneRepository zoneRepository;

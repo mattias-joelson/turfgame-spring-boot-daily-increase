@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joelson.turf.dailyinc.projection.UserIdAndName;
-import org.joelson.turf.dailyinc.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,13 +31,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class UsersControllerTest {
+public class UserControllerTest {
 
     @Mock
-    UserService userService;
+    UserAPIService userAPIService;
 
     @InjectMocks
-    UsersController usersController;
+    UserController usersController;
 
     //@Autowired
     private MockMvc mvc;
@@ -86,7 +85,7 @@ public class UsersControllerTest {
 
     @Test
     public void getUsersTest() throws Exception {
-        when(userService.getSortedUsers(UserIdAndName.class)).thenReturn(createUsersList(1000));
+        when(userAPIService.getSortedUsers(UserIdAndName.class)).thenReturn(createUsersList(1000));
 
 //        mvc.perform(MockMvcRequestBuilders.get("/api/users").accept(MediaType.APPLICATION_JSON))
 //                .andExpect(status().isOk());
@@ -105,6 +104,6 @@ public class UsersControllerTest {
         assertEquals(1000, idAndNames.length);
         //assertEquals(1000, array.length());
 
-        verify(userService).getSortedUsers(UserIdAndName.class);
+        verify(userAPIService).getSortedUsers(UserIdAndName.class);
     }
 }

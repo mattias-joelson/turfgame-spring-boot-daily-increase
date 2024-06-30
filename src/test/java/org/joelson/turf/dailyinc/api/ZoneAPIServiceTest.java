@@ -1,4 +1,4 @@
-package org.joelson.turf.dailyinc.service;
+package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.dailyinc.model.ZoneRepository;
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ZoneServiceTest {
+public class ZoneAPIServiceTest {
 
     @Mock
     ZoneRepository zoneRepository;
 
     @InjectMocks
-    ZoneService zoneService;
+    ZoneAPIService zoneAPIService;
 
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -46,7 +46,7 @@ public class ZoneServiceTest {
     public void testGetSortedZones() {
         when(zoneRepository.findAllSorted(Zone.class)).thenReturn(SORTED_ZONES_LIST);
 
-        List<Zone> sortedZones = zoneService.getSortedZones(Zone.class);
+        List<Zone> sortedZones = zoneAPIService.getSortedZones(Zone.class);
         assertEquals(SORTED_ZONES_LIST, sortedZones);
         verify(zoneRepository).findAllSorted(Zone.class);
     }
@@ -58,12 +58,12 @@ public class ZoneServiceTest {
         when(zoneRepository.findById(ZONE_TWO.getId(), Zone.class)).thenReturn(Optional.of(ZONE_TWO));
         when(zoneRepository.findById(ZONE_THREE.getId(), Zone.class)).thenReturn(Optional.of(ZONE_THREE));
 
-        assertNull(zoneService.getZoneById(0L, Zone.class));
-        assertEquals(ZONE_ONE, zoneService.getZoneById(ZONE_ONE.getId(), Zone.class));
-        assertEquals(ZONE_TWO, zoneService.getZoneById(ZONE_TWO.getId(), Zone.class));
-        assertEquals(ZONE_THREE, zoneService.getZoneById(ZONE_THREE.getId(), Zone.class));
-        assertNull(zoneService.getZoneById(4L, Zone.class));
-        assertNull(zoneService.getZoneById(5L, Zone.class));
+        assertNull(zoneAPIService.getZoneById(0L, Zone.class));
+        assertEquals(ZONE_ONE, zoneAPIService.getZoneById(ZONE_ONE.getId(), Zone.class));
+        assertEquals(ZONE_TWO, zoneAPIService.getZoneById(ZONE_TWO.getId(), Zone.class));
+        assertEquals(ZONE_THREE, zoneAPIService.getZoneById(ZONE_THREE.getId(), Zone.class));
+        assertNull(zoneAPIService.getZoneById(4L, Zone.class));
+        assertNull(zoneAPIService.getZoneById(5L, Zone.class));
         verify(zoneRepository, times(6)).findById(anyLong(), eq(Zone.class));
     }
 
@@ -74,12 +74,12 @@ public class ZoneServiceTest {
         when(zoneRepository.findByName(ZONE_TWO.getName(), Zone.class)).thenReturn(Optional.of(ZONE_TWO));
         when(zoneRepository.findByName(ZONE_THREE.getName(), Zone.class)).thenReturn(Optional.of(ZONE_THREE));
 
-        assertNull(zoneService.getZoneByName("", Zone.class));
-        assertEquals(ZONE_ONE, zoneService.getZoneByName(ZONE_ONE.getName(), Zone.class));
-        assertEquals(ZONE_TWO, zoneService.getZoneByName(ZONE_TWO.getName(), Zone.class));
-        assertEquals(ZONE_THREE, zoneService.getZoneByName(ZONE_THREE.getName(), Zone.class));
-        assertNull(zoneService.getZoneByName(null, Zone.class));
-        assertNull(zoneService.getZoneByName("hej", Zone.class));
+        assertNull(zoneAPIService.getZoneByName("", Zone.class));
+        assertEquals(ZONE_ONE, zoneAPIService.getZoneByName(ZONE_ONE.getName(), Zone.class));
+        assertEquals(ZONE_TWO, zoneAPIService.getZoneByName(ZONE_TWO.getName(), Zone.class));
+        assertEquals(ZONE_THREE, zoneAPIService.getZoneByName(ZONE_THREE.getName(), Zone.class));
+        assertNull(zoneAPIService.getZoneByName(null, Zone.class));
+        assertNull(zoneAPIService.getZoneByName("hej", Zone.class));
         verify(zoneRepository).findByName(null, Zone.class);
         verify(zoneRepository, times(5)).findByName(anyString(), eq(Zone.class));
     }
@@ -102,7 +102,7 @@ public class ZoneServiceTest {
         when(zoneRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
 
-        Zone zone = zoneService.getUpdateOrCreate(ID, NAME, TIME);
+        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME, TIME);
         assertEquals(ZONE, zone);
         verify(zoneRepository).findById(ID);
         verify(zoneRepository).save(ZONE);
@@ -112,7 +112,7 @@ public class ZoneServiceTest {
     public void givenEqualZone_whenGetUpdateOrCreate_thenZoneNotUpdated() {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
 
-        Zone zone = zoneService.getUpdateOrCreate(ID, NAME, TIME);
+        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME, TIME);
         assertEquals(ZONE, zone);
         verify(zoneRepository).findById(ID);
         verify(zoneRepository, never()).save(any(Zone.class));
@@ -122,7 +122,7 @@ public class ZoneServiceTest {
     public void givenOlderZone_whenGetUpdateOrCreate_thenZoneNotUpdated() {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE_UPDATED_TIME)));
 
-        Zone zone = zoneService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
+        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME_OTHER, TIME);
         assertEquals(ZONE_UPDATED_TIME, zone);
         verify(zoneRepository).findById(ID);
         verify(zoneRepository, never()).save(any(Zone.class));
@@ -133,7 +133,7 @@ public class ZoneServiceTest {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
         when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
 
-        Zone zone = zoneService.getUpdateOrCreate(ID, NAME_OTHER, TIME_LATER);
+        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME_OTHER, TIME_LATER);
         assertEquals(ZONE_UPDATED_NAME_AND_TIME, zone);
         verify(zoneRepository).findById(ID);
         verify(zoneRepository).save(ZONE_UPDATED_NAME_AND_TIME);
@@ -144,7 +144,7 @@ public class ZoneServiceTest {
         when(zoneRepository.findById(ID)).thenReturn(Optional.of(copyOf(ZONE)));
         when(zoneRepository.save(any(Zone.class))).then(returnsFirstArg());
 
-        Zone zone = zoneService.getUpdateOrCreate(ID, NAME, TIME_LATER);
+        Zone zone = zoneAPIService.getUpdateOrCreate(ID, NAME, TIME_LATER);
         assertEquals(ZONE_UPDATED_TIME, zone);
         verify(zoneRepository).findById(ID);
         verify(zoneRepository).save(ZONE_UPDATED_TIME);

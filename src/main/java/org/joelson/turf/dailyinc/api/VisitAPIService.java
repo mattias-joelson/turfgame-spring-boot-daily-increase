@@ -1,4 +1,4 @@
-package org.joelson.turf.dailyinc.service;
+package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Visit;
@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class VisitService {
+public class VisitAPIService {
 
     @Autowired
     VisitRepository visitRepository;

@@ -1,4 +1,4 @@
-package org.joelson.turf.dailyinc.service;
+package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
@@ -28,13 +28,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserProgressServiceTest {
+public class UserProgressAPIServiceTest {
 
     @Mock
     UserProgressRepository userProgressRepository;
 
     @InjectMocks
-    UserProgressService userProgressService;
+    UserProgressAPIService userProgressAPIService;
 
     private static Instant nowWithHour19TruncatedToSeconds() {
         Instant nowTruncatedToSeconds = Instant.now().truncatedTo(ChronoUnit.SECONDS);
@@ -74,7 +74,7 @@ public class UserProgressServiceTest {
     public void getSortedUserProgressTest() {
         when(userProgressRepository.findAllSorted(UserProgress.class)).thenReturn(SORTED_USER_PROGRESS);
 
-        List<UserProgress> userProgresses = userProgressService.getSortedUserProgress(UserProgress.class);
+        List<UserProgress> userProgresses = userProgressAPIService.getSortedUserProgress(UserProgress.class);
         assertEquals(SORTED_USER_PROGRESS, userProgresses);
         verify(userProgressRepository).findAllSorted(UserProgress.class);
     }
@@ -85,9 +85,9 @@ public class UserProgressServiceTest {
         when(userProgressRepository.findAllSortedByUser(USER_ONE.getId(), UserProgress.class)).thenReturn(USER_ONE_SORTED_USER_PROGRESS);
         when(userProgressRepository.findAllSortedByUser(USER_TWO.getId(), UserProgress.class)).thenReturn(USER_TWO_SORTED_USER_PROGRESS);
 
-        assertEquals(USER_ONE_SORTED_USER_PROGRESS, userProgressService.getSortedUserProgressByUser(USER_ONE.getId(), UserProgress.class));
-        assertEquals(USER_TWO_SORTED_USER_PROGRESS, userProgressService.getSortedUserProgressByUser(USER_TWO.getId(), UserProgress.class));
-        assertEquals(List.of(), userProgressService.getSortedUserProgressByUser(1003L, UserProgress.class));
+        assertEquals(USER_ONE_SORTED_USER_PROGRESS, userProgressAPIService.getSortedUserProgressByUser(USER_ONE.getId(), UserProgress.class));
+        assertEquals(USER_TWO_SORTED_USER_PROGRESS, userProgressAPIService.getSortedUserProgressByUser(USER_TWO.getId(), UserProgress.class));
+        assertEquals(List.of(), userProgressAPIService.getSortedUserProgressByUser(1003L, UserProgress.class));
         verify(userProgressRepository,times(3)).findAllSortedByUser(anyLong(), eq(UserProgress.class));
     }
 
@@ -130,7 +130,7 @@ public class UserProgressServiceTest {
     public void givenEmptyRepository_whenIncreaseUserProgress_thenProgressCreated() {
         when(userProgressRepository.findById(any(UserProgressId.class))).thenReturn(Optional.empty());
 
-        int maxDayCompleted = userProgressService.increaseUserProgress(USER, DATE, 1, TIME);
+        int maxDayCompleted = userProgressAPIService.increaseUserProgress(USER, DATE, 1, TIME);
         assertEquals(USER_INC_PROGRESS.getDayCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(USER_INC_PROGRESS_ID);
         verify(userProgressRepository).save(USER_INC_PROGRESS);
@@ -150,7 +150,7 @@ public class UserProgressServiceTest {
         when(userProgressRepository.findById(USER_FIB_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_FIB_PROGRESS)));
         when(userProgressRepository.findById(USER_POW_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_POW_PROGRESS)));
 
-        int maxDayCompleted = userProgressService.increaseUserProgress(USER, DATE, 2, TIME.plusSeconds(60));
+        int maxDayCompleted = userProgressAPIService.increaseUserProgress(USER, DATE, 2, TIME.plusSeconds(60));
         assertEquals(USER_INC_PROGRESS.getDayCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(USER_INC_PROGRESS_ID);
         verify(userProgressRepository).findById(USER_ADD_PROGRESS_ID);
@@ -167,7 +167,7 @@ public class UserProgressServiceTest {
         when(userProgressRepository.findById(USER_FIB_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_FIB_PROGRESS)));
         when(userProgressRepository.findById(USER_POW_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_POW_PROGRESS)));
 
-        int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, 1, NEXT_TIME);
+        int maxDayCompleted = userProgressAPIService.increaseUserProgress(USER, NEXT_DATE, 1, NEXT_TIME);
         assertEquals(NEXT_USER_FIB_PROGRESS.getDayCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(USER_INC_PROGRESS_ID);
         verify(userProgressRepository).findById(NEXT_USER_INC_PROGRESS_ID);
@@ -203,7 +203,7 @@ public class UserProgressServiceTest {
         when(userProgressRepository.findById(NEXT_USER_FIB_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_USER_FIB_PROGRESS)));
         when(userProgressRepository.findById(NEXT_USER_POW_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_USER_POW_PROGRESS)));
 
-        int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, 2, LATER_TIME);
+        int maxDayCompleted = userProgressAPIService.increaseUserProgress(USER, NEXT_DATE, 2, LATER_TIME);
         assertEquals(NEXT_USER_FIB_PROGRESS.getDayCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(NEXT_USER_INC_PROGRESS_ID);
         verify(userProgressRepository).save(LATER_USER_INC_PROGRESS);
@@ -221,7 +221,7 @@ public class UserProgressServiceTest {
         when(userProgressRepository.findById(NEXT_USER_FIB_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_USER_FIB_PROGRESS)));
         when(userProgressRepository.findById(NEXT_USER_POW_PROGRESS_ID)).thenReturn(Optional.of(copyOf(LATER_USER_POW_PROGRESS)));
 
-        int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, 3, EVEN_LATER_TIME);
+        int maxDayCompleted = userProgressAPIService.increaseUserProgress(USER, NEXT_DATE, 3, EVEN_LATER_TIME);
         assertEquals(NEXT_USER_FIB_PROGRESS.getDayCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(NEXT_USER_INC_PROGRESS_ID);
         verify(userProgressRepository).findById(NEXT_USER_ADD_PROGRESS_ID);
