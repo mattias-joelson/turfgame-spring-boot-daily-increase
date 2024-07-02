@@ -83,25 +83,25 @@ public class UserControllerTest {
     @Test
     public void givenNoRangeNorUsers_whenGetUsers_thenNoneAreReturned_statusOK() throws Exception {
         when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class)).thenReturn(List.of());
+        when(userAPIService.getSortedUsersBetween(1L, INTEGER_MAX_VALUE, UserIdAndName.class)).thenReturn(List.of());
 
         verifyOKListContentResponse(mvc, API_USERS, USERS_RANGE_UNIT, 0, USER_ID_AND_NAME_JSON_AS_LIST,
                 USER_ID_AND_NAME_INTEGER_GETTER);
 
-        verify(userAPIService).getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
+        verify(userAPIService).getSortedUsersBetween(1L, INTEGER_MAX_VALUE, UserIdAndName.class);
     }
 
     @Test
     public void givenNoRange_whenGetUsers_thenSomeAreReturned_statusOK() throws Exception {
         final int SIZE = 100;
         when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class))
+        when(userAPIService.getSortedUsersBetween(1L, INTEGER_MAX_VALUE, UserIdAndName.class))
                 .thenReturn(createUserList(SIZE));
 
         verifyOKListContentResponse(mvc, API_USERS, USERS_RANGE_UNIT, SIZE, USER_ID_AND_NAME_JSON_AS_LIST,
                 USER_ID_AND_NAME_INTEGER_GETTER);
 
-        verify(userAPIService).getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
+        verify(userAPIService).getSortedUsersBetween(1L, INTEGER_MAX_VALUE, UserIdAndName.class);
     }
 
     @Test

@@ -40,7 +40,7 @@ public final class RangeRequestUtil {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
         Objects.requireNonNull(getBetween);
         Objects.requireNonNull(getter);
-        List<T> body = getBetween.apply(0, Integer.MAX_VALUE);
+        List<T> body = getBetween.apply(1, Integer.MAX_VALUE);
         return RangeResponseUtil.createOKResponse(rangeUnit, body, getter);
     }
 
