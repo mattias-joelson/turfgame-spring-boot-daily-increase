@@ -2,7 +2,6 @@ package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.util.ListTestUtil;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 
 import java.text.ParseException;
 import java.util.List;
