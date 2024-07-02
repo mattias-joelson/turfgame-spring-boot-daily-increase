@@ -1,6 +1,5 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.dailyinc.model.ZoneRepository;
 import org.joelson.turf.dailyinc.util.ListTestUtil;
@@ -41,119 +40,119 @@ public class ZoneAPIServiceTest {
     @InjectMocks
     ZoneAPIService zoneAPIService;
 
-    private static User createUser(Long id) {
-        return new User(id, "User" + id, TIME);
+    private static Zone createZone(Long id) {
+        return new Zone(id, "Zone" + id, TIME);
     }
 
-    private static List<User> createList(long minId, long maxId, long stepId, int limit, Predicate<Integer> sizeBeing) {
-        List<User> users = ListTestUtil.createList(minId, maxId, stepId, ZoneAPIServiceTest::createUser);
-        return limitList(limit, sizeBeing, users);
+    private static List<Zone> createList(long minId, long maxId, long stepId, int limit, Predicate<Integer> sizeBeing) {
+        List<Zone> zones = ListTestUtil.createList(minId, maxId, stepId, ZoneAPIServiceTest::createZone);
+        return limitList(limit, sizeBeing, zones);
     }
 
-    private static List<User> createReversedList(
+    private static List<Zone> createReversedList(
             long maxId, long minId, long stepId, int limit, Predicate<Integer> sizeBeing) {
-        List<User> users = ListTestUtil.createReversedList(maxId, minId, stepId, ZoneAPIServiceTest::createUser);
-        return limitList(limit, sizeBeing, users);
+        List<Zone> zones = ListTestUtil.createReversedList(maxId, minId, stepId, ZoneAPIServiceTest::createZone);
+        return limitList(limit, sizeBeing, zones);
     }
 
-    private static List<User> limitList(int limit, Predicate<Integer> sizeBeing, List<User> users) {
-        if (users.size() > limit) {
-            users = users.subList(0, limit);
+    private static List<Zone> limitList(int limit, Predicate<Integer> sizeBeing, List<Zone> zones) {
+        if (zones.size() > limit) {
+            zones = zones.subList(0, limit);
         }
         if (sizeBeing != null) {
-            assertSize(users, sizeBeing);
+            assertSize(zones, sizeBeing);
         }
-        return Collections.unmodifiableList(users);
+        return Collections.unmodifiableList(zones);
     }
 
-    private static void assertSize(List<User> users, Predicate<Integer> sizeBeing) {
-        assertTrue(sizeBeing.test(users.size()), () -> String.format("users.size()=%d", users.size()));
+    private static void assertSize(List<Zone> zones, Predicate<Integer> sizeBeing) {
+        assertTrue(sizeBeing.test(zones.size()), () -> String.format("zones.size()=%d", zones.size()));
     }
 
-    private static void verifyUserList(
-            List<User> users, long minId, long maxId, long stepId, int minSize, int maxSize) {
-        ListTestUtil.verifyList(users, minId, maxId, stepId, minSize, maxSize, User::getId);
+    private static void verifyZoneList(
+            List<Zone> zones, long minId, long maxId, long stepId, int minSize, int maxSize) {
+        ListTestUtil.verifyList(zones, minId, maxId, stepId, minSize, maxSize, Zone::getId);
     }
 
     @Test
-    public void givenFewUsersInRange_whenFindAllSortedBetween_thenAllReturned() {
+    public void givenFewZonesInRange_whenFindAllSortedBetween_thenAllReturned() {
         long minId = 1500L;
         long maxId = 2500L;
         long stepId = 100L;
         int limit = 100;
         when(zoneRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(zoneRepository.findAllSortedBetween(minId, maxId, limit, User.class)).thenReturn(
+        when(zoneRepository.findAllSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size < limit));
 
-        List<User> users = zoneAPIService.getSortedUsersBetween(minId, maxId, User.class);
-        verifyUserList(users, minId, maxId, stepId, users.size(), users.size());
-        verify(zoneRepository).findAllSortedBetween(minId, maxId, limit, User.class);
+        List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
+        verifyZoneList(zones, minId, maxId, stepId, zones.size(), zones.size());
+        verify(zoneRepository).findAllSortedBetween(minId, maxId, limit, Zone.class);
     }
 
     @Test
-    public void givenMoreUsersInRangeThanLimit_whenFindAllSortedBetween_thenLimitReturned() {
+    public void givenMoreZonesInRangeThanLimit_whenFindAllSortedBetween_thenLimitReturned() {
         long minId = 1001L;
         long maxId = 3001L;
         long stepId = 10L;
         int limit = 100;
         when(zoneRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(zoneRepository.findAllSortedBetween(minId, maxId, limit, User.class)).thenReturn(
+        when(zoneRepository.findAllSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size == limit));
 
-        List<User> users = zoneAPIService.getSortedUsersBetween(minId, maxId, User.class);
-        verifyUserList(users, minId, maxId, stepId, limit, limit);
-        verify(zoneRepository).findAllSortedBetween(minId, maxId, limit, User.class);
+        List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
+        verifyZoneList(zones, minId, maxId, stepId, limit, limit);
+        verify(zoneRepository).findAllSortedBetween(minId, maxId, limit, Zone.class);
     }
 
     @Test
-    public void givenUsersOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
+    public void givenZonesOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
         long minId = 1500L;
         long maxId = 2500L;
         when(zoneRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
 
-        List<User> users = zoneAPIService.getSortedUsersBetween(minId, maxId, User.class);
-        assertTrue(users.isEmpty());
-        verify(zoneRepository).findAllSortedBetween(minId, maxId, 100, User.class);
+        List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
+        assertTrue(zones.isEmpty());
+        verify(zoneRepository).findAllSortedBetween(minId, maxId, 100, Zone.class);
     }
 
     @Test
-    public void givenFewUsers_whenFindLastSortedReversed_thenAllReturned() {
+    public void givenFewZones_whenFindLastSortedReversed_thenAllReturned() {
         long minId = 1001L;
         long maxId = 2001L;
         long stepId = 100L;
         int count = 20;
         int limit = 100;
         when(zoneRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
-        when(zoneRepository.findLastSortedReversed(count, User.class)).thenReturn(
+        when(zoneRepository.findLastSortedReversed(count, Zone.class)).thenReturn(
                 createReversedList(maxId, minId, stepId, limit, size -> size < limit));
 
-        List<User> users = zoneAPIService.getLastSortedUsers(count, User.class);
-        verifyUserList(users, minId, maxId, stepId, users.size(), count);
-        verify(zoneRepository).findLastSortedReversed(count, User.class);
+        List<Zone> zones = zoneAPIService.getLastSortedZones(count, Zone.class);
+        verifyZoneList(zones, minId, maxId, stepId, zones.size(), count);
+        verify(zoneRepository).findLastSortedReversed(count, Zone.class);
     }
 
     @Test
-    public void givenManyUsers_whenFindLastSortedReversed_thenLimitReturned() {
+    public void givenManyZones_whenFindLastSortedReversed_thenLimitReturned() {
         long maxId = 2001L;
         long stepId = 10L;
         int limit = 100;
         int count = 120;
         when(zoneRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
-        when(zoneRepository.findLastSortedReversed(limit, User.class)).thenReturn(
+        when(zoneRepository.findLastSortedReversed(limit, Zone.class)).thenReturn(
                 createReversedList(maxId, 1001L, stepId, limit, size -> size == limit));
 
-        List<User> users = zoneAPIService.getLastSortedUsers(count, User.class);
-        verifyUserList(users, users.getFirst().getId(), maxId, stepId, limit, limit);
-        verify(zoneRepository).findLastSortedReversed(limit, User.class);
+        List<Zone> zones = zoneAPIService.getLastSortedZones(count, Zone.class);
+        verifyZoneList(zones, zones.getFirst().getId(), maxId, stepId, limit, limit);
+        verify(zoneRepository).findLastSortedReversed(limit, Zone.class);
     }
 
     @Test
-    public void givenNoUsers_whenFindLastSortedReversed_thenNoneReturned() {
+    public void givenNoZones_whenFindLastSortedReversed_thenNoneReturned() {
         when(zoneRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
 
-        List<User> users = zoneAPIService.getLastSortedUsers(300, User.class);
-        assertTrue(users.isEmpty());
-        verify(zoneRepository).findLastSortedReversed(100, User.class);
+        List<Zone> zones = zoneAPIService.getLastSortedZones(300, Zone.class);
+        assertTrue(zones.isEmpty());
+        verify(zoneRepository).findLastSortedReversed(100, Zone.class);
     }
 
     @Test
@@ -173,7 +172,7 @@ public class ZoneAPIServiceTest {
     }
 
     @Test
-    public void givenZones_whenGetUserByName_thenExistingReturned() {
+    public void givenZones_whenGetZoneByName_thenExistingReturned() {
         when(zoneRepository.findByName(anyString(), eq(Zone.class))).thenReturn(Optional.empty());
         when(zoneRepository.findByName(ZONE_ONE.getName(), Zone.class)).thenReturn(Optional.of(ZONE_ONE));
         when(zoneRepository.findByName(ZONE_TWO.getName(), Zone.class)).thenReturn(Optional.of(ZONE_TWO));

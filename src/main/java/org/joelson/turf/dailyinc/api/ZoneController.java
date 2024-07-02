@@ -29,15 +29,15 @@ public class ZoneController {
     ZoneAPIService zoneAPIService;
 
     @GetMapping("")
-    public ResponseEntity<List<ZoneIdAndName>> getUsers(
+    public ResponseEntity<List<ZoneIdAndName>> getZones(
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
-        logger.trace("getUsers()");
+        logger.trace("getZones()");
         if (range == null) {
             return RangeRequestUtil.handleIdRequest(ZONES_RANGE_UNIT, ZoneIdAndName.class,
-                    zoneAPIService::getSortedUsersBetween, ZoneIdAndName::getId);
+                    zoneAPIService::getSortedZonesBetween, ZoneIdAndName::getId);
         } else {
             return RangeRequestUtil.handleIdRequest(ZONES_RANGE_UNIT, range, ZoneIdAndName.class,
-                    zoneAPIService::getSortedUsersBetween, zoneAPIService::getLastSortedUsers, ZoneIdAndName::getId);
+                    zoneAPIService::getSortedZonesBetween, zoneAPIService::getLastSortedZones, ZoneIdAndName::getId);
         }
     }
 
