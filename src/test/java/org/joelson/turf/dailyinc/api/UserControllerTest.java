@@ -1,9 +1,10 @@
 package org.joelson.turf.dailyinc.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joelson.turf.dailyinc.projection.UserIdAndName;
+import org.joelson.turf.dailyinc.projection.UserIdAndNameImpl;
+import org.joelson.turf.dailyinc.util.ListTestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,97 +14,152 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.joelson.turf.dailyinc.api.ControllerIntegrationTestUtil.verifyOKListContentResponse;
+import static org.joelson.turf.dailyinc.api.ControllerIntegrationTestUtil.verifyPartialContentResponse;
+import static org.joelson.turf.dailyinc.api.ControllerIntegrationTestUtil.verifyStatusRangeNotSatisfiableResponse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 
+    private static final long INTEGER_MAX_VALUE = Integer.MAX_VALUE;
+
+    private static final String API_USERS = "/api/users";
+    private static final String USERS_RANGE_UNIT = "users";
+
+    private static final Function<String, List<UserIdAndNameImpl>>
+            USER_ID_AND_NAME_JSON_AS_LIST = content -> asList(content, UserIdAndNameImpl[].class);
+    private static final Function<UserIdAndNameImpl, Integer>
+            USER_ID_AND_NAME_INTEGER_GETTER = RangeRequestUtil.integerGetter(UserIdAndNameImpl::getId);
+    public static final List<Object> INVALID_USER_LIST = List.of(new UserIdAndNameImpl(404L, "Hello, world!"));
+
     @Mock
     UserAPIService userAPIService;
-
     @InjectMocks
     UserController usersController;
-
-    //@Autowired
     private MockMvc mvc;
 
-    private static class UserWrapper implements UserIdAndName {
-
-        private final Long id;
-        private final String name;
-
-        @JsonCreator
-        private UserWrapper(@JsonProperty("id") Long id, @JsonProperty("name") String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        @Override
-        public Long getId() {
-            return id;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
+    private static List<UserIdAndName> createUserList(long minId, long maxId) {
+        return ListTestUtil.createList(minId, maxId, 3L, UserControllerTest::createUser);
     }
 
-    private static List<UserIdAndName> createUsersList(int size) {
-        List<UserIdAndName> users = new ArrayList<>(size);
-        for (int i = 0; i < size; i += 1) {
-            long id = 1001L + i;
-            users.add(new UserWrapper(id, "User" +id));
+    private static List<UserIdAndName> createUserList(int size) {
+        return ListTestUtil.createListOfSize(1001L, 10L, size, UserControllerTest::createUser);
+    }
+
+    private static UserIdAndName createUser(Long id) {
+        return new UserIdAndNameImpl(id, "User" + id);
+    }
+
+    private static <T> List<T> asList(String content, Class<T[]> arrayClass) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            T[] array = objectMapper.readValue(content, arrayClass);
+            return Arrays.asList(array);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        return users;
     }
 
     @BeforeEach
     public void setup() {
-        try (AutoCloseable c = MockitoAnnotations.openMocks(this)) {
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        MockitoAnnotations.openMocks(this);
         this.mvc = MockMvcBuilders.standaloneSetup(usersController).build();
     }
 
     @Test
-    public void getUsersTest() throws Exception {
-        when(userAPIService.getSortedUsers(UserIdAndName.class)).thenReturn(createUsersList(1000));
+    public void givenNoRangeNorUsers_whenGetUsers_thenNoneAreReturned_statusOK() throws Exception {
+        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class)).thenReturn(List.of());
 
-//        mvc.perform(MockMvcRequestBuilders.get("/api/users").accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-                //.andExpect(content().)
-                //.andExpect(content().string(equalTo("Hello, world!")));
+        verifyOKListContentResponse(mvc, API_USERS, USERS_RANGE_UNIT, 0, USER_ID_AND_NAME_JSON_AS_LIST,
+                USER_ID_AND_NAME_INTEGER_GETTER);
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/api/users")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+        verify(userAPIService).getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
+    }
 
-        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
-        ObjectMapper objectMapper = new ObjectMapper();
-        String content = mvcResult.getResponse().getContentAsString();
-        UserIdAndName[] idAndNames = objectMapper.readValue(content, UserWrapper[].class);
-        assertEquals(1000, idAndNames.length);
-        //assertEquals(1000, array.length());
+    @Test
+    public void givenNoRange_whenGetUsers_thenSomeAreReturned_statusOK() throws Exception {
+        final int SIZE = 100;
+        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class))
+                .thenReturn(createUserList(SIZE));
 
-        verify(userAPIService).getSortedUsers(UserIdAndName.class);
+        verifyOKListContentResponse(mvc, API_USERS, USERS_RANGE_UNIT, SIZE, USER_ID_AND_NAME_JSON_AS_LIST,
+                USER_ID_AND_NAME_INTEGER_GETTER);
+
+        verify(userAPIService).getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
+    }
+
+    @Test
+    public void givenRangeAndNoUsers_whenGetUsers_thenNoneReturned_statusRequestRangeNotSatisfiable() throws Exception {
+        final long MIN_ID = 100;
+        final long MAX_ID = 150;
+        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class)).thenReturn(List.of());
+        String range = RangeUtil.getRange(USERS_RANGE_UNIT, (int) MIN_ID, (int) MAX_ID);
+        verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, range, USERS_RANGE_UNIT);
+
+        verify(userAPIService).getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class);
+    }
+
+    @Test
+    public void givenRangeAndUsers_whenGetUsers_thenNoneReturned_statusPartialContentResponse() throws Exception {
+        final long MIN_ID = 100;
+        final long MAX_ID = 150;
+        List<UserIdAndName> USER_LIST = createUserList(MIN_ID, MAX_ID);
+        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class)).thenReturn(USER_LIST);
+        String range = RangeUtil.getRange(USERS_RANGE_UNIT, (int) MIN_ID, (int) MAX_ID);
+        verifyPartialContentResponse(mvc, API_USERS, range, USERS_RANGE_UNIT, USER_LIST.size(),
+                USER_ID_AND_NAME_JSON_AS_LIST, USER_ID_AND_NAME_INTEGER_GETTER);
+
+        verify(userAPIService).getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class);
+    }
+
+    @Test
+    public void givenSuffixRangeAndNoUsers_whenGetUsers_thenNoneReturned_statusRequestRangeNotSatisfiable() throws Exception {
+        final int LAST = 50;
+        when(userAPIService.getLastSortedUsers(anyInt(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getLastSortedUsers(LAST, UserIdAndName.class)).thenReturn(List.of());
+        String range = RangeUtil.getRangeSuffix(USERS_RANGE_UNIT, LAST);
+        verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, range, USERS_RANGE_UNIT);
+
+        verify(userAPIService).getLastSortedUsers(LAST, UserIdAndName.class);
+    }
+
+    @Test
+    public void givenSuffixRangeAndUsers_whenGetUsers_thenNoneReturned_statusPartialContentResponse() throws Exception {
+        final int LAST = 50;
+        List<UserIdAndName> USER_LIST = createUserList(LAST / 3);
+        when(userAPIService.getLastSortedUsers(anyInt(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getLastSortedUsers(LAST, UserIdAndName.class)).thenReturn(USER_LIST);
+        String range = RangeUtil.getRangeSuffix(USERS_RANGE_UNIT, LAST);
+        verifyPartialContentResponse(mvc, API_USERS, range, USERS_RANGE_UNIT, USER_LIST.size(),
+                USER_ID_AND_NAME_JSON_AS_LIST, USER_ID_AND_NAME_INTEGER_GETTER);
+
+        verify(userAPIService).getLastSortedUsers(LAST, UserIdAndName.class);
+    }
+
+    @Test
+    public void givenZonesRange_whenGetUsers_then_statusRequestRangeNotSatisfiable() throws Exception {
+        verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, "zones=0-9", USERS_RANGE_UNIT);
+        verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, "users=0--9", USERS_RANGE_UNIT);
+        verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, "users=-0--9", USERS_RANGE_UNIT);
+        verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, "users=--0", USERS_RANGE_UNIT);
     }
 }

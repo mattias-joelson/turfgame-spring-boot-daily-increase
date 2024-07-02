@@ -109,28 +109,25 @@ public class FeedImporterServiceTest {
         feedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
 
         verify(zoneService).getUpdateOrCreate(ZONE_TOREKYRKA.getId(), ZONE_TOREKYRKA.getName(), ZONE_TOREKYRKA.getTime());
-        verifyNoMoreInteractions(zoneService);
 
         verify(userService).getUpdateOrCreate(USER_HAKSME.getId(), USER_HAKSME.getName(), TIME);
         verify(userService).getUpdateOrCreate(USER_TOREBIKER.getId(), USER_TOREBIKER.getName(), TIME);
         verify(userService, times(2)).getUpdateOrCreate(USER_TOREHIKER.getId(), USER_TOREHIKER.getName(), TIME);
-        verifyNoMoreInteractions(userService);
 
         verify(visitService).getVisit(REVISIT_TOREKYRKA_BY_TOREHIKER.getZone(), REVISIT_TOREKYRKA_BY_TOREHIKER.getUser(), REVISIT_TOREKYRKA_BY_TOREHIKER.getTime());
         verify(visitService).create(REVISIT_TOREKYRKA_BY_TOREHIKER.getZone(), REVISIT_TOREKYRKA_BY_TOREHIKER.getUser(), REVISIT_TOREKYRKA_BY_TOREHIKER.getTime(), REVISIT_TOREKYRKA_BY_TOREHIKER.getType());
         verify(visitService).create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType());
         verify(visitService).create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType());
-        verifyNoMoreInteractions(visitService);
 
         verify(userVisitsService).increaseUserVisits(USER_HAKSME, DATE);
         verify(userVisitsService).increaseUserVisits(USER_TOREBIKER, DATE);
         verify(userVisitsService).increaseUserVisits(USER_TOREHIKER, DATE);
-        verifyNoMoreInteractions(userVisitsService);
 
         verify(userProgressService).increaseUserProgress(USER_HAKSME, DATE, 1, TIME);
         verify(userProgressService).increaseUserProgress(USER_TOREBIKER, DATE, 1, TIME);
         verify(userProgressService).increaseUserProgress(USER_TOREHIKER, DATE, 1, TIME);
-        verifyNoMoreInteractions(userProgressService);
+
+        verifyNoMoreInteractions(zoneService, userService, visitService, userVisitsService, userProgressService);
     }
 
     @Test
@@ -147,15 +144,11 @@ public class FeedImporterServiceTest {
         feedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
 
         verify(zoneService).getUpdateOrCreate(ZONE_TOREKYRKA.getId(), ZONE_TOREKYRKA.getName(), ZONE_TOREKYRKA.getTime());
-        verifyNoMoreInteractions(zoneService);
 
         verify(userService, times(2)).getUpdateOrCreate(USER_TOREHIKER.getId(), USER_TOREHIKER.getName(), TIME);
-        verifyNoMoreInteractions(userService);
 
         verify(visitService).getVisit(REVISIT_TOREKYRKA_BY_TOREHIKER.getZone(), REVISIT_TOREKYRKA_BY_TOREHIKER.getUser(), REVISIT_TOREKYRKA_BY_TOREHIKER.getTime());
-        verifyNoMoreInteractions(visitService);
 
-        verifyNoMoreInteractions(userVisitsService);
-        verifyNoMoreInteractions(userProgressService);
+        verifyNoMoreInteractions(zoneService, userService, visitService, userVisitsService, userProgressService);
     }
 }
