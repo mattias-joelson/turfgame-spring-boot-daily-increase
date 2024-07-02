@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    public static final String USERS_RANGE_UNIT = "users";
+    private static final String USERS_RANGE_UNIT = "users";
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired

@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/zones")
 public class ZoneController {
 
-    public static final String ZONES_RANGE_UNIT = "zones";
+    private static final String ZONES_RANGE_UNIT = "zones";
     private final Logger logger = LoggerFactory.getLogger(ZoneController.class);
 
     @Autowired
