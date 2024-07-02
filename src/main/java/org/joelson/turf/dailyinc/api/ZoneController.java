@@ -5,9 +5,11 @@ import org.joelson.turf.dailyinc.projection.ZoneIdAndName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/zones")
 public class ZoneController {
 
+    public static final String ZONES_RANGE_UNIT = "zones";
     private final Logger logger = LoggerFactory.getLogger(ZoneController.class);
 
     @Autowired
@@ -26,9 +29,16 @@ public class ZoneController {
     ZoneAPIService zoneAPIService;
 
     @GetMapping("")
-    public List<ZoneIdAndName> getZones() {
-        logger.trace("getZones()");
-        return zoneAPIService.getSortedZones(ZoneIdAndName.class);
+    public ResponseEntity<List<ZoneIdAndName>> getUsers(
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
+        logger.trace("getUsers()");
+        if (range == null) {
+            return RangeRequestUtil.handleIdRequest(ZONES_RANGE_UNIT, ZoneIdAndName.class,
+                    zoneAPIService::getSortedUsersBetween, ZoneIdAndName::getId);
+        } else {
+            return RangeRequestUtil.handleIdRequest(ZONES_RANGE_UNIT, range, ZoneIdAndName.class,
+                    zoneAPIService::getSortedUsersBetween, zoneAPIService::getLastSortedUsers, ZoneIdAndName::getId);
+        }
     }
 
     @GetMapping({ "/", "/{zoneId}" })

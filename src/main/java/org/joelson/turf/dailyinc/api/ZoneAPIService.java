@@ -12,8 +12,12 @@ public class ZoneAPIService {
     @Autowired
     ZoneRepository zoneRepository;
 
-    public <T> List<T> getSortedZones(Class<T> type) {
-        return zoneRepository.findAllSorted(type);
+    public <T> List<T> getSortedUsersBetween(Long minId, Long maxId, Class<T> type) {
+        return zoneRepository.findAllSortedBetween(minId, maxId, 100, type);
+    }
+
+    public <T> List<T> getLastSortedUsers(int count, Class<T> type) {
+        return zoneRepository.findLastSortedReversed(Math.min(count, 100), type).reversed();
     }
 
     public <T> T getZoneById(Long id, Class<T> type) {
