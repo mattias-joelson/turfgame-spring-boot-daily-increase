@@ -81,7 +81,7 @@ public class VisitRepositoryIntegrationTest {
 //        entityManager.persist(ASSIST);
 //        entityManager.persist(TAKE);
 //
-//        assertEquals(SORTED_VISITS, visitRepository.findAllSorted(Limit.of(3), Visit.class));
+//        assertEquals(SORTED_VISITS, visitRepository.findAllSorted(Visit.class));
 //    }
 
     @Test
