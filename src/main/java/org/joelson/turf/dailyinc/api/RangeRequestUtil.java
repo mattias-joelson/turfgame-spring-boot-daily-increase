@@ -45,6 +45,21 @@ public final class RangeRequestUtil {
     }
 
     public static <T> ResponseEntity<List<T>> handleRequest(
+            String rangeUnit, Class<T> type, GetTypedBetweenFunction<Integer, T> getBetween) {
+        RangeUtil.requiresValidRangeUnit(rangeUnit);
+        Objects.requireNonNull(getBetween);
+        return handleRequest(rangeUnit, getBetweenOfType(getBetween, type));
+    }
+
+    public static <T> ResponseEntity<List<T>> handleRequest(
+            String rangeUnit, BiFunction<Integer, Integer, List<T>> getBetween) {
+        RangeUtil.requiresValidRangeUnit(rangeUnit);
+        Objects.requireNonNull(getBetween);
+        List<T> body = getBetween.apply(0, Integer.MAX_VALUE);
+        return RangeResponseUtil.createOKResponse(rangeUnit, body, 1, body.size());
+    }
+
+    public static <T> ResponseEntity<List<T>> handleRequest(
             String rangeUnit, String rangeHeader, BiFunction<Integer, Integer, List<T>> getBetween,
             Function<Integer, List<T>> getLast, Function<T, Integer> getter) {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
@@ -55,8 +70,28 @@ public final class RangeRequestUtil {
         return RangeUtil.handleRangeRequest(rangeUnit, rangeHeader, getBetween, getLast, getter);
     }
 
-    public static <T> BiFunction<Long, Long, List<T>> getBetweenOfType(
-            GetTypedBetweenFunction<Long, T> getBetween, Class<T> type) {
+    public static <T> ResponseEntity<List<T>> handleRequest(
+            String rangeUnit, String rangeHeader, Class<T> type, GetTypedBetweenFunction<Integer, T> getBetween,
+            GetTypedLastFunction<T> getLast) {
+        RangeUtil.requiresValidRangeUnit(rangeUnit);
+        Objects.requireNonNull(rangeHeader);
+        Objects.requireNonNull(getBetween);
+        Objects.requireNonNull(getLast);
+        return handleRequest(rangeUnit, rangeHeader, getBetweenOfType(getBetween, type), getLastOfType(getLast, type));
+    }
+
+    public static <T> ResponseEntity<List<T>> handleRequest(
+            String rangeUnit, String rangeHeader, BiFunction<Integer, Integer, List<T>> getBetween,
+            Function<Integer, List<T>> getLast) {
+        RangeUtil.requiresValidRangeUnit(rangeUnit);
+        Objects.requireNonNull(rangeHeader);
+        Objects.requireNonNull(getBetween);
+        Objects.requireNonNull(getLast);
+        return RangeUtil.handleRangeRequest(rangeUnit, rangeHeader, getBetween, getLast, null);
+    }
+
+    public static <N,T> BiFunction<N, N, List<T>> getBetweenOfType(
+            GetTypedBetweenFunction<N, T> getBetween, Class<T> type) {
         Objects.requireNonNull(getBetween);
         Objects.requireNonNull(type);
         return (minId, maxId) -> getBetween.apply(minId, maxId, type);

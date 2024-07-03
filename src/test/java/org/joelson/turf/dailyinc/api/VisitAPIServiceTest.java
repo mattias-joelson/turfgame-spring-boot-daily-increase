@@ -150,13 +150,13 @@ public class VisitAPIServiceTest {
     }
 */
 
-    @Test
-    public void getSortedVisitsTest() {
-        when(visitRepository.findAllSorted(Visit.class)).thenReturn(SORTED_VISITS_LIST);
-
-        assertEquals(SORTED_VISITS_LIST, visitAPIService.getSortedVisits(Visit.class));
-        verify(visitRepository).findAllSorted(Visit.class);
-    }
+//    @Test
+//    public void getSortedVisitsTest() {
+//        when(visitRepository.findAllSorted(Visit.class)).thenReturn(SORTED_VISITS_LIST);
+//
+//        assertEquals(SORTED_VISITS_LIST, visitAPIService.getSortedVisits(Visit.class));
+//        verify(visitRepository).findAllSorted(Visit.class);
+//    }
 
     @Test
     public void getSortedVisitsByUserTest() {

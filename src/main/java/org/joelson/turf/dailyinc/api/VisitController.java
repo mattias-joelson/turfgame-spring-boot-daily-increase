@@ -4,7 +4,10 @@ import org.joelson.turf.dailyinc.projection.ZoneIdAndNameUserIdAndNameVisit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,14 +17,22 @@ import java.util.List;
 @RequestMapping("/api/visits")
 public class VisitController {
 
+    private static final String VISITS_RANGE_UNIT = "visits";
     private final Logger logger = LoggerFactory.getLogger(VisitController.class);
 
     @Autowired
     VisitAPIService visitAPIService;
 
     @GetMapping("")
-    public List<ZoneIdAndNameUserIdAndNameVisit> getVisits() {
+    public ResponseEntity<List<ZoneIdAndNameUserIdAndNameVisit>> getVisits(
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
         logger.trace("getVisits()");
-        return visitAPIService.getSortedVisits(ZoneIdAndNameUserIdAndNameVisit.class);
+        if (range == null) {
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, ZoneIdAndNameUserIdAndNameVisit.class,
+                    visitAPIService::getSortedVisitsBetween);
+        } else {
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, range, ZoneIdAndNameUserIdAndNameVisit.class,
+                    visitAPIService::getSortedVisitsBetween, visitAPIService::getLastSortedVisits);
+        }
     }
 }
