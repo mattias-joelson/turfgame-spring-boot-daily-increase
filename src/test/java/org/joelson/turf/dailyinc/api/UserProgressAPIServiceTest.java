@@ -4,6 +4,7 @@ import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
 import org.joelson.turf.dailyinc.model.UserProgressType;
+import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,25 +46,26 @@ public class UserProgressAPIServiceTest {
     private static final Instant NEXT_DATE = DATE.plus(1, ChronoUnit.DAYS);
 
     private static final User USER_ONE = new User(1001L, "UserOne", NEXT_TIME);
-    private static final UserProgress USER_ONE_INC_PROGRESS = new UserProgress(USER_ONE,
-            UserProgressType.DAILY_INCREASE, DATE, 0, 1, TIME);
-    private static final UserProgress USER_ONE_NEXT_PROGRESS = new UserProgress(USER_ONE,
-            UserProgressType.DAILY_INCREASE, NEXT_DATE, 1, 2, NEXT_TIME);
-    private static final UserProgress USER_ONE_ADD_PROGRESS = new UserProgress(USER_ONE, UserProgressType.DAILY_ADD,
-            DATE, 0, 1, TIME);
+    private static final UserProgress USER_ONE_PROGRESS = new UserProgress(USER_ONE, DATE,
+            new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME),
+            new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME));
+    private static final UserProgress USER_ONE_NEXT_PROGRESS = new UserProgress(USER_ONE, NEXT_DATE,
+            new UserProgressTypeProgress(1, 2, TIME), new UserProgressTypeProgress(1, 2, TIME),
+            new UserProgressTypeProgress(1, 2, TIME), new UserProgressTypeProgress(1, 2, TIME));
 
     private static final User USER_TWO = new User(1002L, "UserTwo", NEXT_TIME);
-    private static final UserProgress USER_TWO_INC_PROGRESS = new UserProgress(USER_TWO,
-            UserProgressType.DAILY_INCREASE, DATE, 10, 10, TIME);
-    private static final UserProgress USER_TWO_NEXT_PROGRESS = new UserProgress(USER_TWO,
-            UserProgressType.DAILY_INCREASE, NEXT_DATE, 11, 12, TIME);
+    private static final UserProgress USER_TWO_PROGRESS = new UserProgress(USER_TWO, DATE,
+            new UserProgressTypeProgress(10, 10, TIME), new UserProgressTypeProgress(4, 4, TIME),
+            new UserProgressTypeProgress(6, 6, TIME), new UserProgressTypeProgress(4, 4, TIME));
+    private static final UserProgress USER_TWO_NEXT_PROGRESS = new UserProgress(USER_TWO, NEXT_DATE,
+            new UserProgressTypeProgress(10, 11, NEXT_TIME), new UserProgressTypeProgress(4, 4, NEXT_TIME),
+            new UserProgressTypeProgress(6, 7, NEXT_TIME), new UserProgressTypeProgress(4, 4, NEXT_TIME));
 
-    private static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS,
-            USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS, USER_TWO_INC_PROGRESS, USER_TWO_NEXT_PROGRESS);
-
-    private static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS = List.of(USER_ONE_INC_PROGRESS,
-            USER_ONE_NEXT_PROGRESS, USER_ONE_ADD_PROGRESS);
-    private static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS = List.of(USER_TWO_INC_PROGRESS,
+    private static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_PROGRESS, USER_ONE_NEXT_PROGRESS,
+            USER_TWO_PROGRESS, USER_TWO_NEXT_PROGRESS);
+    private static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS = List.of(USER_ONE_PROGRESS,
+            USER_ONE_NEXT_PROGRESS);
+    private static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS = List.of(USER_TWO_PROGRESS,
             USER_TWO_NEXT_PROGRESS);
 
     @Test

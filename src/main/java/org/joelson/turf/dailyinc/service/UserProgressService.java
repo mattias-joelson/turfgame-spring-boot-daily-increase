@@ -56,7 +56,7 @@ public class UserProgressService {
 
             int addCompleted = increaseUserProgress(userProgress.getAdd(), visits, time,
                     UserProgressType.DAILY_ADD::getNeededVisits);
-            if (increaseCompleted > 0) {
+            if (addCompleted > 0) {
                 updated = true;
                 maxDayCompleted = Math.max(maxDayCompleted, addCompleted);
             } else {
@@ -65,7 +65,7 @@ public class UserProgressService {
 
             int fiboniacciCompleted = increaseUserProgress(userProgress.getFibonnaci(), visits, time,
                     UserProgressType.DAILY_FIBONACCI::getNeededVisits);
-            if (increaseCompleted > 0) {
+            if (fiboniacciCompleted > 0) {
                 updated = true;
                 maxDayCompleted = Math.max(maxDayCompleted, fiboniacciCompleted);
             } else {
@@ -74,7 +74,7 @@ public class UserProgressService {
 
             int powerCompleted = increaseUserProgress(userProgress.getPowerOfTwo(), visits, time,
                     UserProgressType.DAILY_POWER_OF_TWO::getNeededVisits);
-            if (increaseCompleted > 0) {
+            if (powerCompleted > 0) {
                 updated = true;
                 maxDayCompleted = Math.max(maxDayCompleted, powerCompleted);
             } else {
