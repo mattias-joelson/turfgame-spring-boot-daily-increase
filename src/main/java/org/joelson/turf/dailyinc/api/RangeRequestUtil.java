@@ -40,8 +40,13 @@ public final class RangeRequestUtil {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
         Objects.requireNonNull(getBetween);
         Objects.requireNonNull(getter);
-        List<T> body = getBetween.apply(0, Integer.MAX_VALUE);
-        return RangeResponseUtil.createOKResponse(rangeUnit, body, getter);
+        List<T> list = getBetween.apply(0, Integer.MAX_VALUE);
+        if (!list.isEmpty()) {
+            return RangeResponseUtil.createOKResponse(rangeUnit, list, getter.apply(list.getFirst()),
+                    getter.apply(list.getLast()));
+        } else {
+            return RangeResponseUtil.createOKResponse(rangeUnit, list, 0, 0);
+        }
     }
 
     public static <T> ResponseEntity<List<T>> handleRequest(
@@ -56,7 +61,7 @@ public final class RangeRequestUtil {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
         Objects.requireNonNull(getBetween);
         List<T> body = getBetween.apply(0, Integer.MAX_VALUE);
-        return RangeResponseUtil.createOKResponse(rangeUnit, body, 1, body.size());
+        return RangeResponseUtil.createOKResponse(rangeUnit, body, 0, body.size());
     }
 
     public static <T> ResponseEntity<List<T>> handleRequest(
