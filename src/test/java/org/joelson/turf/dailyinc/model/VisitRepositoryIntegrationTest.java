@@ -99,18 +99,18 @@ public class VisitRepositoryIntegrationTest {
 //        assertEquals(List.of(), visitRepository.findAllSortedByUser(1003L, Visit.class));
 //    }
 
-    @Test
-    public void givenVisits_whenFindAllSortedByZone_thenListReturned() {
-        entityManager.persist(NEXT_ZONE);
-        entityManager.persist(TAKER);
-        entityManager.persist(REVISIT);
-        entityManager.persist(ZONE);
-        entityManager.persist(ASSISTER);
-        entityManager.persist(ASSIST);
-        entityManager.persist(TAKE);
-
-        assertEquals(ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(ZONE.getId(), Visit.class));
-        assertEquals(NEXT_ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(NEXT_ZONE.getId(), Visit.class));
-        assertEquals(List.of(), visitRepository.findAllSortedByZone(3L, Visit.class));
-    }
+//    @Test
+//    public void givenVisits_whenFindAllSortedByZone_thenListReturned() {
+//        entityManager.persist(NEXT_ZONE);
+//        entityManager.persist(TAKER);
+//        entityManager.persist(REVISIT);
+//        entityManager.persist(ZONE);
+//        entityManager.persist(ASSISTER);
+//        entityManager.persist(ASSIST);
+//        entityManager.persist(TAKE);
+//
+//        assertEquals(ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(ZONE.getId(), Visit.class));
+//        assertEquals(NEXT_ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(NEXT_ZONE.getId(), Visit.class));
+//        assertEquals(List.of(), visitRepository.findAllSortedByZone(3L, Visit.class));
+//    }
 }

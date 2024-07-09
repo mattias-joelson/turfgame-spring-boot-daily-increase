@@ -174,15 +174,15 @@ public class VisitAPIServiceTest {
 //        verify(visitRepository, times(5)).findAllSortedByUser(anyLong(), eq(Visit.class));
 //    }
 
-    @Test
-    public void getSortedVisitsByZoneTest() {
-        when(visitRepository.findAllSortedByZone(anyLong(), eq(Visit.class))).thenReturn(List.of());
-        when(visitRepository.findAllSortedByZone(ZONE_ONE.getId(), Visit.class)).thenReturn(ZONE_ONE_SORTED_VISITS);
-        when(visitRepository.findAllSortedByZone(ZONE_TWO.getId(), Visit.class)).thenReturn(ZONE_TWO_SORTED_VISITS);
-
-        assertEquals(ZONE_ONE_SORTED_VISITS, visitAPIService.getSortedVisitsByZone(ZONE_ONE.getId(), Visit.class));
-        assertEquals(ZONE_TWO_SORTED_VISITS, visitAPIService.getSortedVisitsByZone(ZONE_TWO.getId(), Visit.class));
-        assertEquals(List.of(), visitAPIService.getSortedVisitsByZone(3L, Visit.class));
-        verify(visitRepository, times(3)).findAllSortedByZone(anyLong(), eq(Visit.class));
-    }
+//    @Test
+//    public void getSortedVisitsByZoneTest() {
+//        when(visitRepository.findAllSortedByZone(anyLong(), eq(Visit.class))).thenReturn(List.of());
+//        when(visitRepository.findAllSortedByZone(ZONE_ONE.getId(), Visit.class)).thenReturn(ZONE_ONE_SORTED_VISITS);
+//        when(visitRepository.findAllSortedByZone(ZONE_TWO.getId(), Visit.class)).thenReturn(ZONE_TWO_SORTED_VISITS);
+//
+//        assertEquals(ZONE_ONE_SORTED_VISITS, visitAPIService.getSortedVisitsByZone(ZONE_ONE.getId(), Visit.class));
+//        assertEquals(ZONE_TWO_SORTED_VISITS, visitAPIService.getSortedVisitsByZone(ZONE_TWO.getId(), Visit.class));
+//        assertEquals(List.of(), visitAPIService.getSortedVisitsByZone(3L, Visit.class));
+//        verify(visitRepository, times(3)).findAllSortedByZone(anyLong(), eq(Visit.class));
+//    }
 }

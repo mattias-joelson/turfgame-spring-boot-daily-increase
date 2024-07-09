@@ -53,13 +53,23 @@ public class ZoneController {
 
     @GetMapping({ "//visits", "/{zoneId}/visits" })
     public ResponseEntity<List<UserIdAndNameVisit>> getZoneVisitsByIdentifier(
-            @PathVariable(required = false) String zoneId) {
+            @PathVariable(required = false) String zoneId,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
         logger.trace(String.format("getZoneVisitsByIdentifier(%s)", zoneId));
         ZoneIdAndName zone = lookupZoneIdAndNameByIdentifier(zoneId);
         if (zone == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(visitAPIService.getSortedVisitsByZone(zone.getId(), UserIdAndNameVisit.class));
+        if (range == null) {
+            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, UserIdAndNameVisit.class,
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsByZone(zone.getId(), firstRow, lastRow,
+                            type));
+        } else {
+            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, UserIdAndNameVisit.class,
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsByZone(zone.getId(), firstRow, lastRow,
+                            type),
+                    (rows, type) -> visitAPIService.getLastSortedVisitsByZone(zone.getId(), rows, type));
+        }
     }
 
     private ZoneIdAndName lookupZoneIdAndNameByIdentifier(String identifier) {

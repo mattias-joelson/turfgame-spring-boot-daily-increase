@@ -36,7 +36,11 @@ public class VisitAPIService {
         return visitRepository.findAllSortedReversedByUser(userId, Math.min(rows, 100), type).reversed();
     }
 
-    public <T> List<T> getSortedVisitsByZone(Long zoneId, Class<T> type) {
-        return visitRepository.findAllSortedByZone(zoneId, type);
+    public <T> List<T> getSortedVisitsByZone(Long zoneId, int firstRow, int lastRow, Class<T> type) {
+        return visitRepository.findAllSortedByZone(zoneId, firstRow, getNoRows(firstRow, lastRow), type);
+    }
+
+    public <T> List<T> getLastSortedVisitsByZone(Long zoneId, int rows, Class<T> type) {
+        return visitRepository.findAllSortedReversedByZone(zoneId, Math.min(rows, 100), type).reversed();
     }
 }
