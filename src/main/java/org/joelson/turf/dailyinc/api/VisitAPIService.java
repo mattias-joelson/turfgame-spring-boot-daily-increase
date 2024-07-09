@@ -20,6 +20,9 @@ public class VisitAPIService {
             throw new IllegalArgumentException(String.format("firstRow=%d > lastRow=%d", firstRow, lastRow));
         }
         int size = lastRow - firstRow + 1;
+        if (size < 0) {
+            size = Integer.MAX_VALUE;
+        }
         int minSize = Math.min(size, 100);
         return visitRepository.findAllSorted(firstRow, minSize, type);
     }
