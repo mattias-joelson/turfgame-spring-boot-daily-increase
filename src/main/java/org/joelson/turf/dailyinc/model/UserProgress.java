@@ -57,7 +57,7 @@ public class UserProgress {
             column = @Column(name = "fib_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "fib_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "fib_time", nullable = false)) })
-    private UserProgressTypeProgress fibonnaci;
+    private UserProgressTypeProgress fibonacci;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
@@ -72,12 +72,12 @@ public class UserProgress {
 
     public UserProgress(
             User user, Instant date, UserProgressTypeProgress increase, UserProgressTypeProgress add,
-            UserProgressTypeProgress fibonnaci, UserProgressTypeProgress powerOfTwo) {
+            UserProgressTypeProgress fibonacci, UserProgressTypeProgress powerOfTwo) {
         this.user = Objects.requireNonNull(user);
         this.date = ModelConstraintsUtil.isTruncatedToDays(date);
         this.increase = Objects.requireNonNull(increase);
         this.add = Objects.requireNonNull(add);
-        this.fibonnaci = Objects.requireNonNull(fibonnaci);
+        this.fibonacci = Objects.requireNonNull(fibonacci);
         this.powerOfTwo = Objects.requireNonNull(powerOfTwo);
     }
 
@@ -98,8 +98,8 @@ public class UserProgress {
         return add;
     }
 
-    public UserProgressTypeProgress getFibonnaci() {
-        return fibonnaci;
+    public UserProgressTypeProgress getFibonacci() {
+        return fibonacci;
     }
 
     public UserProgressTypeProgress getPowerOfTwo() {
@@ -114,7 +114,7 @@ public class UserProgress {
         if (o instanceof UserProgress that) {
             return Objects.equals(user, that.user) && Objects.equals(date, that.date)
                     && Objects.equals(increase, that.increase) && Objects.equals(add, that.add)
-                    && Objects.equals(fibonnaci, that.fibonnaci) && Objects.equals(powerOfTwo, that.powerOfTwo);
+                    && Objects.equals(fibonacci, that.fibonacci) && Objects.equals(powerOfTwo, that.powerOfTwo);
         }
         return false;
     }
@@ -127,7 +127,7 @@ public class UserProgress {
     @Override
     public String toString() {
         return String.format("UserProgress[user=%s, type=%s, %s, %s, %s, %s]", user, date,
-                increase.toInnerString("increase"), add.toInnerString("add"), fibonnaci.toInnerString("fibonacci"),
+                increase.toInnerString("increase"), add.toInnerString("add"), fibonacci.toInnerString("fibonacci"),
                 powerOfTwo.toInnerString("powerOfTwo"));
     }
 }

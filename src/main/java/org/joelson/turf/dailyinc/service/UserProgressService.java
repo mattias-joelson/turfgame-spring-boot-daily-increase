@@ -37,7 +37,7 @@ public class UserProgressService {
                 userProgressRepository.save(new UserProgress(user, date,
                         new UserProgressTypeProgress(previousUserProgress.getIncrease().getCompleted(), 1, time),
                         new UserProgressTypeProgress(previousUserProgress.getAdd().getCompleted(), 1, time),
-                        new UserProgressTypeProgress(previousUserProgress.getFibonnaci().getCompleted(), 2, time),
+                        new UserProgressTypeProgress(previousUserProgress.getFibonacci().getCompleted(), 2, time),
                         new UserProgressTypeProgress(previousUserProgress.getPowerOfTwo().getCompleted(), 1, time)));
                 return 2;
             }
@@ -63,13 +63,13 @@ public class UserProgressService {
                 maxDayCompleted = Math.max(maxDayCompleted, -addCompleted);
             }
 
-            int fiboniacciCompleted = increaseUserProgress(userProgress.getFibonnaci(), visits, time,
+            int fibonacciCompleted = increaseUserProgress(userProgress.getFibonacci(), visits, time,
                     UserProgressType.DAILY_FIBONACCI::getNeededVisits);
-            if (fiboniacciCompleted > 0) {
+            if (fibonacciCompleted > 0) {
                 updated = true;
-                maxDayCompleted = Math.max(maxDayCompleted, fiboniacciCompleted);
+                maxDayCompleted = Math.max(maxDayCompleted, fibonacciCompleted);
             } else {
-                maxDayCompleted = Math.max(maxDayCompleted, -fiboniacciCompleted);
+                maxDayCompleted = Math.max(maxDayCompleted, -fibonacciCompleted);
             }
 
             int powerCompleted = increaseUserProgress(userProgress.getPowerOfTwo(), visits, time,

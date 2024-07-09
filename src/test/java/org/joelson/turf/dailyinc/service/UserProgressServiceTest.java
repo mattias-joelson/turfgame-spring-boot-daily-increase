@@ -4,7 +4,6 @@ import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
 import org.joelson.turf.dailyinc.model.UserProgressId;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
-import org.joelson.turf.dailyinc.model.UserProgressType;
 import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +72,7 @@ public class UserProgressServiceTest {
 
     private static UserProgress copyOf(UserProgress that) {
         return new UserProgress(that.getUser(), that.getDate(), copyOf(that.getIncrease()), copyOf(that.getAdd()),
-                copyOf(that.getFibonnaci()), copyOf(that.getPowerOfTwo()));
+                copyOf(that.getFibonacci()), copyOf(that.getPowerOfTwo()));
     }
 
     private static UserProgressTypeProgress copyOf(UserProgressTypeProgress that) {
@@ -107,7 +106,7 @@ public class UserProgressServiceTest {
         when(userProgressRepository.findById(USER_PROGRESS_ID)).thenReturn(Optional.of(copyOf(USER_PROGRESS)));
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, 1, NEXT_TIME);
-        assertEquals(NEXT_USER_PROGRESS.getFibonnaci().getCompleted(), maxDayCompleted);
+        assertEquals(NEXT_USER_PROGRESS.getFibonacci().getCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(USER_PROGRESS_ID);
         verify(userProgressRepository).findById(NEXT_USER_PROGRESS_ID);
         verify(userProgressRepository).save(NEXT_USER_PROGRESS);

@@ -69,7 +69,7 @@ public class UserProgressTest {
         assertEquals(userProgressTypeProgress, userProgress.getAdd());
         userProgress = new UserProgress(USER, DATE, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, userProgressTypeProgress,
                 USER_TYPE_PROGRESS);
-        assertEquals(userProgressTypeProgress, userProgress.getFibonnaci());
+        assertEquals(userProgressTypeProgress, userProgress.getFibonacci());
         userProgress = new UserProgress(USER, DATE, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
                 userProgressTypeProgress);
         assertEquals(userProgressTypeProgress, userProgress.getPowerOfTwo());
