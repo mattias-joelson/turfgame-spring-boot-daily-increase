@@ -111,6 +111,6 @@ public class VisitRepositoryIntegrationTest {
 
         assertEquals(ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(ZONE.getId(), Visit.class));
         assertEquals(NEXT_ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(NEXT_ZONE.getId(), Visit.class));
-        assertEquals(List.of(), visitRepository.findAllSortedByUser(3L, Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedByZone(3L, Visit.class));
     }
 }
