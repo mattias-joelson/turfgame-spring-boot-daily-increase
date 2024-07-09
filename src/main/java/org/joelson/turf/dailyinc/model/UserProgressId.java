@@ -6,15 +6,13 @@ import java.util.Objects;
 public class UserProgressId {
 
     private Long user;
-    private UserProgressType type;
     private Instant date;
 
     protected UserProgressId() {
     }
 
-    public UserProgressId(Long user, UserProgressType type, Instant date) {
+    public UserProgressId(Long user, Instant date) {
         setUser(user);
-        setType(type);
         setDate(date);
     }
 
@@ -24,14 +22,6 @@ public class UserProgressId {
 
     public void setUser(Long user) {
         this.user = ModelConstraintsUtil.isAboveZero(user);
-    }
-
-    public UserProgressType getType() {
-        return type;
-    }
-
-    public void setType(UserProgressType type) {
-        this.type = Objects.requireNonNull(type);
     }
 
     public Instant getDate() {
@@ -48,18 +38,18 @@ public class UserProgressId {
             return true;
         }
         if (o instanceof UserProgressId that) {
-            return Objects.equals(user, that.user) && type == that.type && Objects.equals(date, that.date);
+            return Objects.equals(user, that.user) && Objects.equals(date, that.date);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, type, date);
+        return Objects.hash(user, date);
     }
 
     @Override
     public String toString() {
-        return String.format("UserProgressId[user=%d, type=%s, date=%s", user, type, date);
+        return String.format("UserProgressId[user=%d, date=%s]", user, date);
     }
 }

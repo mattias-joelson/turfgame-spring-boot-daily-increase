@@ -1,6 +1,7 @@
 package org.joelson.turf.dailyinc.projection;
 
 import org.joelson.turf.dailyinc.model.UserProgressType;
+import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
 
 import java.time.Instant;
 
@@ -8,13 +9,13 @@ public interface UserIdAndNameProgress {
 
     UserIdAndName getUser();
 
-    UserProgressType getType();
-
     Instant getDate();
 
-    Integer getPreviousDayCompleted();
+    UserProgressTypeProgress getIncrease();
 
-    Integer getDayCompleted();
+    UserProgressTypeProgress getAdd();
 
-    Instant getTimeCompleted();
+    UserProgressTypeProgress getFibonacci();
+
+    UserProgressTypeProgress getPowerOfTwo();
 }
