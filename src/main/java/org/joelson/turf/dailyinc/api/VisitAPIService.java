@@ -22,7 +22,7 @@ public class VisitAPIService {
     }
 
     public <T> List<T> getLastSortedVisits(int rows, Class<T> type) {
-        return visitRepository.findAllSortedReversed(rows, type).reversed();
+        return visitRepository.findAllSortedReversed(Math.min(rows, 100), type).reversed();
     }
 
     public <T> List<T> getSortedVisitsByUser(Long userId, Class<T> type) {
