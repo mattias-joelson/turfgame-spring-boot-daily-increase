@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/visits")
 public class VisitController {
 
-    private static final String VISITS_RANGE_UNIT = "visits";
+    public static final String VISITS_RANGE_UNIT = "visits";
     private final Logger logger = LoggerFactory.getLogger(VisitController.class);
 
     @Autowired

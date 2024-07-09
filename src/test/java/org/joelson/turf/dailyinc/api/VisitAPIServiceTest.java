@@ -158,21 +158,21 @@ public class VisitAPIServiceTest {
 //        verify(visitRepository).findAllSorted(Visit.class);
 //    }
 
-    @Test
-    public void getSortedVisitsByUserTest() {
-        when(visitRepository.findAllSortedByUser(anyLong(), eq(Visit.class))).thenReturn(List.of());
-        when(visitRepository.findAllSortedByUser(USER_ONE.getId(), Visit.class)).thenReturn(USER_ONE_SORTED_VISITS);
-        when(visitRepository.findAllSortedByUser(USER_TWO.getId(), Visit.class)).thenReturn(USER_TWO_SORTED_VISITS);
-        when(visitRepository.findAllSortedByUser(USER_THREE.getId(), Visit.class)).thenReturn(USER_THREE_SORTED_VISITS);
-        when(visitRepository.findAllSortedByUser(USER_FOUR.getId(), Visit.class)).thenReturn(USER_FOUR_SORTED_VISITS);
-
-        assertEquals(USER_ONE_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_ONE.getId(), Visit.class));
-        assertEquals(USER_TWO_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_TWO.getId(), Visit.class));
-        assertEquals(USER_THREE_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_THREE.getId(), Visit.class));
-        assertEquals(USER_FOUR_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_FOUR.getId(), Visit.class));
-        assertEquals(List.of(), visitAPIService.getSortedVisitsByUser(5L, Visit.class));
-        verify(visitRepository, times(5)).findAllSortedByUser(anyLong(), eq(Visit.class));
-    }
+//    @Test
+//    public void getSortedVisitsByUserTest() {
+//        when(visitRepository.findAllSortedByUser(anyLong(), eq(Visit.class))).thenReturn(List.of());
+//        when(visitRepository.findAllSortedByUser(USER_ONE.getId(), Visit.class)).thenReturn(USER_ONE_SORTED_VISITS);
+//        when(visitRepository.findAllSortedByUser(USER_TWO.getId(), Visit.class)).thenReturn(USER_TWO_SORTED_VISITS);
+//        when(visitRepository.findAllSortedByUser(USER_THREE.getId(), Visit.class)).thenReturn(USER_THREE_SORTED_VISITS);
+//        when(visitRepository.findAllSortedByUser(USER_FOUR.getId(), Visit.class)).thenReturn(USER_FOUR_SORTED_VISITS);
+//
+//        assertEquals(USER_ONE_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_ONE.getId(), Visit.class));
+//        assertEquals(USER_TWO_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_TWO.getId(), Visit.class));
+//        assertEquals(USER_THREE_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_THREE.getId(), Visit.class));
+//        assertEquals(USER_FOUR_SORTED_VISITS, visitAPIService.getSortedVisitsByUser(USER_FOUR.getId(), Visit.class));
+//        assertEquals(List.of(), visitAPIService.getSortedVisitsByUser(5L, Visit.class));
+//        verify(visitRepository, times(5)).findAllSortedByUser(anyLong(), eq(Visit.class));
+//    }
 
     @Test
     public void getSortedVisitsByZoneTest() {

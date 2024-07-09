@@ -12,21 +12,28 @@ public class VisitAPIService {
     @Autowired
     VisitRepository visitRepository;
 
-    public <T> List<T> getSortedVisitsBetween(Integer firstRow, Integer lastRow, Class<T> type) {
+    private static int getNoRows(int firstRow, int lastRow) {
         int size = lastRow - firstRow + 1;
         if (size < 0) {
             size = Integer.MAX_VALUE;
         }
-        int minSize = Math.min(size, 100);
-        return visitRepository.findAllSorted(firstRow, minSize, type);
+        return Math.min(size, 100);
+    }
+
+    public <T> List<T> getSortedVisitsBetween(int firstRow, int lastRow, Class<T> type) {
+        return visitRepository.findAllSorted(firstRow, getNoRows(firstRow, lastRow), type);
     }
 
     public <T> List<T> getLastSortedVisits(int rows, Class<T> type) {
         return visitRepository.findAllSortedReversed(Math.min(rows, 100), type).reversed();
     }
 
-    public <T> List<T> getSortedVisitsByUser(Long userId, Class<T> type) {
-        return visitRepository.findAllSortedByUser(userId, type);
+    public <T> List<T> getSortedVisitsByUser(Long userId, int firstRow, int lastRow, Class<T> type) {
+        return visitRepository.findAllSortedByUser(userId, firstRow, getNoRows(firstRow, lastRow), type);
+    }
+
+    public <T> List<T> getLastSortedVisitsByUser(Long userId, int rows, Class<T> type) {
+        return visitRepository.findAllSortedReversedByUser(userId, Math.min(rows, 100), type).reversed();
     }
 
     public <T> List<T> getSortedVisitsByZone(Long zoneId, Class<T> type) {
