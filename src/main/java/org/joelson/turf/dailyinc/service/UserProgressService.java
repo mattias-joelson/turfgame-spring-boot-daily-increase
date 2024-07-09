@@ -42,16 +42,16 @@ public class UserProgressService {
                 return 2;
             }
         } else {
-            int maxDayCompleted = -1;
+            int maxDayCompleted;
             boolean updated = false;
 
             int increaseCompleted = increaseUserProgress(userProgress.getIncrease(), visits, time,
                     UserProgressType.DAILY_INCREASE::getNeededVisits);
             if (increaseCompleted > 0) {
                 updated = true;
-                maxDayCompleted = Math.max(maxDayCompleted, increaseCompleted);
+                maxDayCompleted = increaseCompleted;
             } else {
-                maxDayCompleted = Math.max(maxDayCompleted, -increaseCompleted);
+                maxDayCompleted = -increaseCompleted;
             }
 
             int addCompleted = increaseUserProgress(userProgress.getAdd(), visits, time,
