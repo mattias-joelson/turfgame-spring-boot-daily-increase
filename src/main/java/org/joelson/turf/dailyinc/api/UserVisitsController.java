@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/api/user-visits")
 public class UserVisitsController {
 
-    private final Logger logger = LoggerFactory.getLogger(UserVisitsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserVisitsController.class);
 
     @Autowired
     UserVisitsAPIService userVisitsAPIService;

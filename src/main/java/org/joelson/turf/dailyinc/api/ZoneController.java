@@ -20,7 +20,7 @@ import java.util.List;
 public class ZoneController {
 
     private static final String ZONES_RANGE_UNIT = "zones";
-    private final Logger logger = LoggerFactory.getLogger(ZoneController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZoneController.class);
 
     @Autowired
     VisitAPIService visitAPIService;

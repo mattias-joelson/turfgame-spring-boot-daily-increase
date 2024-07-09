@@ -22,7 +22,7 @@ import java.util.List;
 public class UserController {
 
     private static final String USERS_RANGE_UNIT = "users";
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     UserAPIService userAPIService;

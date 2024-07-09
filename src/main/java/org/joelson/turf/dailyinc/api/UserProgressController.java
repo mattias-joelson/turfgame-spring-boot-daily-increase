@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/api/user-progress")
 public class UserProgressController {
 
-    private final Logger logger = LoggerFactory.getLogger(UserProgressController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserProgressController.class);
 
     @Autowired
     UserProgressAPIService userProgressAPIService;

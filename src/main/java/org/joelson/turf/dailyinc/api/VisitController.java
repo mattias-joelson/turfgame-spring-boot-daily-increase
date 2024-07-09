@@ -18,7 +18,7 @@ import java.util.List;
 public class VisitController {
 
     public static final String VISITS_RANGE_UNIT = "visits";
-    private final Logger logger = LoggerFactory.getLogger(VisitController.class);
+    private static final Logger logger = LoggerFactory.getLogger(VisitController.class);
 
     @Autowired
     VisitAPIService visitAPIService;
