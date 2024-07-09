@@ -13,12 +13,6 @@ public class VisitAPIService {
     VisitRepository visitRepository;
 
     public <T> List<T> getSortedVisitsBetween(Integer firstRow, Integer lastRow, Class<T> type) {
-        if (firstRow < 0) {
-            throw new IllegalArgumentException(String.format("firstRow=%d < 0", firstRow));
-        }
-        if (lastRow < firstRow) {
-            throw new IllegalArgumentException(String.format("firstRow=%d > lastRow=%d", firstRow, lastRow));
-        }
         int size = lastRow - firstRow + 1;
         if (size < 0) {
             size = Integer.MAX_VALUE;
