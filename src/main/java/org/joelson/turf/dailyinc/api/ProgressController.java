@@ -24,9 +24,9 @@ public class ProgressController {
     ProgressAPIService progressAPIService;
 
     @GetMapping("")
-    public ResponseEntity<List<UserIdAndNameProgress>> getUserProgress(
+    public ResponseEntity<List<UserIdAndNameProgress>> getProgress(
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
-        logger.trace("getUserProgress()");
+        logger.trace("getProgress()");
         if (range == null) {
             return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, UserIdAndNameProgress.class,
                     progressAPIService::getSortedBetween);

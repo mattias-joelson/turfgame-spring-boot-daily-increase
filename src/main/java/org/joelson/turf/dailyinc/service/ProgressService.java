@@ -23,7 +23,7 @@ public class ProgressService {
         return progressRepository.findById(new ProgressId(user.getId(), date)).orElse(null);
     }
 
-    public int increaseUserProgress(User user, Instant date, Instant time) {
+    public int increaseProgress(User user, Instant date, Instant time) {
         Progress progress = getProgress(user, date);
         if (progress == null) {
             Instant previousDate = date.minus(1, ChronoUnit.DAYS);

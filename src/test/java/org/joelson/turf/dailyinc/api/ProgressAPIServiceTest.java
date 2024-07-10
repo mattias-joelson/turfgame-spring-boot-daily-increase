@@ -65,7 +65,7 @@ public class ProgressAPIServiceTest {
     private static final List<Progress> USER_TWO_SORTED_PROGRESS = List.of(USER_TWO_PROGRESS, USER_TWO_NEXT_PROGRESS);
 
     @Test
-    public void givenUserProgress_whenGetSortedBetween_thenAllReturned() {
+    public void givenProgress_whenGetSortedBetween_thenAllReturned() {
         when(progressRepository.findSortedBetween(anyInt(), anyInt(), any())).thenReturn(List.of());
         when(progressRepository.findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(SORTED_PROGRESS);
@@ -76,7 +76,7 @@ public class ProgressAPIServiceTest {
     }
 
     @Test
-    public void givenUserProgress_whenGetLastSorted_thenAllReturned() {
+    public void givenProgress_whenGetLastSorted_thenAllReturned() {
         when(progressRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
         when(progressRepository.findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(SORTED_PROGRESS.reversed());
@@ -86,7 +86,7 @@ public class ProgressAPIServiceTest {
     }
 
     @Test
-    public void givenUserProgress_whenGetSortedBetweenByUser_thenAllReturned() {
+    public void givenProgress_whenGetSortedBetweenByUser_thenAllReturned() {
         when(progressRepository.findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(List.of());
         when(progressRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(USER_ONE_SORTED_PROGRESS);
@@ -102,7 +102,7 @@ public class ProgressAPIServiceTest {
     }
 
     @Test
-    public void givenUserProgress_whenGetLastSortedByUser_thenAllReturned() {
+    public void givenProgress_whenGetLastSortedByUser_thenAllReturned() {
         when(progressRepository.findLastSortedReversedByUser(anyLong(), anyInt(), any())).thenReturn(List.of());
         when(progressRepository.findLastSortedReversedByUser(USER_ONE.getId(), USER_ONE_SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(USER_ONE_SORTED_PROGRESS.reversed());

@@ -52,7 +52,7 @@ public class ProgressRepositoryIntegrationTest {
     TestEntityManager entityManager;
 
     @Test
-    public void withUserProgress_whenFindById_thenExistingReturned() {
+    public void givenProgress_whenFindById_thenExistingReturned() {
         entityManager.persist(USER_ONE);
         entityManager.persist(USER_TWO);
         entityManager.persist(USER_ONE_PROGRESS);
@@ -76,7 +76,7 @@ public class ProgressRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenNewUserProgress_whenSave_thenSaved() {
+    public void givenNewProgress_whenSave_thenSaved() {
         entityManager.persist(USER_ONE);
 
         Progress savedProgress = progressRepository.save(USER_ONE_PROGRESS);
@@ -87,7 +87,7 @@ public class ProgressRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenUserProgress_whenUpdate_thenUpdated() {
+    public void givenProgress_whenUpdate_thenUpdated() {
         Progress progress = new Progress(USER_TWO, DATE, 10, new DailyProgress(10, 10, TIME),
                 new DailyProgress(4, 4, TIME), new DailyProgress(6, 6, TIME), new DailyProgress(4, 4, TIME));
         entityManager.persist(progress);
@@ -100,7 +100,7 @@ public class ProgressRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenUserProgress_whenFindSortedBetween_thenListReturned() {
+    public void givenProgress_whenFindSortedBetween_thenListReturned() {
         entityManager.persist(USER_TWO_NEXT_PROGRESS);
         entityManager.persist(USER_TWO_PROGRESS);
         entityManager.persist(USER_ONE_NEXT_PROGRESS);
@@ -118,7 +118,7 @@ public class ProgressRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenUserProgress_whenFindAllSortedByUser_thenListReturned() {
+    public void givenProgress_whenFindAllSortedByUser_thenListReturned() {
         entityManager.persist(USER_TWO_NEXT_PROGRESS);
         entityManager.persist(USER_TWO_PROGRESS);
         entityManager.persist(USER_ONE_NEXT_PROGRESS);

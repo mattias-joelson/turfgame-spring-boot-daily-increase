@@ -77,67 +77,64 @@ public class ProgressServiceTest {
     }
 
     @Test
-    public void givenEmptyRepository_whenIncreaseUserProgress_thenProgressCreated() {
+    public void givenEmptyRepository_whenIncreaseProgress_thenProgressCreated() {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
 
-        int maxDayCompleted = progressService.increaseUserProgress(USER, DATE, TIME);
+        int maxDayCompleted = progressService.increaseProgress(USER, DATE, TIME);
         assertEquals(PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(PROGRESS_ID);
         verify(progressRepository).save(PROGRESS);
     }
 
     @Test
-    public void givenDateUserProgress_whenIncreaseUserProgress_thenProgressNotUpdated() {
+    public void givenDateProgress_whenIncreaseProgress_thenProgressNotUpdated() {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseUserProgress(USER, DATE, TIME.plusSeconds(60));
+        int maxDayCompleted = progressService.increaseProgress(USER, DATE, TIME.plusSeconds(60));
         assertEquals(PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(PROGRESS_ID);
         verify(progressRepository).save(any(Progress.class));
     }
 
     @Test
-    public void givenDateUserProgressButNoNextDateUserProgress_whenIncreaseUserProgress_thenProgressCreated() {
+    public void givenDateProgressButNoNextDateProgress_whenIncreaseProgress_thenProgressCreated() {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseUserProgress(USER, NEXT_DATE, NEXT_TIME);
+        int maxDayCompleted = progressService.increaseProgress(USER, NEXT_DATE, NEXT_TIME);
         assertEquals(NEXT_PROGRESS.getFibonacci().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(PROGRESS_ID);
         verify(progressRepository).findById(NEXT_PROGRESS_ID);
         verify(progressRepository).save(NEXT_PROGRESS);
 
-        /*ArgumentCaptor<UserProgress> saveArgumentCaptor = ArgumentCaptor.forClass(UserProgress.class);
-        verify(userProgressRepository, times(4)).save(saveArgumentCaptor.capture());
+        /*ArgumentCaptor<Progress> saveArgumentCaptor = ArgumentCaptor.forClass(Progress.class);
+        verify(progressRepository, times(4)).save(saveArgumentCaptor.capture());
         System.out.println("NEXT_DATE: " + NEXT_DATE);
         System.out.println("NEXT_TIME: " + NEXT_TIME);
         System.out.println();
-        System.out.println("NEXT_USER_INC_PROGRESS: " + NEXT_USER_INC_PROGRESS);
-        System.out.println("NEXT_USER_ADD_PROGRESS: " + NEXT_USER_ADD_PROGRESS);
-        System.out.println("NEXT_USER_FIB_PROGRESS: " + NEXT_USER_FIB_PROGRESS);
-        System.out.println("NEXT_USER_POW_PROGRESS: " + NEXT_USER_POW_PROGRESS);
+        System.out.println("NEXT_PROGRESS: " + NEXT_PROGRESS);
         System.out.println();
         saveArgumentCaptor.getAllValues().forEach(System.out::println);*/
     }
 
     @Test
-    public void givenNextDateUserProgress_whenIncreaseUserProgress_thenProgressUpdated() {
+    public void givenNextDateProgress_whenIncreaseProgress_thenProgressUpdated() {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseUserProgress(USER, NEXT_DATE, LATER_TIME);
+        int maxDayCompleted = progressService.increaseProgress(USER, NEXT_DATE, LATER_TIME);
         assertEquals(LATER_PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(NEXT_PROGRESS_ID);
         verify(progressRepository).save(LATER_PROGRESS);
     }
 
     @Test
-    public void givenNextDateLaterUserProgress_whenIncreaseUserProgress_thenProgressUpdated() {
+    public void givenNextDateLaterProgress_whenIncreaseProgress_thenProgressUpdated() {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(LATER_PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseUserProgress(USER, NEXT_DATE, EVEN_LATER_TIME);
+        int maxDayCompleted = progressService.increaseProgress(USER, NEXT_DATE, EVEN_LATER_TIME);
         assertEquals(EVEN_LATER_PROGRESS.getAdd().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(NEXT_PROGRESS_ID);
         verify(progressRepository).save(EVEN_LATER_PROGRESS);

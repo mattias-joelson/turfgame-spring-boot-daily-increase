@@ -92,10 +92,10 @@ public class FeedImporterServiceTest {
         when(visitService.create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType())).thenReturn(ASSIST_TOREKYRKA_BY_HAKSME);
         when(visitService.create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType())).thenReturn(ASSIST_TOREKYRKA_BY_TOREBIKER);
 
-        when(progressService.increaseUserProgress(any(User.class), any(Instant.class), any(Instant.class))).thenReturn(-1);
-        when(progressService.increaseUserProgress(USER_HAKSME, DATE, TIME)).thenReturn(1);
-        when(progressService.increaseUserProgress(USER_TOREBIKER, DATE, TIME)).thenReturn(1);
-        when(progressService.increaseUserProgress(USER_TOREHIKER, DATE, TIME)).thenReturn(1);
+        when(progressService.increaseProgress(any(User.class), any(Instant.class), any(Instant.class))).thenReturn(-1);
+        when(progressService.increaseProgress(USER_HAKSME, DATE, TIME)).thenReturn(1);
+        when(progressService.increaseProgress(USER_TOREBIKER, DATE, TIME)).thenReturn(1);
+        when(progressService.increaseProgress(USER_TOREHIKER, DATE, TIME)).thenReturn(1);
 
         feedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
 
@@ -110,9 +110,9 @@ public class FeedImporterServiceTest {
         verify(visitService).create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType());
         verify(visitService).create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType());
 
-        verify(progressService).increaseUserProgress(USER_HAKSME, DATE, TIME);
-        verify(progressService).increaseUserProgress(USER_TOREBIKER, DATE, TIME);
-        verify(progressService).increaseUserProgress(USER_TOREHIKER, DATE, TIME);
+        verify(progressService).increaseProgress(USER_HAKSME, DATE, TIME);
+        verify(progressService).increaseProgress(USER_TOREBIKER, DATE, TIME);
+        verify(progressService).increaseProgress(USER_TOREHIKER, DATE, TIME);
 
         verifyNoMoreInteractions(zoneService, userService, visitService, progressService);
     }

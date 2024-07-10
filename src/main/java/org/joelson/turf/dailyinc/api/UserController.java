@@ -59,10 +59,10 @@ public class UserController {
     }
 
     @GetMapping({ "//progress", "/{userId}/progress" })
-    public ResponseEntity<List<UserProgress>> getUserProgressByIdentifier(
+    public ResponseEntity<List<UserProgress>> getProgressByIdentifier(
             @PathVariable(required = false) String userId,
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
-        logger.trace(String.format("getUserProgressByIdentifier(%s)", userId));
+        logger.trace(String.format("getProgressByIdentifier(%s)", userId));
         UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
