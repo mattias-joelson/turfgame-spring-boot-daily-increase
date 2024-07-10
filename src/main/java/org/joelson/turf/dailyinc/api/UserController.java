@@ -27,7 +27,7 @@ public class UserController {
     UserAPIService userAPIService;
 
     @Autowired
-    UserProgressAPIService userProgressAPIService;
+    ProgressAPIService progressAPIService;
 
     @Autowired
     VisitAPIService visitAPIService;
@@ -66,11 +66,11 @@ public class UserController {
         }
         if (range == null) {
             return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, UserProgress.class,
-                    (firstRow, lastRow, type) -> userProgressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
+                    (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
         } else {
             return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, range, UserProgress.class,
-                    (firstRow, lastRow, type) -> userProgressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
-                    (rows, type) -> userProgressAPIService.getLastSortedByUser(user.getId(), rows, type));
+                    (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
+                    (rows, type) -> progressAPIService.getLastSortedByUser(user.getId(), rows, type));
         }
     }
 

@@ -25,13 +25,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserProgressAPIServiceTest {
+public class ProgressAPIServiceTest {
 
     @Mock
     ProgressRepository progressRepository;
 
     @InjectMocks
-    UserProgressAPIService userProgressAPIService;
+    ProgressAPIService progressAPIService;
 
     private static Instant nowWithHour19TruncatedToSeconds() {
         Instant nowTruncatedToSeconds = Instant.now().truncatedTo(ChronoUnit.SECONDS);
@@ -71,7 +71,7 @@ public class UserProgressAPIServiceTest {
                 .thenReturn(SORTED_PROGRESS);
 
         assertEquals(SORTED_PROGRESS,
-                userProgressAPIService.getSortedBetween(0, SORTED_PROGRESS.size() - 1, Progress.class));
+                progressAPIService.getSortedBetween(0, SORTED_PROGRESS.size() - 1, Progress.class));
         verify(progressRepository).findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class);
     }
 
@@ -81,7 +81,7 @@ public class UserProgressAPIServiceTest {
         when(progressRepository.findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(SORTED_PROGRESS.reversed());
 
-        assertEquals(SORTED_PROGRESS, userProgressAPIService.getLastSorted(SORTED_PROGRESS.size(), Progress.class));
+        assertEquals(SORTED_PROGRESS, progressAPIService.getLastSorted(SORTED_PROGRESS.size(), Progress.class));
         verify(progressRepository).findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class);
     }
 
@@ -94,10 +94,10 @@ public class UserProgressAPIServiceTest {
                 .thenReturn(USER_TWO_SORTED_PROGRESS);
 
         assertEquals(USER_ONE_SORTED_PROGRESS,
-                userProgressAPIService.getSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size() - 1, Progress.class));
+                progressAPIService.getSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size() - 1, Progress.class));
         assertEquals(USER_TWO_SORTED_PROGRESS,
-                userProgressAPIService.getSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size() - 1, Progress.class));
-        assertEquals(List.of(), userProgressAPIService.getSortedBetweenByUser(1003L, 0, 100, Progress.class));
+                progressAPIService.getSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size() - 1, Progress.class));
+        assertEquals(List.of(), progressAPIService.getSortedBetweenByUser(1003L, 0, 100, Progress.class));
         verify(progressRepository, times(3)).findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any());
     }
 
@@ -110,10 +110,10 @@ public class UserProgressAPIServiceTest {
                 .thenReturn(USER_TWO_SORTED_PROGRESS.reversed());
 
         assertEquals(USER_ONE_SORTED_PROGRESS,
-                userProgressAPIService.getLastSortedByUser(USER_ONE.getId(), USER_ONE_SORTED_PROGRESS.size(), Progress.class));
+                progressAPIService.getLastSortedByUser(USER_ONE.getId(), USER_ONE_SORTED_PROGRESS.size(), Progress.class));
         assertEquals(USER_TWO_SORTED_PROGRESS,
-                userProgressAPIService.getLastSortedByUser(USER_TWO.getId(), USER_TWO_SORTED_PROGRESS.size(), Progress.class));
-        assertEquals(List.of(), userProgressAPIService.getLastSortedByUser(1003L, 100, Progress.class));
+                progressAPIService.getLastSortedByUser(USER_TWO.getId(), USER_TWO_SORTED_PROGRESS.size(), Progress.class));
+        assertEquals(List.of(), progressAPIService.getLastSortedByUser(1003L, 100, Progress.class));
         verify(progressRepository, times(3)).findLastSortedReversedByUser(anyLong(), anyInt(), any());
     }
 }

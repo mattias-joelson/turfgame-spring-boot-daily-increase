@@ -21,7 +21,7 @@ public class UserProgressController {
     private static final Logger logger = LoggerFactory.getLogger(UserProgressController.class);
 
     @Autowired
-    UserProgressAPIService userProgressAPIService;
+    ProgressAPIService progressAPIService;
 
     @GetMapping("")
     public ResponseEntity<List<UserIdAndNameProgress>> getUserProgress(
@@ -29,10 +29,10 @@ public class UserProgressController {
         logger.trace("getUserProgress()");
         if (range == null) {
             return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, UserIdAndNameProgress.class,
-                    userProgressAPIService::getSortedBetween);
+                    progressAPIService::getSortedBetween);
         } else {
             return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, range, UserIdAndNameProgress.class,
-                    userProgressAPIService::getSortedBetween, userProgressAPIService::getLastSorted);
+                    progressAPIService::getSortedBetween, progressAPIService::getLastSorted);
         }
     }
 
