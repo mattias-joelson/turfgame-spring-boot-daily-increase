@@ -2,7 +2,7 @@ package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Progress;
-import org.joelson.turf.dailyinc.model.UserProgressRepository;
+import org.joelson.turf.dailyinc.model.ProgressRepository;
 import org.joelson.turf.dailyinc.model.DailyProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class UserProgressAPIServiceTest {
 
     @Mock
-    UserProgressRepository userProgressRepository;
+    ProgressRepository progressRepository;
 
     @InjectMocks
     UserProgressAPIService userProgressAPIService;
@@ -66,50 +66,47 @@ public class UserProgressAPIServiceTest {
 
     @Test
     public void givenUserProgress_whenGetSortedBetween_thenAllReturned() {
-        when(userProgressRepository.findSortedBetween(anyInt(), anyInt(), any())).thenReturn(List.of());
-        when(userProgressRepository.findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class))
+        when(progressRepository.findSortedBetween(anyInt(), anyInt(), any())).thenReturn(List.of());
+        when(progressRepository.findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(SORTED_PROGRESS);
 
         assertEquals(SORTED_PROGRESS,
                 userProgressAPIService.getSortedBetween(0, SORTED_PROGRESS.size() - 1, Progress.class));
-        verify(userProgressRepository).findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class);
+        verify(progressRepository).findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class);
     }
 
     @Test
     public void givenUserProgress_whenGetLastSorted_thenAllReturned() {
-        when(userProgressRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
-        when(userProgressRepository.findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class))
+        when(progressRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
+        when(progressRepository.findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(SORTED_PROGRESS.reversed());
 
         assertEquals(SORTED_PROGRESS, userProgressAPIService.getLastSorted(SORTED_PROGRESS.size(), Progress.class));
-        verify(userProgressRepository).findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class);
+        verify(progressRepository).findLastSortedReversed(SORTED_PROGRESS.size(), Progress.class);
     }
 
     @Test
     public void givenUserProgress_whenGetSortedBetweenByUser_thenAllReturned() {
-        when(userProgressRepository.findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any()))
-                .thenReturn(List.of());
-        when(userProgressRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size(), Progress.class))
+        when(progressRepository.findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(List.of());
+        when(progressRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(USER_ONE_SORTED_PROGRESS);
-        when(userProgressRepository.findSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size(), Progress.class))
+        when(progressRepository.findSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(USER_TWO_SORTED_PROGRESS);
 
         assertEquals(USER_ONE_SORTED_PROGRESS,
-                userProgressAPIService.getSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size() - 1,
-                        Progress.class));
+                userProgressAPIService.getSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size() - 1, Progress.class));
         assertEquals(USER_TWO_SORTED_PROGRESS,
-                userProgressAPIService.getSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size() - 1,
-                        Progress.class));
+                userProgressAPIService.getSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size() - 1, Progress.class));
         assertEquals(List.of(), userProgressAPIService.getSortedBetweenByUser(1003L, 0, 100, Progress.class));
-        verify(userProgressRepository, times(3)).findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any());
+        verify(progressRepository, times(3)).findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any());
     }
 
     @Test
     public void givenUserProgress_whenGetLastSortedByUser_thenAllReturned() {
-        when(userProgressRepository.findLastSortedReversedByUser(anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), USER_ONE_SORTED_PROGRESS.size(), Progress.class))
+        when(progressRepository.findLastSortedReversedByUser(anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(progressRepository.findLastSortedReversedByUser(USER_ONE.getId(), USER_ONE_SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(USER_ONE_SORTED_PROGRESS.reversed());
-        when(userProgressRepository.findLastSortedReversedByUser(USER_TWO.getId(), USER_TWO_SORTED_PROGRESS.size(), Progress.class))
+        when(progressRepository.findLastSortedReversedByUser(USER_TWO.getId(), USER_TWO_SORTED_PROGRESS.size(), Progress.class))
                 .thenReturn(USER_TWO_SORTED_PROGRESS.reversed());
 
         assertEquals(USER_ONE_SORTED_PROGRESS,
@@ -117,6 +114,6 @@ public class UserProgressAPIServiceTest {
         assertEquals(USER_TWO_SORTED_PROGRESS,
                 userProgressAPIService.getLastSortedByUser(USER_TWO.getId(), USER_TWO_SORTED_PROGRESS.size(), Progress.class));
         assertEquals(List.of(), userProgressAPIService.getLastSortedByUser(1003L, 100, Progress.class));
-        verify(userProgressRepository, times(3)).findLastSortedReversedByUser(anyLong(), anyInt(), any());
+        verify(progressRepository, times(3)).findLastSortedReversedByUser(anyLong(), anyInt(), any());
     }
 }

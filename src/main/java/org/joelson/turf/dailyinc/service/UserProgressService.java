@@ -3,7 +3,7 @@ package org.joelson.turf.dailyinc.service;
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Progress;
 import org.joelson.turf.dailyinc.model.ProgressId;
-import org.joelson.turf.dailyinc.model.UserProgressRepository;
+import org.joelson.turf.dailyinc.model.ProgressRepository;
 import org.joelson.turf.dailyinc.model.DailyProgressType;
 import org.joelson.turf.dailyinc.model.DailyProgress;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,10 @@ import java.util.function.Function;
 public class UserProgressService {
 
     @Autowired
-    UserProgressRepository userProgressRepository;
+    ProgressRepository progressRepository;
 
     private Progress getProgress(User user, Instant date) {
-        return userProgressRepository.findById(new ProgressId(user.getId(), date)).orElse(null);
+        return progressRepository.findById(new ProgressId(user.getId(), date)).orElse(null);
     }
 
     public int increaseUserProgress(User user, Instant date, Instant time) {
@@ -29,12 +29,12 @@ public class UserProgressService {
             Instant previousDate = date.minus(1, ChronoUnit.DAYS);
             Progress previousProgress = getProgress(user, previousDate);
             if (previousProgress == null) {
-                userProgressRepository.save(
+                progressRepository.save(
                         new Progress(user, date, 1, new DailyProgress(0, 1, time), new DailyProgress(0, 1, time),
                                 new DailyProgress(0, 1, time), new DailyProgress(0, 1, time)));
                 return 1;
             } else {
-                userProgressRepository.save(new Progress(user, date, 1,
+                progressRepository.save(new Progress(user, date, 1,
                         new DailyProgress(previousProgress.getIncrease().getCompleted(), 1, time),
                         new DailyProgress(previousProgress.getAdd().getCompleted(), 1, time),
                         new DailyProgress(previousProgress.getFibonacci().getCompleted(), 2, time),
@@ -61,7 +61,7 @@ public class UserProgressService {
                     increaseDailyProgress(progress.getPowerOfTwo(), visits, time,
                             DailyProgressType.DAILY_POWER_OF_TWO::getNeededVisits)));
 
-            userProgressRepository.save(progress);
+            progressRepository.save(progress);
             return maxDayCompleted;
         }
     }

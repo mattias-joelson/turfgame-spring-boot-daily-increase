@@ -3,7 +3,7 @@ package org.joelson.turf.dailyinc.service;
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Progress;
 import org.joelson.turf.dailyinc.model.ProgressId;
-import org.joelson.turf.dailyinc.model.UserProgressRepository;
+import org.joelson.turf.dailyinc.model.ProgressRepository;
 import org.joelson.turf.dailyinc.model.DailyProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class UserProgressServiceTest {
 
     @Mock
-    UserProgressRepository userProgressRepository;
+    ProgressRepository progressRepository;
 
     @InjectMocks
     UserProgressService userProgressService;
@@ -78,35 +78,35 @@ public class UserProgressServiceTest {
 
     @Test
     public void givenEmptyRepository_whenIncreaseUserProgress_thenProgressCreated() {
-        when(userProgressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
+        when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, DATE, TIME);
         assertEquals(PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
-        verify(userProgressRepository).findById(PROGRESS_ID);
-        verify(userProgressRepository).save(PROGRESS);
+        verify(progressRepository).findById(PROGRESS_ID);
+        verify(progressRepository).save(PROGRESS);
     }
 
     @Test
     public void givenDateUserProgress_whenIncreaseUserProgress_thenProgressNotUpdated() {
-        when(userProgressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
-        when(userProgressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
+        when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
+        when(progressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, DATE, TIME.plusSeconds(60));
         assertEquals(PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
-        verify(userProgressRepository).findById(PROGRESS_ID);
-        verify(userProgressRepository).save(any(Progress.class));
+        verify(progressRepository).findById(PROGRESS_ID);
+        verify(progressRepository).save(any(Progress.class));
     }
 
     @Test
     public void givenDateUserProgressButNoNextDateUserProgress_whenIncreaseUserProgress_thenProgressCreated() {
-        when(userProgressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
-        when(userProgressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
+        when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
+        when(progressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, NEXT_TIME);
         assertEquals(NEXT_PROGRESS.getFibonacci().getCompleted(), maxDayCompleted);
-        verify(userProgressRepository).findById(PROGRESS_ID);
-        verify(userProgressRepository).findById(NEXT_PROGRESS_ID);
-        verify(userProgressRepository).save(NEXT_PROGRESS);
+        verify(progressRepository).findById(PROGRESS_ID);
+        verify(progressRepository).findById(NEXT_PROGRESS_ID);
+        verify(progressRepository).save(NEXT_PROGRESS);
 
         /*ArgumentCaptor<UserProgress> saveArgumentCaptor = ArgumentCaptor.forClass(UserProgress.class);
         verify(userProgressRepository, times(4)).save(saveArgumentCaptor.capture());
@@ -123,23 +123,23 @@ public class UserProgressServiceTest {
 
     @Test
     public void givenNextDateUserProgress_whenIncreaseUserProgress_thenProgressUpdated() {
-        when(userProgressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
-        when(userProgressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_PROGRESS)));
+        when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
+        when(progressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_PROGRESS)));
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, LATER_TIME);
         assertEquals(LATER_PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
-        verify(userProgressRepository).findById(NEXT_PROGRESS_ID);
-        verify(userProgressRepository).save(LATER_PROGRESS);
+        verify(progressRepository).findById(NEXT_PROGRESS_ID);
+        verify(progressRepository).save(LATER_PROGRESS);
     }
 
     @Test
     public void givenNextDateLaterUserProgress_whenIncreaseUserProgress_thenProgressUpdated() {
-        when(userProgressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
-        when(userProgressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(LATER_PROGRESS)));
+        when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
+        when(progressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(LATER_PROGRESS)));
 
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, NEXT_DATE, EVEN_LATER_TIME);
         assertEquals(EVEN_LATER_PROGRESS.getAdd().getCompleted(), maxDayCompleted);
-        verify(userProgressRepository).findById(NEXT_PROGRESS_ID);
-        verify(userProgressRepository).save(EVEN_LATER_PROGRESS);
+        verify(progressRepository).findById(NEXT_PROGRESS_ID);
+        verify(progressRepository).save(EVEN_LATER_PROGRESS);
     }
 }

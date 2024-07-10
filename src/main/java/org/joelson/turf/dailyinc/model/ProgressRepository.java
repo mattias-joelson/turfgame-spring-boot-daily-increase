@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.List;
 
-public interface UserProgressRepository extends JpaRepository<Progress, ProgressId> {
+public interface ProgressRepository extends JpaRepository<Progress, ProgressId> {
 
     @Query("select up from Progress up order by up.user.id, up.date limit :limit offset :offset")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))

@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
-import org.joelson.turf.dailyinc.model.UserProgressRepository;
+import org.joelson.turf.dailyinc.model.ProgressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public class UserProgressAPIService {
 
     @Autowired
-    UserProgressRepository userProgressRepository;
+    ProgressRepository progressRepository;
 
     private static int getNoRows(int firstRow, int lastRow) {
         int size = lastRow - firstRow + 1;
@@ -21,18 +21,18 @@ public class UserProgressAPIService {
     }
 
     public <T> List<T> getSortedBetween(int firstRow, int lastRow, Class<T> type) {
-        return userProgressRepository.findSortedBetween(firstRow, getNoRows(firstRow, lastRow), type);
+        return progressRepository.findSortedBetween(firstRow, getNoRows(firstRow, lastRow), type);
     }
 
     public <T> List<T> getLastSorted(int rows, Class<T> type) {
-        return userProgressRepository.findLastSortedReversed(Math.min(rows, 100), type).reversed();
+        return progressRepository.findLastSortedReversed(Math.min(rows, 100), type).reversed();
     }
 
     public <T> List<T> getSortedBetweenByUser(Long userId, int firstRow, int lastRow, Class<T> type) {
-        return userProgressRepository.findSortedBetweenByUser(userId, firstRow, getNoRows(firstRow, lastRow), type);
+        return progressRepository.findSortedBetweenByUser(userId, firstRow, getNoRows(firstRow, lastRow), type);
     }
 
     public <T> List<T> getLastSortedByUser(Long userId, int rows, Class<T> type) {
-        return userProgressRepository.findLastSortedReversedByUser(userId, Math.min(rows, 100), type).reversed();
+        return progressRepository.findLastSortedReversedByUser(userId, Math.min(rows, 100), type).reversed();
     }
 }
