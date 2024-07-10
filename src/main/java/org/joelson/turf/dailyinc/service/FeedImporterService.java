@@ -35,10 +35,7 @@ public class FeedImporterService {
     UserService userService;
 
     @Autowired
-    UserProgressService userProgressService;
-
-    @Autowired
-    UserVisitsService userVisitsService;
+    ProgressService progressService;
 
     @Autowired
     VisitService visitService;
@@ -109,9 +106,7 @@ public class FeedImporterService {
     private void addVisit(Zone zone, User user, Instant time, VisitType type, Instant date) {
         Visit visit = visitService.create(zone, user, time, type);
         logger.trace(String.format("Added visit %s", visit));
-        int visits = userVisitsService.increaseUserVisits(user, date);
-        logger.trace(String.format("Visits %d @ %s", visits, date));
-        int maxDayCompleted = userProgressService.increaseUserProgress(user, date, visits, time);
+        int maxDayCompleted = progressService.increaseProgress(user, date, time);
         logger.trace(String.format("Max day completed %d @ %s", maxDayCompleted, time));
     }
 }

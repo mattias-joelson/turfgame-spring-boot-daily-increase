@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -35,10 +34,7 @@ public class FeedImporterServiceTest {
     UserService userService;
 
     @Mock
-    UserProgressService userProgressService;
-
-    @Mock
-    UserVisitsService userVisitsService;
+    ProgressService progressService;
 
     @Mock
     VisitService visitService;
@@ -96,15 +92,10 @@ public class FeedImporterServiceTest {
         when(visitService.create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType())).thenReturn(ASSIST_TOREKYRKA_BY_HAKSME);
         when(visitService.create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType())).thenReturn(ASSIST_TOREKYRKA_BY_TOREBIKER);
 
-        when(userVisitsService.increaseUserVisits(any(User.class), any(Instant.class))).thenReturn(-1);
-        when(userVisitsService.increaseUserVisits(USER_HAKSME, DATE)).thenReturn(1);
-        when(userVisitsService.increaseUserVisits(USER_TOREBIKER, DATE)).thenReturn(1);
-        when(userVisitsService.increaseUserVisits(USER_TOREHIKER, DATE)).thenReturn(1);
-
-        when(userProgressService.increaseUserProgress(any(User.class), any(Instant.class), anyInt(), any(Instant.class))).thenReturn(-1);
-        when(userProgressService.increaseUserProgress(USER_HAKSME, DATE, 1, TIME)).thenReturn(1);
-        when(userProgressService.increaseUserProgress(USER_TOREBIKER, DATE, 1, TIME)).thenReturn(1);
-        when(userProgressService.increaseUserProgress(USER_TOREHIKER, DATE, 1, TIME)).thenReturn(1);
+        when(progressService.increaseProgress(any(User.class), any(Instant.class), any(Instant.class))).thenReturn(-1);
+        when(progressService.increaseProgress(USER_HAKSME, DATE, TIME)).thenReturn(1);
+        when(progressService.increaseProgress(USER_TOREBIKER, DATE, TIME)).thenReturn(1);
+        when(progressService.increaseProgress(USER_TOREHIKER, DATE, TIME)).thenReturn(1);
 
         feedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
 
@@ -119,15 +110,11 @@ public class FeedImporterServiceTest {
         verify(visitService).create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType());
         verify(visitService).create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType());
 
-        verify(userVisitsService).increaseUserVisits(USER_HAKSME, DATE);
-        verify(userVisitsService).increaseUserVisits(USER_TOREBIKER, DATE);
-        verify(userVisitsService).increaseUserVisits(USER_TOREHIKER, DATE);
+        verify(progressService).increaseProgress(USER_HAKSME, DATE, TIME);
+        verify(progressService).increaseProgress(USER_TOREBIKER, DATE, TIME);
+        verify(progressService).increaseProgress(USER_TOREHIKER, DATE, TIME);
 
-        verify(userProgressService).increaseUserProgress(USER_HAKSME, DATE, 1, TIME);
-        verify(userProgressService).increaseUserProgress(USER_TOREBIKER, DATE, 1, TIME);
-        verify(userProgressService).increaseUserProgress(USER_TOREHIKER, DATE, 1, TIME);
-
-        verifyNoMoreInteractions(zoneService, userService, visitService, userVisitsService, userProgressService);
+        verifyNoMoreInteractions(zoneService, userService, visitService, progressService);
     }
 
     @Test
@@ -149,6 +136,6 @@ public class FeedImporterServiceTest {
 
         verify(visitService).getVisit(REVISIT_TOREKYRKA_BY_TOREHIKER.getZone(), REVISIT_TOREKYRKA_BY_TOREHIKER.getUser(), REVISIT_TOREKYRKA_BY_TOREHIKER.getTime());
 
-        verifyNoMoreInteractions(zoneService, userService, visitService, userVisitsService, userProgressService);
+        verifyNoMoreInteractions(zoneService, userService, visitService, progressService);
     }
 }

@@ -16,18 +16,19 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@IdClass(UserProgressId.class)
-@Table(name = "user_progress", indexes = { @Index(name = "index_user_progress_user_id", columnList = "user_id"),
-        @Index(name = "index_user_progress_date", columnList = "date"),
-        @Index(name = "index_user_progress_inc_comp", columnList = "inc_comp"),
-        @Index(name = "index_user_progress_inc_time", columnList = "inc_time"),
-        @Index(name = "index_user_progress_add_comp", columnList = "add_comp"),
-        @Index(name = "index_user_progress_add_time", columnList = "add_time"),
-        @Index(name = "index_user_progress_fib_comp", columnList = "fib_comp"),
-        @Index(name = "index_user_progress_fib_time", columnList = "fib_time"),
-        @Index(name = "index_user_progress_pow_comp", columnList = "pow_comp"),
-        @Index(name = "index_user_progress_pow_time", columnList = "pow_time") })
-public class UserProgress {
+@IdClass(ProgressId.class)
+@Table(name = "progress", indexes = { @Index(name = "index_progress_user_id", columnList = "user_id"),
+        @Index(name = "index_progress_date", columnList = "date"),
+        @Index(name = "index_progress_visits", columnList = "visits"),
+        @Index(name = "index_progress_inc_comp", columnList = "inc_comp"),
+        @Index(name = "index_progress_inc_time", columnList = "inc_time"),
+        @Index(name = "index_progress_add_comp", columnList = "add_comp"),
+        @Index(name = "index_progress_add_time", columnList = "add_time"),
+        @Index(name = "index_progress_fib_comp", columnList = "fib_comp"),
+        @Index(name = "index_progress_fib_time", columnList = "fib_time"),
+        @Index(name = "index_progress_pow_comp", columnList = "pow_comp"),
+        @Index(name = "index_progress_pow_time", columnList = "pow_time") })
+public class Progress {
 
     @Id
     @ManyToOne
@@ -38,43 +39,47 @@ public class UserProgress {
     @Column(updatable = false, nullable = false)
     private Instant date;
 
+    @Column(nullable = false)
+    private Integer visits;
+
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "inc_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "inc_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "inc_time", nullable = false)) })
-    private UserProgressTypeProgress increase;
+    private DailyProgress increase;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "add_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "add_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "add_time", nullable = false)) })
-    private UserProgressTypeProgress add;
+    private DailyProgress add;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "fib_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "fib_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "fib_time", nullable = false)) })
-    private UserProgressTypeProgress fibonacci;
+    private DailyProgress fibonacci;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "pow_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "pow_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "pow_time", nullable = false)) })
-    private UserProgressTypeProgress powerOfTwo;
+    private DailyProgress powerOfTwo;
 
 
-    protected UserProgress() {
+    protected Progress() {
     }
 
-    public UserProgress(
-            User user, Instant date, UserProgressTypeProgress increase, UserProgressTypeProgress add,
-            UserProgressTypeProgress fibonacci, UserProgressTypeProgress powerOfTwo) {
+    public Progress(
+            User user, Instant date, Integer visits, DailyProgress increase, DailyProgress add, DailyProgress fibonacci,
+            DailyProgress powerOfTwo) {
         this.user = Objects.requireNonNull(user);
         this.date = ModelConstraintsUtil.isTruncatedToDays(date);
+        setVisits(visits);
         this.increase = Objects.requireNonNull(increase);
         this.add = Objects.requireNonNull(add);
         this.fibonacci = Objects.requireNonNull(fibonacci);
@@ -89,20 +94,27 @@ public class UserProgress {
         return date;
     }
 
+    public Integer getVisits() {
+        return visits;
+    }
 
-    public UserProgressTypeProgress getIncrease() {
+    public void setVisits(Integer visits) {
+        this.visits = ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isAboveZero(visits), this.visits);
+    }
+
+    public DailyProgress getIncrease() {
         return increase;
     }
 
-    public UserProgressTypeProgress getAdd() {
+    public DailyProgress getAdd() {
         return add;
     }
 
-    public UserProgressTypeProgress getFibonacci() {
+    public DailyProgress getFibonacci() {
         return fibonacci;
     }
 
-    public UserProgressTypeProgress getPowerOfTwo() {
+    public DailyProgress getPowerOfTwo() {
         return powerOfTwo;
     }
 
@@ -111,10 +123,11 @@ public class UserProgress {
         if (this == o) {
             return true;
         }
-        if (o instanceof UserProgress that) {
+        if (o instanceof Progress that) {
             return Objects.equals(user, that.user) && Objects.equals(date, that.date)
-                    && Objects.equals(increase, that.increase) && Objects.equals(add, that.add)
-                    && Objects.equals(fibonacci, that.fibonacci) && Objects.equals(powerOfTwo, that.powerOfTwo);
+                    && Objects.equals(visits, that.visits) && Objects.equals(increase, that.increase)
+                    && Objects.equals(add, that.add) && Objects.equals(fibonacci, that.fibonacci)
+                    && Objects.equals(powerOfTwo, that.powerOfTwo);
         }
         return false;
     }
@@ -126,7 +139,7 @@ public class UserProgress {
 
     @Override
     public String toString() {
-        return String.format("UserProgress[user=%s, type=%s, %s, %s, %s, %s]", user, date,
+        return String.format("Progress[user=%s, date=%s, visits=%d, %s, %s, %s, %s]", user, date, visits,
                 increase.toInnerString("increase"), add.toInnerString("add"), fibonacci.toInnerString("fibonacci"),
                 powerOfTwo.toInnerString("powerOfTwo"));
     }

@@ -1,8 +1,7 @@
 package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.projection.UserIdAndName;
-import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
-import org.joelson.turf.dailyinc.projection.UserIdAndNameVisits;
+import org.joelson.turf.dailyinc.projection.UserProgress;
 import org.joelson.turf.dailyinc.projection.ZoneIdAndNameVisit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.joelson.turf.dailyinc.api.ProgressController.PROGRESS_RANGE_UNIT;
+import static org.joelson.turf.dailyinc.api.VisitController.VISITS_RANGE_UNIT;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -28,10 +30,7 @@ public class UserController {
     UserAPIService userAPIService;
 
     @Autowired
-    UserProgressAPIService userProgressAPIService;
-
-    @Autowired
-    UserVisitsAPIService userVisitsAPIService;
+    ProgressAPIService progressAPIService;
 
     @Autowired
     VisitAPIService visitAPIService;
@@ -59,28 +58,23 @@ public class UserController {
         return ControllerUtil.respondOk(user);
     }
 
-    @GetMapping({ "//user-progress", "/{userId}/user-progress" })
-    public ResponseEntity<List<UserIdAndNameProgress>> getUserProgressByIdentifier(
-            @PathVariable(required = false) String userId) {
-        logger.trace(String.format("getUserProgressByIdentifier(%s)", userId));
+    @GetMapping({ "//progress", "/{userId}/progress" })
+    public ResponseEntity<List<UserProgress>> getProgressByIdentifier(
+            @PathVariable(required = false) String userId,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
+        logger.trace(String.format("getProgressByIdentifier(%s)", userId));
         UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(
-                userProgressAPIService.getSortedUserProgressByUser(user.getId(), UserIdAndNameProgress.class));
-    }
-
-    @GetMapping({ "//user-visits", "/{userId}/user-visits" })
-    public ResponseEntity<List<UserIdAndNameVisits>> getUserVisitsByIdentifier(
-            @PathVariable(required = false) String userId) {
-        logger.trace(String.format("getUserVisitsByIdentifier(%s)", userId));
-        UserIdAndName user = lookupUserByIdentifier(userId);
-        if (user == null) {
-            return ControllerUtil.respondNotFound();
+        if (range == null) {
+            return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, UserProgress.class,
+                    (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
+        } else {
+            return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, range, UserProgress.class,
+                    (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
+                    (rows, type) -> progressAPIService.getLastSortedByUser(user.getId(), rows, type));
         }
-        return ControllerUtil.respondOk(
-                userVisitsAPIService.getSortedUserVisitsByUser(user.getId(), UserIdAndNameVisits.class));
     }
 
     @GetMapping({ "//visits", "/{userId}/visits" })
@@ -93,10 +87,10 @@ public class UserController {
             return ControllerUtil.respondNotFound();
         }
         if (range == null) {
-            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, ZoneIdAndNameVisit.class,
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, ZoneIdAndNameVisit.class,
                     (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
         } else {
-            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, ZoneIdAndNameVisit.class,
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, range, ZoneIdAndNameVisit.class,
                     (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
                     (rows, type) -> visitAPIService.getLastSortedByUser(user.getId(), rows, type));
         }
