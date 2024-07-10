@@ -24,30 +24,26 @@ public class UserProgressRepositoryIntegrationTest {
     private static final Instant NEXT_DATE = DATE.plus(1, ChronoUnit.DAYS);
 
     private static final User USER_ONE = new User(1001L, "UserOne", NEXT_TIME);
-    private static final UserProgress USER_ONE_PROGRESS = new UserProgress(USER_ONE, DATE, 1,
-            new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME),
-            new DailyProgress(0, 1, TIME));
-    private static final UserProgress USER_ONE_NEXT_PROGRESS = new UserProgress(USER_ONE, NEXT_DATE, 3,
+    private static final Progress USER_ONE_PROGRESS = new Progress(USER_ONE, DATE, 1, new DailyProgress(0, 1, TIME),
+            new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME));
+    private static final Progress USER_ONE_NEXT_PROGRESS = new Progress(USER_ONE, NEXT_DATE, 3,
             new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME),
             new DailyProgress(1, 2, NEXT_TIME));
 
     private static final User USER_TWO = new User(1002L, "UserTwo", NEXT_TIME);
-    private static final UserProgress USER_TWO_PROGRESS = new UserProgress(USER_TWO, DATE, 10,
-            new DailyProgress(10, 10, TIME), new DailyProgress(4, 4, TIME), new DailyProgress(6, 6, TIME),
-            new DailyProgress(4, 4, TIME));
-    private static final UserProgress USER_TWO_NEXT_PROGRESS = new UserProgress(USER_TWO, NEXT_DATE, 13,
+    private static final Progress USER_TWO_PROGRESS = new Progress(USER_TWO, DATE, 10, new DailyProgress(10, 10, TIME),
+            new DailyProgress(4, 4, TIME), new DailyProgress(6, 6, TIME), new DailyProgress(4, 4, TIME));
+    private static final Progress USER_TWO_NEXT_PROGRESS = new Progress(USER_TWO, NEXT_DATE, 13,
             new DailyProgress(10, 11, NEXT_TIME), new DailyProgress(4, 4, NEXT_TIME),
             new DailyProgress(6, 7, NEXT_TIME), new DailyProgress(4, 4, NEXT_TIME));
 
-    private static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_PROGRESS, USER_ONE_NEXT_PROGRESS,
+    private static final List<Progress> SORTED_PROGRESS = List.of(USER_ONE_PROGRESS, USER_ONE_NEXT_PROGRESS,
             USER_TWO_PROGRESS, USER_TWO_NEXT_PROGRESS);
-    private static final List<UserProgress> SORTED_USER_PROGRESS_REVERSED = SORTED_USER_PROGRESS.reversed();
-    private static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS = List.of(USER_ONE_PROGRESS,
-            USER_ONE_NEXT_PROGRESS);
-    private static final List<UserProgress> USER_ONE_SORTED_USER_PROGRESS_REVERSED = USER_ONE_SORTED_USER_PROGRESS.reversed();
-    private static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS = List.of(USER_TWO_PROGRESS,
-            USER_TWO_NEXT_PROGRESS);
-    private static final List<UserProgress> USER_TWO_SORTED_USER_PROGRESS_REVERSED = USER_TWO_SORTED_USER_PROGRESS.reversed();
+    private static final List<Progress> SORTED_PROGRESS_REVERSED = SORTED_PROGRESS.reversed();
+    private static final List<Progress> USER_ONE_SORTED_PROGRESS = List.of(USER_ONE_PROGRESS, USER_ONE_NEXT_PROGRESS);
+    private static final List<Progress> USER_ONE_SORTED_PROGRESS_REVERSED = USER_ONE_SORTED_PROGRESS.reversed();
+    private static final List<Progress> USER_TWO_SORTED_PROGRESS = List.of(USER_TWO_PROGRESS, USER_TWO_NEXT_PROGRESS);
+    private static final List<Progress> USER_TWO_SORTED_PROGRESS_REVERSED = USER_TWO_SORTED_PROGRESS.reversed();
 
     @Autowired
     UserProgressRepository userProgressRepository;
@@ -64,9 +60,9 @@ public class UserProgressRepositoryIntegrationTest {
         entityManager.persist(USER_TWO_PROGRESS);
         entityManager.persist(USER_TWO_NEXT_PROGRESS);
 
-        UserProgress userProgress = userProgressRepository.findById(
+        Progress progress = userProgressRepository.findById(
                 new ProgressId(USER_ONE_PROGRESS.getUser().getId(), USER_ONE_PROGRESS.getDate())).orElse(null);
-        assertEquals(USER_ONE_PROGRESS, userProgress);
+        assertEquals(USER_ONE_PROGRESS, progress);
         assertEquals(USER_ONE_NEXT_PROGRESS,
                 userProgressRepository.findById(new ProgressId(USER_ONE.getId(), NEXT_DATE)).orElse(null));
         assertEquals(USER_TWO_PROGRESS,
@@ -84,24 +80,24 @@ public class UserProgressRepositoryIntegrationTest {
     public void givenNewUserProgress_whenSave_thenSaved() {
         entityManager.persist(USER_ONE);
 
-        UserProgress savedUserProgress = userProgressRepository.save(USER_ONE_PROGRESS);
-        assertEquals(USER_ONE_PROGRESS, entityManager.find(UserProgress.class,
-                new ProgressId(savedUserProgress.getUser().getId(), savedUserProgress.getDate())));
+        Progress savedProgress = userProgressRepository.save(USER_ONE_PROGRESS);
+        assertEquals(USER_ONE_PROGRESS, entityManager.find(Progress.class,
+                new ProgressId(savedProgress.getUser().getId(), savedProgress.getDate())));
 
         assertThrows(EntityExistsException.class, () -> entityManager.persist(USER_ONE_PROGRESS));
     }
 
     @Test
     public void givenUserProgress_whenUpdate_thenUpdated() {
-        UserProgress userProgress = new UserProgress(USER_TWO, DATE, 10, new DailyProgress(10, 10, TIME),
+        Progress progress = new Progress(USER_TWO, DATE, 10, new DailyProgress(10, 10, TIME),
                 new DailyProgress(4, 4, TIME), new DailyProgress(6, 6, TIME), new DailyProgress(4, 4, TIME));
-        entityManager.persist(userProgress);
+        entityManager.persist(progress);
 
-        userProgress.getIncrease().setCompleted(userProgress.getIncrease().getCompleted() + 1);
-        userProgress.getIncrease().setTime(TIME.plusSeconds(60));
-        UserProgress savedUserProgress = userProgressRepository.save(userProgress);
-        assertEquals(userProgress, entityManager.find(UserProgress.class,
-                new ProgressId(savedUserProgress.getUser().getId(), savedUserProgress.getDate())));
+        progress.getIncrease().setCompleted(progress.getIncrease().getCompleted() + 1);
+        progress.getIncrease().setTime(TIME.plusSeconds(60));
+        Progress savedProgress = userProgressRepository.save(progress);
+        assertEquals(progress, entityManager.find(Progress.class,
+                new ProgressId(savedProgress.getUser().getId(), savedProgress.getDate())));
     }
 
     @Test
@@ -111,15 +107,15 @@ public class UserProgressRepositoryIntegrationTest {
         entityManager.persist(USER_ONE_NEXT_PROGRESS);
         entityManager.persist(USER_ONE_PROGRESS);
 
-        assertEquals(SORTED_USER_PROGRESS, userProgressRepository.findSortedBetween(0, SORTED_USER_PROGRESS.size(), UserProgress.class));
-        assertEquals(SORTED_USER_PROGRESS.subList(1, 3), userProgressRepository.findSortedBetween(1, 2, UserProgress.class));
-        assertEquals(List.of(), userProgressRepository.findSortedBetween(SORTED_USER_PROGRESS.size(), 100, UserProgress.class));
+        assertEquals(SORTED_PROGRESS, userProgressRepository.findSortedBetween(0, SORTED_PROGRESS.size(), Progress.class));
+        assertEquals(SORTED_PROGRESS.subList(1, 3), userProgressRepository.findSortedBetween(1, 2, Progress.class));
+        assertEquals(List.of(), userProgressRepository.findSortedBetween(SORTED_PROGRESS.size(), 100, Progress.class));
 
-        assertEquals(SORTED_USER_PROGRESS_REVERSED,
-                userProgressRepository.findLastSortedReversed(SORTED_USER_PROGRESS_REVERSED.size(), UserProgress.class));
-        assertEquals(SORTED_USER_PROGRESS_REVERSED.subList(0, 2),
-                userProgressRepository.findLastSortedReversed(2, UserProgress.class));
-        assertEquals(List.of(), userProgressRepository.findLastSortedReversed(0, UserProgress.class));
+        assertEquals(SORTED_PROGRESS_REVERSED,
+                userProgressRepository.findLastSortedReversed(SORTED_PROGRESS_REVERSED.size(), Progress.class));
+        assertEquals(SORTED_PROGRESS_REVERSED.subList(0, 2),
+                userProgressRepository.findLastSortedReversed(2, Progress.class));
+        assertEquals(List.of(), userProgressRepository.findLastSortedReversed(0, Progress.class));
     }
 
     @Test
@@ -129,19 +125,21 @@ public class UserProgressRepositoryIntegrationTest {
         entityManager.persist(USER_ONE_NEXT_PROGRESS);
         entityManager.persist(USER_ONE_PROGRESS);
 
-        assertEquals(USER_ONE_SORTED_USER_PROGRESS,
-                userProgressRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_USER_PROGRESS.size(), UserProgress.class));
-        assertEquals(USER_TWO_SORTED_USER_PROGRESS,
-                userProgressRepository.findSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_USER_PROGRESS.size(), UserProgress.class));
-        assertEquals(List.of(), userProgressRepository.findSortedBetweenByUser(1003L, 0, 100, UserProgress.class));
+        assertEquals(USER_ONE_SORTED_PROGRESS,
+                userProgressRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_PROGRESS.size(),
+                        Progress.class));
+        assertEquals(USER_TWO_SORTED_PROGRESS,
+                userProgressRepository.findSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_PROGRESS.size(),
+                        Progress.class));
+        assertEquals(List.of(), userProgressRepository.findSortedBetweenByUser(1003L, 0, 100, Progress.class));
 
-        assertEquals(USER_ONE_SORTED_USER_PROGRESS_REVERSED,
-                userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), USER_ONE_SORTED_USER_PROGRESS_REVERSED.size(), UserProgress.class));
-        assertEquals(USER_ONE_SORTED_USER_PROGRESS_REVERSED.subList(0, 1),
-                userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), 1, UserProgress.class));
-        assertEquals(List.of(), userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), 0, UserProgress.class));
-        assertEquals(USER_TWO_SORTED_USER_PROGRESS_REVERSED,
-                userProgressRepository.findLastSortedReversedByUser(USER_TWO.getId(), USER_TWO_SORTED_USER_PROGRESS_REVERSED.size(), UserProgress.class));
-        assertEquals(List.of(), userProgressRepository.findLastSortedReversedByUser(1003L, 100, UserProgress.class));
+        assertEquals(USER_ONE_SORTED_PROGRESS_REVERSED,
+                userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), USER_ONE_SORTED_PROGRESS_REVERSED.size(), Progress.class));
+        assertEquals(USER_ONE_SORTED_PROGRESS_REVERSED.subList(0, 1),
+                userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), 1, Progress.class));
+        assertEquals(List.of(), userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), 0, Progress.class));
+        assertEquals(USER_TWO_SORTED_PROGRESS_REVERSED,
+                userProgressRepository.findLastSortedReversedByUser(USER_TWO.getId(), USER_TWO_SORTED_PROGRESS_REVERSED.size(), Progress.class));
+        assertEquals(List.of(), userProgressRepository.findLastSortedReversedByUser(1003L, 100, Progress.class));
     }
 }

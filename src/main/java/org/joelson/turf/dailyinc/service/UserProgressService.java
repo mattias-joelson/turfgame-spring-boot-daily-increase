@@ -1,7 +1,7 @@
 package org.joelson.turf.dailyinc.service;
 
 import org.joelson.turf.dailyinc.model.User;
-import org.joelson.turf.dailyinc.model.UserProgress;
+import org.joelson.turf.dailyinc.model.Progress;
 import org.joelson.turf.dailyinc.model.ProgressId;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
 import org.joelson.turf.dailyinc.model.DailyProgressType;
@@ -19,50 +19,49 @@ public class UserProgressService {
     @Autowired
     UserProgressRepository userProgressRepository;
 
-    private UserProgress getUserProgress(User user, Instant date) {
+    private Progress getProgress(User user, Instant date) {
         return userProgressRepository.findById(new ProgressId(user.getId(), date)).orElse(null);
     }
 
     public int increaseUserProgress(User user, Instant date, Instant time) {
-        UserProgress userProgress = getUserProgress(user, date);
-        if (userProgress == null) {
+        Progress progress = getProgress(user, date);
+        if (progress == null) {
             Instant previousDate = date.minus(1, ChronoUnit.DAYS);
-            UserProgress previousUserProgress = getUserProgress(user, previousDate);
-            if (previousUserProgress == null) {
+            Progress previousProgress = getProgress(user, previousDate);
+            if (previousProgress == null) {
                 userProgressRepository.save(
-                        new UserProgress(user, date, 1, new DailyProgress(0, 1, time), new DailyProgress(0, 1, time),
+                        new Progress(user, date, 1, new DailyProgress(0, 1, time), new DailyProgress(0, 1, time),
                                 new DailyProgress(0, 1, time), new DailyProgress(0, 1, time)));
                 return 1;
             } else {
-                userProgressRepository.save(new UserProgress(user, date, 1,
-                        new DailyProgress(previousUserProgress.getIncrease().getCompleted(), 1, time),
-                        new DailyProgress(previousUserProgress.getAdd().getCompleted(), 1, time),
-                        new DailyProgress(previousUserProgress.getFibonacci().getCompleted(), 2, time),
-                        new DailyProgress(previousUserProgress.getPowerOfTwo().getCompleted(), 1, time)));
+                userProgressRepository.save(new Progress(user, date, 1,
+                        new DailyProgress(previousProgress.getIncrease().getCompleted(), 1, time),
+                        new DailyProgress(previousProgress.getAdd().getCompleted(), 1, time),
+                        new DailyProgress(previousProgress.getFibonacci().getCompleted(), 2, time),
+                        new DailyProgress(previousProgress.getPowerOfTwo().getCompleted(), 1, time)));
                 return 2;
             }
         } else {
             int maxDayCompleted;
 
-            int visits = userProgress.getVisits() + 1;
-            userProgress.setVisits(visits);
+            int visits = progress.getVisits() + 1;
+            progress.setVisits(visits);
 
-            maxDayCompleted = Math.abs(increaseDailyProgress(userProgress.getIncrease(), visits, time,
+            maxDayCompleted = Math.abs(increaseDailyProgress(progress.getIncrease(), visits, time,
                     DailyProgressType.DAILY_INCREASE::getNeededVisits));
 
-            maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
-                    increaseDailyProgress(userProgress.getAdd(), visits, time,
-                            DailyProgressType.DAILY_ADD::getNeededVisits)));
+            maxDayCompleted = Math.max(maxDayCompleted, Math.abs(increaseDailyProgress(progress.getAdd(), visits, time,
+                    DailyProgressType.DAILY_ADD::getNeededVisits)));
 
             maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
-                    increaseDailyProgress(userProgress.getFibonacci(), visits, time,
+                    increaseDailyProgress(progress.getFibonacci(), visits, time,
                             DailyProgressType.DAILY_FIBONACCI::getNeededVisits)));
 
             maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
-                    increaseDailyProgress(userProgress.getPowerOfTwo(), visits, time,
+                    increaseDailyProgress(progress.getPowerOfTwo(), visits, time,
                             DailyProgressType.DAILY_POWER_OF_TWO::getNeededVisits)));
 
-            userProgressRepository.save(userProgress);
+            userProgressRepository.save(progress);
             return maxDayCompleted;
         }
     }

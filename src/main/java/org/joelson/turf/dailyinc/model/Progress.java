@@ -17,18 +17,18 @@ import java.util.Objects;
 
 @Entity
 @IdClass(ProgressId.class)
-@Table(name = "user_progress", indexes = { @Index(name = "index_user_progress_user_id", columnList = "user_id"),
-        @Index(name = "index_user_progress_date", columnList = "date"),
-        @Index(name = "index_user_progress_visits", columnList = "visits"),
-        @Index(name = "index_user_progress_inc_comp", columnList = "inc_comp"),
-        @Index(name = "index_user_progress_inc_time", columnList = "inc_time"),
-        @Index(name = "index_user_progress_add_comp", columnList = "add_comp"),
-        @Index(name = "index_user_progress_add_time", columnList = "add_time"),
-        @Index(name = "index_user_progress_fib_comp", columnList = "fib_comp"),
-        @Index(name = "index_user_progress_fib_time", columnList = "fib_time"),
-        @Index(name = "index_user_progress_pow_comp", columnList = "pow_comp"),
-        @Index(name = "index_user_progress_pow_time", columnList = "pow_time") })
-public class UserProgress {
+@Table(name = "progress", indexes = { @Index(name = "index_progress_user_id", columnList = "user_id"),
+        @Index(name = "index_progress_date", columnList = "date"),
+        @Index(name = "index_progress_visits", columnList = "visits"),
+        @Index(name = "index_progress_inc_comp", columnList = "inc_comp"),
+        @Index(name = "index_progress_inc_time", columnList = "inc_time"),
+        @Index(name = "index_progress_add_comp", columnList = "add_comp"),
+        @Index(name = "index_progress_add_time", columnList = "add_time"),
+        @Index(name = "index_progress_fib_comp", columnList = "fib_comp"),
+        @Index(name = "index_progress_fib_time", columnList = "fib_time"),
+        @Index(name = "index_progress_pow_comp", columnList = "pow_comp"),
+        @Index(name = "index_progress_pow_time", columnList = "pow_time") })
+public class Progress {
 
     @Id
     @ManyToOne
@@ -71,10 +71,10 @@ public class UserProgress {
     private DailyProgress powerOfTwo;
 
 
-    protected UserProgress() {
+    protected Progress() {
     }
 
-    public UserProgress(
+    public Progress(
             User user, Instant date, Integer visits, DailyProgress increase, DailyProgress add, DailyProgress fibonacci,
             DailyProgress powerOfTwo) {
         this.user = Objects.requireNonNull(user);
@@ -123,7 +123,7 @@ public class UserProgress {
         if (this == o) {
             return true;
         }
-        if (o instanceof UserProgress that) {
+        if (o instanceof Progress that) {
             return Objects.equals(user, that.user) && Objects.equals(date, that.date)
                     && Objects.equals(visits, that.visits) && Objects.equals(increase, that.increase)
                     && Objects.equals(add, that.add) && Objects.equals(fibonacci, that.fibonacci)
@@ -139,7 +139,7 @@ public class UserProgress {
 
     @Override
     public String toString() {
-        return String.format("UserProgress[user=%s, date=%s, visits=%d, %s, %s, %s, %s]", user, date, visits,
+        return String.format("Progress[user=%s, date=%s, visits=%d, %s, %s, %s, %s]", user, date, visits,
                 increase.toInnerString("increase"), add.toInnerString("add"), fibonacci.toInnerString("fibonacci"),
                 powerOfTwo.toInnerString("powerOfTwo"));
     }
