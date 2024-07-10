@@ -23,21 +23,18 @@ public class UserProgressService {
         return userProgressRepository.findById(new UserProgressId(user.getId(), date)).orElse(null);
     }
 
-    public int increaseUserProgress(User user, Instant date, int visits, Instant time) {
+    public int increaseUserProgress(User user, Instant date, Instant time) {
         UserProgress userProgress = getUserProgress(user, date);
         if (userProgress == null) {
-            if (visits != 1) {
-                throw new IllegalArgumentException(String.format("User progress existed for visits=%d > 0.", visits));
-            }
             Instant previousDate = date.minus(1, ChronoUnit.DAYS);
             UserProgress previousUserProgress = getUserProgress(user, previousDate);
             if (previousUserProgress == null) {
-                userProgressRepository.save(new UserProgress(user, date, visits,
+                userProgressRepository.save(new UserProgress(user, date, 1,
                         new UserProgressTypeProgress(0, 1, time), new UserProgressTypeProgress(0, 1, time),
                         new UserProgressTypeProgress(0, 1, time), new UserProgressTypeProgress(0, 1, time)));
                 return 1;
             } else {
-                userProgressRepository.save(new UserProgress(user, date, visits,
+                userProgressRepository.save(new UserProgress(user, date, 1,
                         new UserProgressTypeProgress(previousUserProgress.getIncrease().getCompleted(), 1, time),
                         new UserProgressTypeProgress(previousUserProgress.getAdd().getCompleted(), 1, time),
                         new UserProgressTypeProgress(previousUserProgress.getFibonacci().getCompleted(), 2, time),
@@ -47,10 +44,7 @@ public class UserProgressService {
         } else {
             int maxDayCompleted;
 
-            if (userProgress.getVisits() >= visits) {
-                throw new IllegalArgumentException(
-                        String.format("userProgress.getVisits()=%d >= visits=%d", userProgress.getVisits(), visits));
-            }
+            int visits = userProgress.getVisits() + 1;
             userProgress.setVisits(visits);
 
             maxDayCompleted = Math.abs(increaseUserProgress(userProgress.getIncrease(), visits, time,

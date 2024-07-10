@@ -2,7 +2,6 @@ package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.projection.UserIdAndName;
 import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
-import org.joelson.turf.dailyinc.projection.UserIdAndNameVisits;
 import org.joelson.turf.dailyinc.projection.ZoneIdAndNameVisit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,6 @@ public class UserController {
 
     @Autowired
     UserProgressAPIService userProgressAPIService;
-
-    @Autowired
-    UserVisitsAPIService userVisitsAPIService;
 
     @Autowired
     VisitAPIService visitAPIService;
@@ -69,18 +65,6 @@ public class UserController {
         }
         return ControllerUtil.respondOk(
                 userProgressAPIService.getSortedUserProgressByUser(user.getId(), UserIdAndNameProgress.class));
-    }
-
-    @GetMapping({ "//user-visits", "/{userId}/user-visits" })
-    public ResponseEntity<List<UserIdAndNameVisits>> getUserVisitsByIdentifier(
-            @PathVariable(required = false) String userId) {
-        logger.trace(String.format("getUserVisitsByIdentifier(%s)", userId));
-        UserIdAndName user = lookupUserByIdentifier(userId);
-        if (user == null) {
-            return ControllerUtil.respondNotFound();
-        }
-        return ControllerUtil.respondOk(
-                userVisitsAPIService.getSortedUserVisitsByUser(user.getId(), UserIdAndNameVisits.class));
     }
 
     @GetMapping({ "//visits", "/{userId}/visits" })
