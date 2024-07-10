@@ -4,7 +4,7 @@ import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
 import org.joelson.turf.dailyinc.model.ProgressId;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
-import org.joelson.turf.dailyinc.model.DaylyProgressType;
+import org.joelson.turf.dailyinc.model.DailyProgressType;
 import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,19 +48,19 @@ public class UserProgressService {
             userProgress.setVisits(visits);
 
             maxDayCompleted = Math.abs(increaseUserProgress(userProgress.getIncrease(), visits, time,
-                    DaylyProgressType.DAILY_INCREASE::getNeededVisits));
+                    DailyProgressType.DAILY_INCREASE::getNeededVisits));
 
             maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
                     increaseUserProgress(userProgress.getAdd(), visits, time,
-                            DaylyProgressType.DAILY_ADD::getNeededVisits)));
+                            DailyProgressType.DAILY_ADD::getNeededVisits)));
 
             maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
                     increaseUserProgress(userProgress.getFibonacci(), visits, time,
-                            DaylyProgressType.DAILY_FIBONACCI::getNeededVisits)));
+                            DailyProgressType.DAILY_FIBONACCI::getNeededVisits)));
 
             maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
                     increaseUserProgress(userProgress.getPowerOfTwo(), visits, time,
-                            DaylyProgressType.DAILY_POWER_OF_TWO::getNeededVisits)));
+                            DailyProgressType.DAILY_POWER_OF_TWO::getNeededVisits)));
 
             userProgressRepository.save(userProgress);
             return maxDayCompleted;
