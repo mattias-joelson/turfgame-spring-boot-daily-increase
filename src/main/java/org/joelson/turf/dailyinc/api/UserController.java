@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.joelson.turf.dailyinc.api.ProgressController.PROGRESS_RANGE_UNIT;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -55,7 +57,7 @@ public class UserController {
         return ControllerUtil.respondOk(user);
     }
 
-    @GetMapping({ "//user-progress", "/{userId}/user-progress" })
+    @GetMapping({ "//progress", "/{userId}/progress" })
     public ResponseEntity<List<UserProgress>> getUserProgressByIdentifier(
             @PathVariable(required = false) String userId,
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
@@ -65,10 +67,10 @@ public class UserController {
             return ControllerUtil.respondNotFound();
         }
         if (range == null) {
-            return RangeRequestUtil.handleRequest(ProgressController.PROGRESS_RANGE_UNIT, UserProgress.class,
+            return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, UserProgress.class,
                     (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
         } else {
-            return RangeRequestUtil.handleRequest(ProgressController.PROGRESS_RANGE_UNIT, range, UserProgress.class,
+            return RangeRequestUtil.handleRequest(PROGRESS_RANGE_UNIT, range, UserProgress.class,
                     (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
                     (rows, type) -> progressAPIService.getLastSortedByUser(user.getId(), rows, type));
         }

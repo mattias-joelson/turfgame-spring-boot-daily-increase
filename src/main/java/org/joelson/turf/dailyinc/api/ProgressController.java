@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user-progress")
+@RequestMapping("/api/progress")
 public class ProgressController {
 
-    public static final String PROGRESS_RANGE_UNIT = "progress";
+    static final String PROGRESS_RANGE_UNIT = "progress";
     private static final Logger logger = LoggerFactory.getLogger(ProgressController.class);
 
     @Autowired
