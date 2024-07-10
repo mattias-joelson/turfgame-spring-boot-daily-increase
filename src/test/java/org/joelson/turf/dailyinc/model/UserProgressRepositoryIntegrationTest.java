@@ -65,19 +65,19 @@ public class UserProgressRepositoryIntegrationTest {
         entityManager.persist(USER_TWO_NEXT_PROGRESS);
 
         UserProgress userProgress = userProgressRepository.findById(
-                new UserProgressId(USER_ONE_PROGRESS.getUser().getId(), USER_ONE_PROGRESS.getDate())).orElse(null);
+                new ProgressId(USER_ONE_PROGRESS.getUser().getId(), USER_ONE_PROGRESS.getDate())).orElse(null);
         assertEquals(USER_ONE_PROGRESS, userProgress);
         assertEquals(USER_ONE_NEXT_PROGRESS,
-                userProgressRepository.findById(new UserProgressId(USER_ONE.getId(), NEXT_DATE)).orElse(null));
+                userProgressRepository.findById(new ProgressId(USER_ONE.getId(), NEXT_DATE)).orElse(null));
         assertEquals(USER_TWO_PROGRESS,
-                userProgressRepository.findById(new UserProgressId(USER_TWO.getId(), DATE)).orElse(null));
+                userProgressRepository.findById(new ProgressId(USER_TWO.getId(), DATE)).orElse(null));
         assertEquals(USER_TWO_NEXT_PROGRESS,
-                userProgressRepository.findById(new UserProgressId(USER_TWO.getId(), NEXT_DATE)).orElse(null));
+                userProgressRepository.findById(new ProgressId(USER_TWO.getId(), NEXT_DATE)).orElse(null));
 
         assertNull(
-                userProgressRepository.findById(new UserProgressId(1000L, USER_ONE_PROGRESS.getDate())).orElse(null));
+                userProgressRepository.findById(new ProgressId(1000L, USER_ONE_PROGRESS.getDate())).orElse(null));
         assertNull(userProgressRepository.findById(
-                new UserProgressId(USER_ONE.getId(), NEXT_DATE.plus(1, ChronoUnit.DAYS))).orElse(null));
+                new ProgressId(USER_ONE.getId(), NEXT_DATE.plus(1, ChronoUnit.DAYS))).orElse(null));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class UserProgressRepositoryIntegrationTest {
 
         UserProgress savedUserProgress = userProgressRepository.save(USER_ONE_PROGRESS);
         assertEquals(USER_ONE_PROGRESS, entityManager.find(UserProgress.class,
-                new UserProgressId(savedUserProgress.getUser().getId(), savedUserProgress.getDate())));
+                new ProgressId(savedUserProgress.getUser().getId(), savedUserProgress.getDate())));
 
         assertThrows(EntityExistsException.class, () -> entityManager.persist(USER_ONE_PROGRESS));
     }
@@ -102,7 +102,7 @@ public class UserProgressRepositoryIntegrationTest {
         userProgress.getIncrease().setTime(TIME.plusSeconds(60));
         UserProgress savedUserProgress = userProgressRepository.save(userProgress);
         assertEquals(userProgress, entityManager.find(UserProgress.class,
-                new UserProgressId(savedUserProgress.getUser().getId(), savedUserProgress.getDate())));
+                new ProgressId(savedUserProgress.getUser().getId(), savedUserProgress.getDate())));
     }
 
     @Test

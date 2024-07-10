@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@IdClass(UserProgressId.class)
+@IdClass(ProgressId.class)
 @Table(name = "user_progress", indexes = { @Index(name = "index_user_progress_user_id", columnList = "user_id"),
         @Index(name = "index_user_progress_date", columnList = "date"),
         @Index(name = "index_user_progress_visits", columnList = "visits"),

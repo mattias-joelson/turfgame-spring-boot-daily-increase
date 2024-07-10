@@ -3,15 +3,15 @@ package org.joelson.turf.dailyinc.model;
 import java.time.Instant;
 import java.util.Objects;
 
-public class UserProgressId {
+public class ProgressId {
 
     private Long user;
     private Instant date;
 
-    protected UserProgressId() {
+    protected ProgressId() {
     }
 
-    public UserProgressId(Long user, Instant date) {
+    public ProgressId(Long user, Instant date) {
         setUser(user);
         setDate(date);
     }
@@ -37,7 +37,7 @@ public class UserProgressId {
         if (this == o) {
             return true;
         }
-        if (o instanceof UserProgressId that) {
+        if (o instanceof ProgressId that) {
             return Objects.equals(user, that.user) && Objects.equals(date, that.date);
         }
         return false;
@@ -50,6 +50,6 @@ public class UserProgressId {
 
     @Override
     public String toString() {
-        return String.format("UserProgressId[user=%d, date=%s]", user, date);
+        return String.format("ProgressId[user=%d, date=%s]", user, date);
     }
 }

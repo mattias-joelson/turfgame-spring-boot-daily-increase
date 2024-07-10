@@ -2,7 +2,7 @@ package org.joelson.turf.dailyinc.service;
 
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
-import org.joelson.turf.dailyinc.model.UserProgressId;
+import org.joelson.turf.dailyinc.model.ProgressId;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
 import org.joelson.turf.dailyinc.model.UserProgressType;
 import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
@@ -20,7 +20,7 @@ public class UserProgressService {
     UserProgressRepository userProgressRepository;
 
     private UserProgress getUserProgress(User user, Instant date) {
-        return userProgressRepository.findById(new UserProgressId(user.getId(), date)).orElse(null);
+        return userProgressRepository.findById(new ProgressId(user.getId(), date)).orElse(null);
     }
 
     public int increaseUserProgress(User user, Instant date, Instant time) {
