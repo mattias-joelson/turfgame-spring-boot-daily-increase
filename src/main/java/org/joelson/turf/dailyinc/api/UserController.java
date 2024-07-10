@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static org.joelson.turf.dailyinc.api.ProgressController.PROGRESS_RANGE_UNIT;
+import static org.joelson.turf.dailyinc.api.VisitController.VISITS_RANGE_UNIT;
 
 @RestController
 @RequestMapping("/api/users")
@@ -86,10 +87,10 @@ public class UserController {
             return ControllerUtil.respondNotFound();
         }
         if (range == null) {
-            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, ZoneIdAndNameVisit.class,
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, ZoneIdAndNameVisit.class,
                     (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
         } else {
-            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, ZoneIdAndNameVisit.class,
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, range, ZoneIdAndNameVisit.class,
                     (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
                     (rows, type) -> visitAPIService.getLastSortedByUser(user.getId(), rows, type));
         }

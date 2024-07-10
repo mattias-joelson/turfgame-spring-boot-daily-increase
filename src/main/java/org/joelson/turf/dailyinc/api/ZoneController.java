@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.joelson.turf.dailyinc.api.VisitController.VISITS_RANGE_UNIT;
+
 @RestController
 @RequestMapping("/api/zones")
 public class ZoneController {
@@ -61,10 +63,10 @@ public class ZoneController {
             return ControllerUtil.respondNotFound();
         }
         if (range == null) {
-            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, UserIdAndNameVisit.class,
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, UserIdAndNameVisit.class,
                     (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByZone(zone.getId(), firstRow, lastRow, type));
         } else {
-            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, UserIdAndNameVisit.class,
+            return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, range, UserIdAndNameVisit.class,
                     (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByZone(zone.getId(), firstRow, lastRow, type),
                     (rows, type) -> visitAPIService.getLastSortedByZone(zone.getId(), rows, type));
         }
