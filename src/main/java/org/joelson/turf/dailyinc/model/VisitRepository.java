@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface VisitRepository extends JpaRepository<Visit, VisitId> {
 
-    @Query("select v from Visit v order by v.time, v.zone.id, v.type, v.user.id limit :limit offset :offset")
+    @Query("select v from Visit v order by v.time, v.zone.id, v.type, v.user.id offset :offset limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findSortedBetween(int offset, int limit, Class<T> type);
 
@@ -17,7 +17,7 @@ public interface VisitRepository extends JpaRepository<Visit, VisitId> {
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findLastSortedReversed(int limit, Class<T> type);
 
-    @Query("select v from Visit v where v.user.id = :userId order by v.time limit :limit offset :offset")
+    @Query("select v from Visit v where v.user.id = :userId order by v.time offset :offset limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findSortedBetweenByUser(Long userId, int offset, int limit, Class<T> type);
 
@@ -25,7 +25,7 @@ public interface VisitRepository extends JpaRepository<Visit, VisitId> {
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findLastSortedReversedByUser(Long userId, int limit, Class<T> type);
 
-    @Query("select v from Visit v where v.zone.id = :zoneId order by v.time, v.type, v.user.id limit :limit offset :offset")
+    @Query("select v from Visit v where v.zone.id = :zoneId order by v.time, v.type, v.user.id offset :offset limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findSortedBetweenByZone(Long zoneId, int offset, int limit, Class<T> type);
 
