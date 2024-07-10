@@ -61,7 +61,7 @@ public final class RangeRequestUtil {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
         Objects.requireNonNull(getBetween);
         List<T> body = getBetween.apply(0, Integer.MAX_VALUE);
-        return RangeResponseUtil.createOKResponse(rangeUnit, body, 0, body.size());
+        return RangeResponseUtil.createOKResponse(rangeUnit, body, 0, body.size() - 1);
     }
 
     static <T> ResponseEntity<List<T>> handleRequest(
