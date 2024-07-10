@@ -65,10 +65,10 @@ public class UserController {
             return ControllerUtil.respondNotFound();
         }
         if (range == null) {
-            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, UserProgress.class,
+            return RangeRequestUtil.handleRequest(ProgressController.PROGRESS_RANGE_UNIT, UserProgress.class,
                     (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
         } else {
-            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, range, UserProgress.class,
+            return RangeRequestUtil.handleRequest(ProgressController.PROGRESS_RANGE_UNIT, range, UserProgress.class,
                     (firstRow, lastRow, type) -> progressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
                     (rows, type) -> progressAPIService.getLastSortedByUser(user.getId(), rows, type));
         }

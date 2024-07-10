@@ -15,10 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user-progress")
-public class UserProgressController {
+public class ProgressController {
 
     public static final String PROGRESS_RANGE_UNIT = "progress";
-    private static final Logger logger = LoggerFactory.getLogger(UserProgressController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProgressController.class);
 
     @Autowired
     ProgressAPIService progressAPIService;
