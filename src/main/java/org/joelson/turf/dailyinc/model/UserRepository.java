@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u where u.id >= :minId and u.id <= :maxId order by u.id asc limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
-    <T> List<T> findAllSortedBetween(Long minId, Long maxId, int limit, Class<T> type);
+    <T> List<T> findSortedBetween(Long minId, Long maxId, int limit, Class<T> type);
 
     @Query("select u from User u order by u.id desc limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))

@@ -13,7 +13,7 @@ public class UserAPIService {
     UserRepository userRepository;
 
     public <T> List<T> getSortedUsersBetween(Long minId, Long maxId, Class<T> type) {
-        return userRepository.findAllSortedBetween(minId, maxId, 100, type);
+        return userRepository.findSortedBetween(minId, maxId, 100, type);
     }
 
     public <T> List<T> getLastSortedUsers(int count, Class<T> type) {

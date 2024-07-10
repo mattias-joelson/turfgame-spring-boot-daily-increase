@@ -12,7 +12,7 @@ public interface ZoneRepository extends JpaRepository<Zone, Long> {
 
     @Query("select z from Zone z where z.id >= :minId and z.id <= :maxId order by z.id asc limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
-    <T> List<T> findAllSortedBetween(Long minId, Long maxId, int limit, Class<T> type);
+    <T> List<T> findSortedBetween(Long minId, Long maxId, int limit, Class<T> type);
 
     @Query("select z from Zone z order by z.id desc limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))

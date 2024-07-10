@@ -80,13 +80,13 @@ public class ZoneAPIServiceTest {
         long maxId = 2500L;
         long stepId = 100L;
         int limit = 100;
-        when(zoneRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(zoneRepository.findAllSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
+        when(zoneRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size < limit));
 
         List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, zones.size(), zones.size());
-        verify(zoneRepository).findAllSortedBetween(minId, maxId, limit, Zone.class);
+        verify(zoneRepository).findSortedBetween(minId, maxId, limit, Zone.class);
     }
 
     @Test
@@ -95,24 +95,24 @@ public class ZoneAPIServiceTest {
         long maxId = 3001L;
         long stepId = 10L;
         int limit = 100;
-        when(zoneRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(zoneRepository.findAllSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
+        when(zoneRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size == limit));
 
         List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, limit, limit);
-        verify(zoneRepository).findAllSortedBetween(minId, maxId, limit, Zone.class);
+        verify(zoneRepository).findSortedBetween(minId, maxId, limit, Zone.class);
     }
 
     @Test
     public void givenZonesOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
         long minId = 1500L;
         long maxId = 2500L;
-        when(zoneRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(zoneRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
 
         List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
         assertTrue(zones.isEmpty());
-        verify(zoneRepository).findAllSortedBetween(minId, maxId, 100, Zone.class);
+        verify(zoneRepository).findSortedBetween(minId, maxId, 100, Zone.class);
     }
 
     @Test

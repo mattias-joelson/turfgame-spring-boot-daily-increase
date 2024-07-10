@@ -71,7 +71,7 @@ public class UserRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenFewUsersInRange_whenFindAllSortedBetween_thenAllReturned() {
+    public void givenFewUsersInRange_whenFindSortedBetween_thenAllReturned() {
         long minId = 1500L;
         long maxId = 2500L;
         long stepId = 100L;
@@ -79,12 +79,12 @@ public class UserRepositoryIntegrationTest {
         int limit = 100;
         assertTrue(created < limit);
 
-        List<User> users = userRepository.findAllSortedBetween(minId, maxId, limit, User.class);
+        List<User> users = userRepository.findSortedBetween(minId, maxId, limit, User.class);
         verifyUserList(users, minId, maxId, stepId, created, created);
     }
 
     @Test
-    public void givenMoreUsersInRangeThanLimit_whenFindAllSortedBetween_thenLimitReturned() {
+    public void givenMoreUsersInRangeThanLimit_whenFindSortedBetween_thenLimitReturned() {
         long minId = 1001L;
         long maxId = 3001L;
         long stepId = 10L;
@@ -92,16 +92,16 @@ public class UserRepositoryIntegrationTest {
         int limit = 100;
         assertTrue(created > limit);
 
-        List<User> users = userRepository.findAllSortedBetween(minId, maxId, limit, User.class);
+        List<User> users = userRepository.findSortedBetween(minId, maxId, limit, User.class);
         verifyUserList(users, minId, maxId, stepId, limit, limit);
     }
 
     @Test
-    public void givenUsersOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
+    public void givenUsersOutsideOfRange_whenFindSortedBetween_thenNoneReturned() {
         int created = persistUsers(3001L, 4001L, 10);
         assertTrue(created > 0);
 
-        List<User> users = userRepository.findAllSortedBetween(1500L, 2500L, 100, User.class);
+        List<User> users = userRepository.findSortedBetween(1500L, 2500L, 100, User.class);
         assertTrue(users.isEmpty());
     }
 

@@ -82,13 +82,13 @@ public class UserAPIServiceTest {
         long maxId = 2500L;
         long stepId = 100L;
         int limit = 100;
-        when(userRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(userRepository.findAllSortedBetween(minId, maxId, limit, User.class)).thenReturn(
+        when(userRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(userRepository.findSortedBetween(minId, maxId, limit, User.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size < limit));
 
         List<User> users = userAPIService.getSortedUsersBetween(minId, maxId, User.class);
         verifyUserList(users, minId, maxId, stepId, users.size(), users.size());
-        verify(userRepository).findAllSortedBetween(minId, maxId, limit, User.class);
+        verify(userRepository).findSortedBetween(minId, maxId, limit, User.class);
     }
 
     @Test
@@ -97,24 +97,24 @@ public class UserAPIServiceTest {
         long maxId = 3001L;
         long stepId = 10L;
         int limit = 100;
-        when(userRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
-        when(userRepository.findAllSortedBetween(minId, maxId, limit, User.class)).thenReturn(
+        when(userRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(userRepository.findSortedBetween(minId, maxId, limit, User.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size == limit));
 
         List<User> users = userAPIService.getSortedUsersBetween(minId, maxId, User.class);
         verifyUserList(users, minId, maxId, stepId, limit, limit);
-        verify(userRepository).findAllSortedBetween(minId, maxId, limit, User.class);
+        verify(userRepository).findSortedBetween(minId, maxId, limit, User.class);
     }
 
     @Test
     public void givenUsersOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
         long minId = 1500L;
         long maxId = 2500L;
-        when(userRepository.findAllSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(userRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
 
         List<User> users = userAPIService.getSortedUsersBetween(minId, maxId, User.class);
         assertTrue(users.isEmpty());
-        verify(userRepository).findAllSortedBetween(minId, maxId, 100, User.class);
+        verify(userRepository).findSortedBetween(minId, maxId, 100, User.class);
     }
 
     @Test

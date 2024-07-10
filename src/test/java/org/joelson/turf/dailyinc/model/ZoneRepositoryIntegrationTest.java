@@ -71,7 +71,7 @@ public class ZoneRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenFewZonesInRange_whenFindAllSortedBetween_thenAllReturned() {
+    public void givenFewZonesInRange_whenFindSortedBetween_thenAllReturned() {
         long minId = 1500L;
         long maxId = 2500L;
         long stepId = 100L;
@@ -79,12 +79,12 @@ public class ZoneRepositoryIntegrationTest {
         int limit = 100;
         assertTrue(created < limit);
 
-        List<Zone> zones = zoneRepository.findAllSortedBetween(minId, maxId, limit, Zone.class);
+        List<Zone> zones = zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, created, created);
     }
 
     @Test
-    public void givenMoreZonesInRangeThanLimit_whenFindAllSortedBetween_thenLimitReturned() {
+    public void givenMoreZonesInRangeThanLimit_whenFindSortedBetween_thenLimitReturned() {
         long minId = 1001L;
         long maxId = 3001L;
         long stepId = 10L;
@@ -92,16 +92,16 @@ public class ZoneRepositoryIntegrationTest {
         int limit = 100;
         assertTrue(created > limit);
 
-        List<Zone> zones = zoneRepository.findAllSortedBetween(minId, maxId, limit, Zone.class);
+        List<Zone> zones = zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, limit, limit);
     }
 
     @Test
-    public void givenZonesOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
+    public void givenZonesOutsideOfRange_whenFindSortedBetween_thenNoneReturned() {
         int created = persistZones(3001L, 4001L, 10);
         assertTrue(created > 0);
 
-        List<Zone> zones = zoneRepository.findAllSortedBetween(1500L, 2500L, 100, Zone.class);
+        List<Zone> zones = zoneRepository.findSortedBetween(1500L, 2500L, 100, Zone.class);
         assertTrue(zones.isEmpty());
     }
 

@@ -13,7 +13,7 @@ public class ZoneAPIService {
     ZoneRepository zoneRepository;
 
     public <T> List<T> getSortedZonesBetween(Long minId, Long maxId, Class<T> type) {
-        return zoneRepository.findAllSortedBetween(minId, maxId, 100, type);
+        return zoneRepository.findSortedBetween(minId, maxId, 100, type);
     }
 
     public <T> List<T> getLastSortedZones(int count, Class<T> type) {
