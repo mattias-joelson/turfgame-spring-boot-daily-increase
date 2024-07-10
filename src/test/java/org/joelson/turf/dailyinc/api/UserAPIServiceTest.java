@@ -77,7 +77,7 @@ public class UserAPIServiceTest {
     }
 
     @Test
-    public void givenFewUsersInRange_whenFindAllSortedBetween_thenAllReturned() {
+    public void givenFewUsersInRange_whenGetSortedBetween_thenAllReturned() {
         long minId = 1500L;
         long maxId = 2500L;
         long stepId = 100L;
@@ -86,13 +86,13 @@ public class UserAPIServiceTest {
         when(userRepository.findSortedBetween(minId, maxId, limit, User.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size < limit));
 
-        List<User> users = userAPIService.getSortedUsersBetween(minId, maxId, User.class);
+        List<User> users = userAPIService.getSortedBetween(minId, maxId, User.class);
         verifyUserList(users, minId, maxId, stepId, users.size(), users.size());
         verify(userRepository).findSortedBetween(minId, maxId, limit, User.class);
     }
 
     @Test
-    public void givenMoreUsersInRangeThanLimit_whenFindAllSortedBetween_thenLimitReturned() {
+    public void givenMoreUsersInRangeThanLimit_whenGetSortedBetween_thenLimitReturned() {
         long minId = 1001L;
         long maxId = 3001L;
         long stepId = 10L;
@@ -101,24 +101,24 @@ public class UserAPIServiceTest {
         when(userRepository.findSortedBetween(minId, maxId, limit, User.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size == limit));
 
-        List<User> users = userAPIService.getSortedUsersBetween(minId, maxId, User.class);
+        List<User> users = userAPIService.getSortedBetween(minId, maxId, User.class);
         verifyUserList(users, minId, maxId, stepId, limit, limit);
         verify(userRepository).findSortedBetween(minId, maxId, limit, User.class);
     }
 
     @Test
-    public void givenUsersOutsideOfRange_whenFindAllSortedBetween_thenNoneReturned() {
+    public void givenUsersOutsideOfRange_whenGetSortedBetween_thenNoneReturned() {
         long minId = 1500L;
         long maxId = 2500L;
         when(userRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
 
-        List<User> users = userAPIService.getSortedUsersBetween(minId, maxId, User.class);
+        List<User> users = userAPIService.getSortedBetween(minId, maxId, User.class);
         assertTrue(users.isEmpty());
         verify(userRepository).findSortedBetween(minId, maxId, 100, User.class);
     }
 
     @Test
-    public void givenFewUsers_whenFindLastSortedReversed_thenAllReturned() {
+    public void givenFewUsers_whenGetLastSorted_thenAllReturned() {
         long minId = 1001L;
         long maxId = 2001L;
         long stepId = 100L;
@@ -128,13 +128,13 @@ public class UserAPIServiceTest {
         when(userRepository.findLastSortedReversed(count, User.class)).thenReturn(
                 createReversedList(maxId, minId, stepId, limit, size -> size < limit));
 
-        List<User> users = userAPIService.getLastSortedUsers(count, User.class);
+        List<User> users = userAPIService.getLastSorted(count, User.class);
         verifyUserList(users, minId, maxId, stepId, users.size(), count);
         verify(userRepository).findLastSortedReversed(count, User.class);
     }
 
     @Test
-    public void givenManyUsers_whenFindLastSortedReversed_thenLimitReturned() {
+    public void givenManyUsers_whenGetLastSorted_thenLimitReturned() {
         long maxId = 2001L;
         long stepId = 10L;
         int limit = 100;
@@ -143,16 +143,16 @@ public class UserAPIServiceTest {
         when(userRepository.findLastSortedReversed(limit, User.class)).thenReturn(
                 createReversedList(maxId, 1001L, stepId, limit, size -> size == limit));
 
-        List<User> users = userAPIService.getLastSortedUsers(count, User.class);
+        List<User> users = userAPIService.getLastSorted(count, User.class);
         verifyUserList(users, users.getFirst().getId(), maxId, stepId, limit, limit);
         verify(userRepository).findLastSortedReversed(limit, User.class);
     }
 
     @Test
-    public void givenNoUsers_whenFindLastSortedReversed_thenNoneReturned() {
+    public void givenNoUsers_whenGetLastSorted_thenNoneReturned() {
         when(userRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
 
-        List<User> users = userAPIService.getLastSortedUsers(300, User.class);
+        List<User> users = userAPIService.getLastSorted(300, User.class);
         assertTrue(users.isEmpty());
         verify(userRepository).findLastSortedReversed(100, User.class);
     }

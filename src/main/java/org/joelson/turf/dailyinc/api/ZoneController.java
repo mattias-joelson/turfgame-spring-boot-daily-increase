@@ -34,10 +34,10 @@ public class ZoneController {
         logger.trace("getZones()");
         if (range == null) {
             return RangeRequestUtil.handleIdRequest(ZONES_RANGE_UNIT, ZoneIdAndName.class,
-                    zoneAPIService::getSortedZonesBetween, ZoneIdAndName::getId);
+                    zoneAPIService::getSortedBetween, ZoneIdAndName::getId);
         } else {
             return RangeRequestUtil.handleIdRequest(ZONES_RANGE_UNIT, range, ZoneIdAndName.class,
-                    zoneAPIService::getSortedZonesBetween, zoneAPIService::getLastSortedZones, ZoneIdAndName::getId);
+                    zoneAPIService::getSortedBetween, zoneAPIService::getLastSorted, ZoneIdAndName::getId);
         }
     }
 
@@ -62,13 +62,11 @@ public class ZoneController {
         }
         if (range == null) {
             return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, UserIdAndNameVisit.class,
-                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByZone(zone.getId(), firstRow,
-                            lastRow, type));
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByZone(zone.getId(), firstRow, lastRow, type));
         } else {
             return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, UserIdAndNameVisit.class,
-                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByZone(zone.getId(), firstRow,
-                            lastRow, type),
-                    (rows, type) -> visitAPIService.getLastSortedVisitsByZone(zone.getId(), rows, type));
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedBetweenByZone(zone.getId(), firstRow, lastRow, type),
+                    (rows, type) -> visitAPIService.getLastSortedByZone(zone.getId(), rows, type));
         }
     }
 

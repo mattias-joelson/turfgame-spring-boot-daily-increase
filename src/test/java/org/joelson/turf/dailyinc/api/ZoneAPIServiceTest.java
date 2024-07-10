@@ -84,7 +84,7 @@ public class ZoneAPIServiceTest {
         when(zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size < limit));
 
-        List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
+        List<Zone> zones = zoneAPIService.getSortedBetween(minId, maxId, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, zones.size(), zones.size());
         verify(zoneRepository).findSortedBetween(minId, maxId, limit, Zone.class);
     }
@@ -99,7 +99,7 @@ public class ZoneAPIServiceTest {
         when(zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class)).thenReturn(
                 createList(minId, maxId, stepId, limit, size -> size == limit));
 
-        List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
+        List<Zone> zones = zoneAPIService.getSortedBetween(minId, maxId, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, limit, limit);
         verify(zoneRepository).findSortedBetween(minId, maxId, limit, Zone.class);
     }
@@ -110,7 +110,7 @@ public class ZoneAPIServiceTest {
         long maxId = 2500L;
         when(zoneRepository.findSortedBetween(anyLong(), anyLong(), anyInt(), any())).thenReturn(List.of());
 
-        List<Zone> zones = zoneAPIService.getSortedZonesBetween(minId, maxId, Zone.class);
+        List<Zone> zones = zoneAPIService.getSortedBetween(minId, maxId, Zone.class);
         assertTrue(zones.isEmpty());
         verify(zoneRepository).findSortedBetween(minId, maxId, 100, Zone.class);
     }
@@ -126,7 +126,7 @@ public class ZoneAPIServiceTest {
         when(zoneRepository.findLastSortedReversed(count, Zone.class)).thenReturn(
                 createReversedList(maxId, minId, stepId, limit, size -> size < limit));
 
-        List<Zone> zones = zoneAPIService.getLastSortedZones(count, Zone.class);
+        List<Zone> zones = zoneAPIService.getLastSorted(count, Zone.class);
         verifyZoneList(zones, minId, maxId, stepId, zones.size(), count);
         verify(zoneRepository).findLastSortedReversed(count, Zone.class);
     }
@@ -141,7 +141,7 @@ public class ZoneAPIServiceTest {
         when(zoneRepository.findLastSortedReversed(limit, Zone.class)).thenReturn(
                 createReversedList(maxId, 1001L, stepId, limit, size -> size == limit));
 
-        List<Zone> zones = zoneAPIService.getLastSortedZones(count, Zone.class);
+        List<Zone> zones = zoneAPIService.getLastSorted(count, Zone.class);
         verifyZoneList(zones, zones.getFirst().getId(), maxId, stepId, limit, limit);
         verify(zoneRepository).findLastSortedReversed(limit, Zone.class);
     }
@@ -150,7 +150,7 @@ public class ZoneAPIServiceTest {
     public void givenNoZones_whenFindLastSortedReversed_thenNoneReturned() {
         when(zoneRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
 
-        List<Zone> zones = zoneAPIService.getLastSortedZones(300, Zone.class);
+        List<Zone> zones = zoneAPIService.getLastSorted(300, Zone.class);
         assertTrue(zones.isEmpty());
         verify(zoneRepository).findLastSortedReversed(100, Zone.class);
     }

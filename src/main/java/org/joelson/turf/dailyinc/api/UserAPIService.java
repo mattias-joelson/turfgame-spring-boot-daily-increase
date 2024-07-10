@@ -12,12 +12,12 @@ public class UserAPIService {
     @Autowired
     UserRepository userRepository;
 
-    public <T> List<T> getSortedUsersBetween(Long minId, Long maxId, Class<T> type) {
+    public <T> List<T> getSortedBetween(Long minId, Long maxId, Class<T> type) {
         return userRepository.findSortedBetween(minId, maxId, 100, type);
     }
 
-    public <T> List<T> getLastSortedUsers(int count, Class<T> type) {
-        return userRepository.findLastSortedReversed(Math.min(count, 100), type).reversed();
+    public <T> List<T> getLastSorted(int last, Class<T> type) {
+        return userRepository.findLastSortedReversed(Math.min(last, 100), type).reversed();
     }
 
     public <T> T getUserById(Long id, Class<T> type) {

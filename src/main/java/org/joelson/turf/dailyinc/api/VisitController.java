@@ -29,10 +29,10 @@ public class VisitController {
         logger.trace("getVisits()");
         if (range == null) {
             return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, ZoneIdAndNameUserIdAndNameVisit.class,
-                    visitAPIService::getSortedVisitsBetween);
+                    visitAPIService::getSortedBetween);
         } else {
             return RangeRequestUtil.handleRequest(VISITS_RANGE_UNIT, range, ZoneIdAndNameUserIdAndNameVisit.class,
-                    visitAPIService::getSortedVisitsBetween, visitAPIService::getLastSortedVisits);
+                    visitAPIService::getSortedBetween, visitAPIService::getLastSorted);
         }
     }
 }

@@ -82,38 +82,38 @@ public class UserControllerTest {
 
     @Test
     public void givenNoRangeNorUsers_whenGetUsers_thenNoneAreReturned_statusOK() throws Exception {
-        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class)).thenReturn(List.of());
+        when(userAPIService.getSortedBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class)).thenReturn(List.of());
 
         verifyOKListContentResponse(mvc, API_USERS, USERS_RANGE_UNIT, 0, USER_ID_AND_NAME_JSON_AS_LIST,
                 USER_ID_AND_NAME_INTEGER_GETTER);
 
-        verify(userAPIService).getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
+        verify(userAPIService).getSortedBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
     }
 
     @Test
     public void givenNoRange_whenGetUsers_thenSomeAreReturned_statusOK() throws Exception {
         final int SIZE = 100;
-        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class))
+        when(userAPIService.getSortedBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class))
                 .thenReturn(createUserList(SIZE));
 
         verifyOKListContentResponse(mvc, API_USERS, USERS_RANGE_UNIT, SIZE, USER_ID_AND_NAME_JSON_AS_LIST,
                 USER_ID_AND_NAME_INTEGER_GETTER);
 
-        verify(userAPIService).getSortedUsersBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
+        verify(userAPIService).getSortedBetween(0L, INTEGER_MAX_VALUE, UserIdAndName.class);
     }
 
     @Test
     public void givenRangeAndNoUsers_whenGetUsers_thenNoneReturned_statusRequestRangeNotSatisfiable() throws Exception {
         final long MIN_ID = 100;
         final long MAX_ID = 150;
-        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class)).thenReturn(List.of());
+        when(userAPIService.getSortedBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedBetween(MIN_ID, MAX_ID, UserIdAndName.class)).thenReturn(List.of());
         String range = RangeUtil.getRange(USERS_RANGE_UNIT, (int) MIN_ID, (int) MAX_ID);
         verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, range, USERS_RANGE_UNIT);
 
-        verify(userAPIService).getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class);
+        verify(userAPIService).getSortedBetween(MIN_ID, MAX_ID, UserIdAndName.class);
     }
 
     @Test
@@ -121,37 +121,37 @@ public class UserControllerTest {
         final long MIN_ID = 100;
         final long MAX_ID = 150;
         List<UserIdAndName> USER_LIST = createUserList(MIN_ID, MAX_ID);
-        when(userAPIService.getSortedUsersBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class)).thenReturn(USER_LIST);
+        when(userAPIService.getSortedBetween(anyLong(), anyLong(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getSortedBetween(MIN_ID, MAX_ID, UserIdAndName.class)).thenReturn(USER_LIST);
         String range = RangeUtil.getRange(USERS_RANGE_UNIT, (int) MIN_ID, (int) MAX_ID);
         verifyPartialContentResponse(mvc, API_USERS, range, USERS_RANGE_UNIT, USER_LIST.size(),
                 USER_ID_AND_NAME_JSON_AS_LIST, USER_ID_AND_NAME_INTEGER_GETTER);
 
-        verify(userAPIService).getSortedUsersBetween(MIN_ID, MAX_ID, UserIdAndName.class);
+        verify(userAPIService).getSortedBetween(MIN_ID, MAX_ID, UserIdAndName.class);
     }
 
     @Test
     public void givenSuffixRangeAndNoUsers_whenGetUsers_thenNoneReturned_statusRequestRangeNotSatisfiable() throws Exception {
         final int LAST = 50;
-        when(userAPIService.getLastSortedUsers(anyInt(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getLastSortedUsers(LAST, UserIdAndName.class)).thenReturn(List.of());
+        when(userAPIService.getLastSorted(anyInt(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getLastSorted(LAST, UserIdAndName.class)).thenReturn(List.of());
         String range = RangeUtil.getRangeSuffix(USERS_RANGE_UNIT, LAST);
         verifyStatusRangeNotSatisfiableResponse(mvc, API_USERS, range, USERS_RANGE_UNIT);
 
-        verify(userAPIService).getLastSortedUsers(LAST, UserIdAndName.class);
+        verify(userAPIService).getLastSorted(LAST, UserIdAndName.class);
     }
 
     @Test
     public void givenSuffixRangeAndUsers_whenGetUsers_thenNoneReturned_statusPartialContentResponse() throws Exception {
         final int LAST = 50;
         List<UserIdAndName> USER_LIST = createUserList(LAST / 3);
-        when(userAPIService.getLastSortedUsers(anyInt(), any())).thenReturn(INVALID_USER_LIST);
-        when(userAPIService.getLastSortedUsers(LAST, UserIdAndName.class)).thenReturn(USER_LIST);
+        when(userAPIService.getLastSorted(anyInt(), any())).thenReturn(INVALID_USER_LIST);
+        when(userAPIService.getLastSorted(LAST, UserIdAndName.class)).thenReturn(USER_LIST);
         String range = RangeUtil.getRangeSuffix(USERS_RANGE_UNIT, LAST);
         verifyPartialContentResponse(mvc, API_USERS, range, USERS_RANGE_UNIT, USER_LIST.size(),
                 USER_ID_AND_NAME_JSON_AS_LIST, USER_ID_AND_NAME_INTEGER_GETTER);
 
-        verify(userAPIService).getLastSortedUsers(LAST, UserIdAndName.class);
+        verify(userAPIService).getLastSorted(LAST, UserIdAndName.class);
     }
 
     @Test
