@@ -54,7 +54,7 @@ public class VisitAPIServiceTest {
     private static final Visit ASSIST_ZONE_TWO_BY_USER_TWO_LATER = new Visit(ZONE_TWO, USER_TWO, TIME_LATER, VisitType.ASSIST);
     private static final Visit TAKE_ZONE_ONE_BY_USER_THREE_LATER = new Visit(ZONE_ONE, USER_THREE, TIME_LATER, VisitType.TAKE);
 
-    private static final List<Visit> SORTED_VISITS_LIST = List.of(TAKE_ZONE_ONE_BY_USER_ONE,
+    private static final List<Visit> SORTED_VISITS = List.of(TAKE_ZONE_ONE_BY_USER_ONE,
             ASSIST_ZONE_ONE_BY_USER_TWO, REVISIT_ZONE_TWO_BY_USER_THREE, ASSIST_ZONE_TWO_BY_USER_FOUR,
             TAKE_ZONE_ONE_BY_USER_THREE_LATER, TAKE_ZONE_TWO_BY_USER_FOUR_LATER, ASSIST_ZONE_TWO_BY_USER_ONE_LATER,
             ASSIST_ZONE_TWO_BY_USER_TWO_LATER);
@@ -73,20 +73,20 @@ public class VisitAPIServiceTest {
     @Test
     public void givenVisits_whenGetSortedBetween_thenAllReturned() {
         when(visitRepository.findSortedBetween(anyInt(), anyInt(), any())).thenReturn(List.of());
-        when(visitRepository.findSortedBetween(0, SORTED_VISITS_LIST.size(), Visit.class)).thenReturn(SORTED_VISITS_LIST);
+        when(visitRepository.findSortedBetween(0, SORTED_VISITS.size(), Visit.class)).thenReturn(SORTED_VISITS);
 
-        assertEquals(SORTED_VISITS_LIST,
-                visitAPIService.getSortedBetween(0, SORTED_VISITS_LIST.size() - 1, Visit.class));
-        verify(visitRepository).findSortedBetween(0, SORTED_VISITS_LIST.size(), Visit.class);
+        assertEquals(SORTED_VISITS,
+                visitAPIService.getSortedBetween(0, SORTED_VISITS.size() - 1, Visit.class));
+        verify(visitRepository).findSortedBetween(0, SORTED_VISITS.size(), Visit.class);
     }
 
     @Test
     public void givenVisits_whenGetLastSorted_thenAllReturned() {
         when(visitRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
-        when(visitRepository.findLastSortedReversed(SORTED_VISITS_LIST.size(), Visit.class)).thenReturn(SORTED_VISITS_LIST.reversed());
+        when(visitRepository.findLastSortedReversed(SORTED_VISITS.size(), Visit.class)).thenReturn(SORTED_VISITS.reversed());
 
-        assertEquals(SORTED_VISITS_LIST, visitAPIService.getLastSorted(SORTED_VISITS_LIST.size(), Visit.class));
-        verify(visitRepository).findLastSortedReversed(SORTED_VISITS_LIST.size(), Visit.class);
+        assertEquals(SORTED_VISITS, visitAPIService.getLastSorted(SORTED_VISITS.size(), Visit.class));
+        verify(visitRepository).findLastSortedReversed(SORTED_VISITS.size(), Visit.class);
     }
 
     @Test
