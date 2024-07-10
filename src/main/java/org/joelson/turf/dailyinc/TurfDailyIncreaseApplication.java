@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc;
 
-import org.joelson.turf.dailyinc.service.IncrementalFeedImporterService;
+import org.joelson.turf.dailyinc.service.BulkFeedImporterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class TurfDailyIncreaseApplication {
     private static final Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
 
     @Autowired
-    IncrementalFeedImporterService incrementalFeedImporterService;
+    BulkFeedImporterService bulkFeedImporterService;
 
     public static void main(String[] args) {
         SpringApplication.run(TurfDailyIncreaseApplication.class, args);
@@ -31,22 +31,18 @@ public class TurfDailyIncreaseApplication {
     @Bean
     public CommandLineRunner argumentHandler(ApplicationContext ctx) {
         return args -> {
+            // arguments passed through -Dspring-boot.run.arguments="test1 test2"
+            logArray("Program arguments:", "No program arguments.", args);
+            //printContextBeans(ctx);
+
             for (String filename : args) {
                 logger.info(String.format("Importing data from '%s'", filename));
-                incrementalFeedImporterService.importFeed(filename);
+                bulkFeedImporterService.importFeed(filename);
             }
             if (args.length > 0) {
                 logger.info("Done importing data.");
             }
-        };
-    }
-
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-            // arguments passed through -Dspring-boot.run.arguments="test1 test2"
-            logArray("Program arguments:", "No program arguments.", args);
-            //printContextBeans(ctx);
+            bulkFeedImporterService.calculateProgress();
         };
     }
 
