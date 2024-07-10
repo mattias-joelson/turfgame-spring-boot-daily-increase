@@ -13,7 +13,7 @@ public interface VisitRepository extends JpaRepository<Visit, VisitId> {
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findAllSorted(int offset, int limit, Class<T> type);
 
-    @Query("select v from Visit v order by v.time desc, v.zone.id desc, v.type, v.user.id limit :count")
+    @Query("select v from Visit v order by v.time desc, v.zone.id desc, v.type desc, v.user.id desc limit :count")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findAllSortedReversed(int count, Class<T> type);
 

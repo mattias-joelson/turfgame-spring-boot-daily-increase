@@ -29,9 +29,12 @@ public class VisitRepositoryIntegrationTest {
     private static final Visit REVISIT = new Visit(NEXT_ZONE, TAKER, NEXT_TIME, VisitType.REVISIT);
 
     private static final List<Visit> SORTED_VISITS = List.of(TAKE, ASSIST, REVISIT);
+    private static final List<Visit> SORTED_VISITS_REVERSED = SORTED_VISITS.reversed();
     private static final List<Visit> TAKER_SORTED_VISITS = List.of(TAKE, REVISIT);
+    private static final List<Visit> TAKER_SORTED_VISITS_REVERSED = TAKER_SORTED_VISITS.reversed();
     private static final List<Visit> ASSISTER_SORTED_VISITS = List.of(ASSIST);
     private static final List<Visit> ZONE_SORTED_VISITS = List.of(TAKE, ASSIST);
+    private static final List<Visit> ZONE_SORTED_VISITS_REVERSED = ZONE_SORTED_VISITS.reversed();
     private static final List<Visit> NEXT_ZONE_SORTED_VISITS = List.of(REVISIT);
 
     @Autowired
@@ -71,46 +74,76 @@ public class VisitRepositoryIntegrationTest {
         assertThrows(EntityExistsException.class, () -> entityManager.persist(TAKE));
     }
 
-//    @Test
-//    public void givenVisits_whenFindAllSorted_thenAllReturned() {
-//        entityManager.persist(NEXT_ZONE);
-//        entityManager.persist(TAKER);
-//        entityManager.persist(REVISIT);
-//        entityManager.persist(ZONE);
-//        entityManager.persist(ASSISTER);
-//        entityManager.persist(ASSIST);
-//        entityManager.persist(TAKE);
-//
-//        assertEquals(SORTED_VISITS, visitRepository.findAllSorted(Visit.class));
-//    }
+    @Test
+    public void givenVisits_whenFindAllSorted_thenAllReturned() {
+        entityManager.persist(NEXT_ZONE);
+        entityManager.persist(TAKER);
+        entityManager.persist(REVISIT);
+        entityManager.persist(ZONE);
+        entityManager.persist(ASSISTER);
+        entityManager.persist(ASSIST);
+        entityManager.persist(TAKE);
 
-//    @Test
-//    public void givenVisits_whenFindAllSortedByUser_thenListReturned() {
-//        entityManager.persist(NEXT_ZONE);
-//        entityManager.persist(TAKER);
-//        entityManager.persist(REVISIT);
-//        entityManager.persist(ZONE);
-//        entityManager.persist(ASSISTER);
-//        entityManager.persist(ASSIST);
-//        entityManager.persist(TAKE);
-//
-//        assertEquals(TAKER_SORTED_VISITS, visitRepository.findAllSortedByUser(TAKER.getId(), Visit.class));
-//        assertEquals(ASSISTER_SORTED_VISITS, visitRepository.findAllSortedByUser(ASSISTER.getId(), Visit.class));
-//        assertEquals(List.of(), visitRepository.findAllSortedByUser(1003L, Visit.class));
-//    }
+        assertEquals(SORTED_VISITS, visitRepository.findAllSorted(0, SORTED_VISITS.size(), Visit.class));
+        assertEquals(SORTED_VISITS.subList(1, 2), visitRepository.findAllSorted(1, 1, Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSorted(SORTED_VISITS.size(), 100, Visit.class));
 
-//    @Test
-//    public void givenVisits_whenFindAllSortedByZone_thenListReturned() {
-//        entityManager.persist(NEXT_ZONE);
-//        entityManager.persist(TAKER);
-//        entityManager.persist(REVISIT);
-//        entityManager.persist(ZONE);
-//        entityManager.persist(ASSISTER);
-//        entityManager.persist(ASSIST);
-//        entityManager.persist(TAKE);
-//
-//        assertEquals(ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(ZONE.getId(), Visit.class));
-//        assertEquals(NEXT_ZONE_SORTED_VISITS, visitRepository.findAllSortedByZone(NEXT_ZONE.getId(), Visit.class));
-//        assertEquals(List.of(), visitRepository.findAllSortedByZone(3L, Visit.class));
-//    }
+        assertEquals(SORTED_VISITS_REVERSED, visitRepository.findAllSortedReversed(SORTED_VISITS.size(), Visit.class));
+        assertEquals(SORTED_VISITS_REVERSED.subList(0, 2), visitRepository.findAllSortedReversed(2, Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedReversed(0, Visit.class));
+    }
+
+    @Test
+    public void givenVisits_whenFindAllSortedByUser_thenListReturned() {
+        entityManager.persist(NEXT_ZONE);
+        entityManager.persist(TAKER);
+        entityManager.persist(REVISIT);
+        entityManager.persist(ZONE);
+        entityManager.persist(ASSISTER);
+        entityManager.persist(ASSIST);
+        entityManager.persist(TAKE);
+
+        assertEquals(TAKER_SORTED_VISITS,
+                visitRepository.findAllSortedByUser(TAKER.getId(), 0, TAKER_SORTED_VISITS.size(), Visit.class));
+        assertEquals(TAKER_SORTED_VISITS.subList(1, TAKER_SORTED_VISITS.size()),
+                visitRepository.findAllSortedByUser(TAKER.getId(), 1, 100, Visit.class));
+        assertEquals(ASSISTER_SORTED_VISITS,
+                visitRepository.findAllSortedByUser(ASSISTER.getId(), 0, ASSISTER_SORTED_VISITS.size(), Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedByUser(1003L, 0, 100, Visit.class));
+
+        assertEquals(TAKER_SORTED_VISITS_REVERSED,
+                visitRepository.findAllSortedReversedByUser(TAKER.getId(), TAKER_SORTED_VISITS_REVERSED.size(), Visit.class));
+        assertEquals(List.of(),
+                visitRepository.findAllSortedReversedByUser(TAKER.getId(), 0, Visit.class));
+        assertEquals(ASSISTER_SORTED_VISITS,
+                visitRepository.findAllSortedReversedByUser(ASSISTER.getId(), ASSISTER_SORTED_VISITS.size(), Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedReversedByUser(1003L, 100, Visit.class));
+    }
+
+    @Test
+    public void givenVisits_whenFindAllSortedByZone_thenListReturned() {
+        entityManager.persist(NEXT_ZONE);
+        entityManager.persist(TAKER);
+        entityManager.persist(REVISIT);
+        entityManager.persist(ZONE);
+        entityManager.persist(ASSISTER);
+        entityManager.persist(ASSIST);
+        entityManager.persist(TAKE);
+
+        assertEquals(ZONE_SORTED_VISITS,
+                visitRepository.findAllSortedByZone(ZONE.getId(), 0, ZONE_SORTED_VISITS.size(), Visit.class));
+        assertEquals(ZONE_SORTED_VISITS.subList(1, ZONE_SORTED_VISITS.size()),
+                visitRepository.findAllSortedByZone(ZONE.getId(), 1, 100, Visit.class));
+        assertEquals(NEXT_ZONE_SORTED_VISITS,
+                visitRepository.findAllSortedByZone(NEXT_ZONE.getId(), 0, NEXT_ZONE_SORTED_VISITS.size(), Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedByZone(3L, 0, 100, Visit.class));
+
+        assertEquals(ZONE_SORTED_VISITS_REVERSED,
+                visitRepository.findAllSortedReversedByZone(ZONE.getId(), ZONE_SORTED_VISITS_REVERSED.size(), Visit.class));
+        assertEquals(List.of(),
+                visitRepository.findAllSortedReversedByZone(ZONE.getId(), 0, Visit.class));
+        assertEquals(NEXT_ZONE_SORTED_VISITS,
+                visitRepository.findAllSortedReversedByZone(NEXT_ZONE.getId(), NEXT_ZONE_SORTED_VISITS.size(), Visit.class));
+        assertEquals(List.of(), visitRepository.findAllSortedReversedByZone(3L, 100, Visit.class));
+    }
 }
