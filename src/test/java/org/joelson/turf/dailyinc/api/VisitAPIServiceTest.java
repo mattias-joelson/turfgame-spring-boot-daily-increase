@@ -90,7 +90,7 @@ public class VisitAPIServiceTest {
     }
 
     @Test
-    public void givenVisits_whenGetSortedVisitsByUser_thenAllReturned() {
+    public void givenVisits_whenGetSortedVisitsBetweenByUser_thenAllReturned() {
         when(visitRepository.findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(List.of());
         when(visitRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_VISITS.size(), Visit.class))
                 .thenReturn(USER_ONE_SORTED_VISITS);
@@ -102,14 +102,14 @@ public class VisitAPIServiceTest {
                 .thenReturn(USER_FOUR_SORTED_VISITS);
 
         assertEquals(USER_ONE_SORTED_VISITS,
-                visitAPIService.getSortedVisitsByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_VISITS.size() - 1, Visit.class));
+                visitAPIService.getSortedVisitsBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_VISITS.size() - 1, Visit.class));
         assertEquals(USER_TWO_SORTED_VISITS,
-                visitAPIService.getSortedVisitsByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_VISITS.size() - 1, Visit.class));
+                visitAPIService.getSortedVisitsBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_VISITS.size() - 1, Visit.class));
         assertEquals(USER_THREE_SORTED_VISITS,
-                visitAPIService.getSortedVisitsByUser(USER_THREE.getId(), 0, USER_THREE_SORTED_VISITS.size() - 1, Visit.class));
+                visitAPIService.getSortedVisitsBetweenByUser(USER_THREE.getId(), 0, USER_THREE_SORTED_VISITS.size() - 1, Visit.class));
         assertEquals(USER_FOUR_SORTED_VISITS,
-                visitAPIService.getSortedVisitsByUser(USER_FOUR.getId(), 0, USER_FOUR_SORTED_VISITS.size() - 1, Visit.class));
-        assertEquals(List.of(), visitAPIService.getSortedVisitsByUser(1005L, 0, 100, Visit.class));
+                visitAPIService.getSortedVisitsBetweenByUser(USER_FOUR.getId(), 0, USER_FOUR_SORTED_VISITS.size() - 1, Visit.class));
+        assertEquals(List.of(), visitAPIService.getSortedVisitsBetweenByUser(1005L, 0, 100, Visit.class));
         verify(visitRepository, times(5)).findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), eq(Visit.class));
     }
 
@@ -138,7 +138,7 @@ public class VisitAPIServiceTest {
     }
 
     @Test
-    public void givenVisits_whenGetSortedVisitsByZone_thenAllReturned() {
+    public void givenVisits_whenGetSortedVisitsBetweenByZone_thenAllReturned() {
         when(visitRepository.findSortedBetweenByZone(anyLong(), anyInt(), anyInt(), any())).thenReturn(List.of());
         when(visitRepository.findSortedBetweenByZone(ZONE_ONE.getId(), 0, ZONE_ONE_SORTED_VISITS.size(), Visit.class))
                 .thenReturn(ZONE_ONE_SORTED_VISITS);
@@ -146,10 +146,10 @@ public class VisitAPIServiceTest {
                 .thenReturn(ZONE_TWO_SORTED_VISITS);
 
         assertEquals(ZONE_ONE_SORTED_VISITS,
-                visitAPIService.getSortedVisitsByZone(ZONE_ONE.getId(), 0, ZONE_ONE_SORTED_VISITS.size() - 1, Visit.class));
+                visitAPIService.getSortedVisitsBetweenByZone(ZONE_ONE.getId(), 0, ZONE_ONE_SORTED_VISITS.size() - 1, Visit.class));
         assertEquals(ZONE_TWO_SORTED_VISITS,
-                visitAPIService.getSortedVisitsByZone(ZONE_TWO.getId(), 0, ZONE_TWO_SORTED_VISITS.size() - 1, Visit.class));
-        assertEquals(List.of(), visitAPIService.getSortedVisitsByZone(3L, 0, 100, Visit.class));
+                visitAPIService.getSortedVisitsBetweenByZone(ZONE_TWO.getId(), 0, ZONE_TWO_SORTED_VISITS.size() - 1, Visit.class));
+        assertEquals(List.of(), visitAPIService.getSortedVisitsBetweenByZone(3L, 0, 100, Visit.class));
         verify(visitRepository, times(3)).findSortedBetweenByZone(anyLong(), anyInt(), anyInt(), eq(Visit.class));
     }
 

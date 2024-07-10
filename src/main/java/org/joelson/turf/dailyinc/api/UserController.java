@@ -94,12 +94,12 @@ public class UserController {
         }
         if (range == null) {
             return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, ZoneIdAndNameVisit.class,
-                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsByUser(user.getId(), firstRow, lastRow,
-                            type));
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByUser(user.getId(), firstRow,
+                            lastRow, type));
         } else {
             return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, ZoneIdAndNameVisit.class,
-                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsByUser(user.getId(), firstRow, lastRow,
-                            type),
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByUser(user.getId(), firstRow,
+                            lastRow, type),
                     (rows, type) -> visitAPIService.getLastSortedVisitsByUser(user.getId(), rows, type));
         }
     }

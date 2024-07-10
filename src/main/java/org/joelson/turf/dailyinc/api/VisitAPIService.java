@@ -28,7 +28,7 @@ public class VisitAPIService {
         return visitRepository.findLastSortedReversed(Math.min(rows, 100), type).reversed();
     }
 
-    public <T> List<T> getSortedVisitsByUser(Long userId, int firstRow, int lastRow, Class<T> type) {
+    public <T> List<T> getSortedVisitsBetweenByUser(Long userId, int firstRow, int lastRow, Class<T> type) {
         return visitRepository.findSortedBetweenByUser(userId, firstRow, getNoRows(firstRow, lastRow), type);
     }
 
@@ -36,7 +36,7 @@ public class VisitAPIService {
         return visitRepository.findLastSortedReversedByUser(userId, Math.min(rows, 100), type).reversed();
     }
 
-    public <T> List<T> getSortedVisitsByZone(Long zoneId, int firstRow, int lastRow, Class<T> type) {
+    public <T> List<T> getSortedVisitsBetweenByZone(Long zoneId, int firstRow, int lastRow, Class<T> type) {
         return visitRepository.findSortedBetweenByZone(zoneId, firstRow, getNoRows(firstRow, lastRow), type);
     }
 

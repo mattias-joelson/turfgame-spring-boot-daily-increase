@@ -62,12 +62,12 @@ public class ZoneController {
         }
         if (range == null) {
             return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, UserIdAndNameVisit.class,
-                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsByZone(zone.getId(), firstRow, lastRow,
-                            type));
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByZone(zone.getId(), firstRow,
+                            lastRow, type));
         } else {
             return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, UserIdAndNameVisit.class,
-                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsByZone(zone.getId(), firstRow, lastRow,
-                            type),
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByZone(zone.getId(), firstRow,
+                            lastRow, type),
                     (rows, type) -> visitAPIService.getLastSortedVisitsByZone(zone.getId(), rows, type));
         }
     }
