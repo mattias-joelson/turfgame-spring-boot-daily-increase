@@ -19,8 +19,8 @@ public class UserProgressTest {
     private static final int PREVIOUS_DAY_COMPLETED = 5;
     private static final int DAY_COMPLETED = 1;
 
-    private static final UserProgressTypeProgress USER_TYPE_PROGRESS
-            = new UserProgressTypeProgress(PREVIOUS_DAY_COMPLETED, DAY_COMPLETED, TIME);
+    private static final DailyProgress USER_TYPE_PROGRESS = new DailyProgress(PREVIOUS_DAY_COMPLETED, DAY_COMPLETED,
+            TIME);
 
     @Test
     public void testUser() {
@@ -83,21 +83,20 @@ public class UserProgressTest {
                 () -> new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
                         USER_TYPE_PROGRESS));
 
-        UserProgressTypeProgress userProgressTypeProgress = new UserProgressTypeProgress(PREVIOUS_DAY_COMPLETED + 3,
-                DAY_COMPLETED, TIME);
-        assertNotEquals(USER_TYPE_PROGRESS, userProgressTypeProgress);
-        UserProgress userProgress = new UserProgress(USER, DATE, VISITS, userProgressTypeProgress, USER_TYPE_PROGRESS,
+        DailyProgress dailyProgress = new DailyProgress(PREVIOUS_DAY_COMPLETED + 3, DAY_COMPLETED, TIME);
+        assertNotEquals(USER_TYPE_PROGRESS, dailyProgress);
+        UserProgress userProgress = new UserProgress(USER, DATE, VISITS, dailyProgress, USER_TYPE_PROGRESS,
                 USER_TYPE_PROGRESS, USER_TYPE_PROGRESS);
-        assertEquals(userProgressTypeProgress, userProgress.getIncrease());
-        userProgress = new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, userProgressTypeProgress, USER_TYPE_PROGRESS,
+        assertEquals(dailyProgress, userProgress.getIncrease());
+        userProgress = new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, dailyProgress, USER_TYPE_PROGRESS,
                 USER_TYPE_PROGRESS);
-        assertEquals(userProgressTypeProgress, userProgress.getAdd());
-        userProgress = new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, userProgressTypeProgress,
+        assertEquals(dailyProgress, userProgress.getAdd());
+        userProgress = new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, dailyProgress,
                 USER_TYPE_PROGRESS);
-        assertEquals(userProgressTypeProgress, userProgress.getFibonacci());
+        assertEquals(dailyProgress, userProgress.getFibonacci());
         userProgress = new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
-                userProgressTypeProgress);
-        assertEquals(userProgressTypeProgress, userProgress.getPowerOfTwo());
+                dailyProgress);
+        assertEquals(dailyProgress, userProgress.getPowerOfTwo());
     }
 
     @Test
@@ -127,21 +126,20 @@ public class UserProgressTest {
                         USER_TYPE_PROGRESS));
 
         Integer previousDayCompleted = PREVIOUS_DAY_COMPLETED + 3;
-        UserProgressTypeProgress userProgressTypeProgress = new UserProgressTypeProgress(PREVIOUS_DAY_COMPLETED + 3,
-                DAY_COMPLETED, TIME);
+        DailyProgress dailyProgress = new DailyProgress(PREVIOUS_DAY_COMPLETED + 3, DAY_COMPLETED, TIME);
         assertNotEquals(USER_TYPE_PROGRESS, previousDayCompleted);
         assertNotEquals(userProgress,
-                new UserProgress(USER, DATE, VISITS, userProgressTypeProgress, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
+                new UserProgress(USER, DATE, VISITS, dailyProgress, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
                         USER_TYPE_PROGRESS));
         assertNotEquals(userProgress,
-                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, userProgressTypeProgress, USER_TYPE_PROGRESS,
+                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, dailyProgress, USER_TYPE_PROGRESS,
                         USER_TYPE_PROGRESS));
         assertNotEquals(userProgress,
-                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, userProgressTypeProgress,
+                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, dailyProgress,
                         USER_TYPE_PROGRESS));
         assertNotEquals(userProgress,
                 new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
-                        userProgressTypeProgress));
+                        dailyProgress));
     }
 
     @Test
@@ -170,20 +168,19 @@ public class UserProgressTest {
                         USER_TYPE_PROGRESS).hashCode());
 
         Integer previousDayCompleted = PREVIOUS_DAY_COMPLETED + 3;
-        UserProgressTypeProgress userProgressTypeProgress = new UserProgressTypeProgress(PREVIOUS_DAY_COMPLETED + 3,
-                DAY_COMPLETED, TIME);
+        DailyProgress dailyProgress = new DailyProgress(PREVIOUS_DAY_COMPLETED + 3, DAY_COMPLETED, TIME);
         assertNotEquals(USER_TYPE_PROGRESS, previousDayCompleted);
         assertEquals(userProgress.hashCode(),
-                new UserProgress(USER, DATE, VISITS, userProgressTypeProgress, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
+                new UserProgress(USER, DATE, VISITS, dailyProgress, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
                         USER_TYPE_PROGRESS).hashCode());
         assertEquals(userProgress.hashCode(),
-                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, userProgressTypeProgress, USER_TYPE_PROGRESS,
+                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, dailyProgress, USER_TYPE_PROGRESS,
                         USER_TYPE_PROGRESS).hashCode());
         assertEquals(userProgress.hashCode(),
-                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, userProgressTypeProgress,
+                new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, dailyProgress,
                         USER_TYPE_PROGRESS).hashCode());
         assertEquals(userProgress.hashCode(),
                 new UserProgress(USER, DATE, VISITS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS, USER_TYPE_PROGRESS,
-                        userProgressTypeProgress).hashCode());
+                        dailyProgress).hashCode());
     }
 }

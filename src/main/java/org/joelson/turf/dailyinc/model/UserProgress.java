@@ -47,36 +47,36 @@ public class UserProgress {
             column = @Column(name = "inc_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "inc_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "inc_time", nullable = false)) })
-    private UserProgressTypeProgress increase;
+    private DailyProgress increase;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "add_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "add_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "add_time", nullable = false)) })
-    private UserProgressTypeProgress add;
+    private DailyProgress add;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "fib_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "fib_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "fib_time", nullable = false)) })
-    private UserProgressTypeProgress fibonacci;
+    private DailyProgress fibonacci;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "previous",
             column = @Column(name = "pow_prev", updatable = false, nullable = false)),
             @AttributeOverride(name = "completed", column = @Column(name = "pow_comp", nullable = false)),
             @AttributeOverride(name = "time", column = @Column(name = "pow_time", nullable = false)) })
-    private UserProgressTypeProgress powerOfTwo;
+    private DailyProgress powerOfTwo;
 
 
     protected UserProgress() {
     }
 
     public UserProgress(
-            User user, Instant date, Integer visits, UserProgressTypeProgress increase, UserProgressTypeProgress add,
-            UserProgressTypeProgress fibonacci, UserProgressTypeProgress powerOfTwo) {
+            User user, Instant date, Integer visits, DailyProgress increase, DailyProgress add, DailyProgress fibonacci,
+            DailyProgress powerOfTwo) {
         this.user = Objects.requireNonNull(user);
         this.date = ModelConstraintsUtil.isTruncatedToDays(date);
         setVisits(visits);
@@ -102,19 +102,19 @@ public class UserProgress {
         this.visits = ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isAboveZero(visits), this.visits);
     }
 
-    public UserProgressTypeProgress getIncrease() {
+    public DailyProgress getIncrease() {
         return increase;
     }
 
-    public UserProgressTypeProgress getAdd() {
+    public DailyProgress getAdd() {
         return add;
     }
 
-    public UserProgressTypeProgress getFibonacci() {
+    public DailyProgress getFibonacci() {
         return fibonacci;
     }
 
-    public UserProgressTypeProgress getPowerOfTwo() {
+    public DailyProgress getPowerOfTwo() {
         return powerOfTwo;
     }
 

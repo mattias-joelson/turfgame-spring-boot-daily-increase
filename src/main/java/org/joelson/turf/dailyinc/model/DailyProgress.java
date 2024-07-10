@@ -6,16 +6,16 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Embeddable
-public class UserProgressTypeProgress {
+public class DailyProgress {
 
     private Integer previous;
     private Integer completed;
     private Instant time;
 
-    protected UserProgressTypeProgress() {
+    protected DailyProgress() {
     }
 
-    public UserProgressTypeProgress(
+    public DailyProgress(
             Integer previous, Integer completed, Instant time) {
         this.previous = ModelConstraintsUtil.isEqualOrAboveZero(previous);
         setCompleted(completed);
@@ -49,7 +49,7 @@ public class UserProgressTypeProgress {
         if (this == o) {
             return true;
         }
-        if (o instanceof UserProgressTypeProgress that) {
+        if (o instanceof DailyProgress that) {
             return Objects.equals(previous, that.previous) && Objects.equals(completed, that.completed)
                     && Objects.equals(time, that.time);
         }
@@ -63,7 +63,7 @@ public class UserProgressTypeProgress {
 
     @Override
     public String toString() {
-        return String.format("UserProgressTypeProgress[previous=%d, completed=%d, time=%s]", previous, completed, time);
+        return String.format("DailyProgress[previous=%d, completed=%d, time=%s]", previous, completed, time);
     }
 
     public String toInnerString(String type) {

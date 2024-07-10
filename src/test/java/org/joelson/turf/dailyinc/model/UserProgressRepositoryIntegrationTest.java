@@ -25,19 +25,19 @@ public class UserProgressRepositoryIntegrationTest {
 
     private static final User USER_ONE = new User(1001L, "UserOne", NEXT_TIME);
     private static final UserProgress USER_ONE_PROGRESS = new UserProgress(USER_ONE, DATE, 1,
-            new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME),
-            new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME));
+            new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME),
+            new DailyProgress(0, 1, TIME));
     private static final UserProgress USER_ONE_NEXT_PROGRESS = new UserProgress(USER_ONE, NEXT_DATE, 3,
-            new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 2, NEXT_TIME),
-            new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 2, NEXT_TIME));
+            new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME),
+            new DailyProgress(1, 2, NEXT_TIME));
 
     private static final User USER_TWO = new User(1002L, "UserTwo", NEXT_TIME);
     private static final UserProgress USER_TWO_PROGRESS = new UserProgress(USER_TWO, DATE, 10,
-            new UserProgressTypeProgress(10, 10, TIME), new UserProgressTypeProgress(4, 4, TIME),
-            new UserProgressTypeProgress(6, 6, TIME), new UserProgressTypeProgress(4, 4, TIME));
+            new DailyProgress(10, 10, TIME), new DailyProgress(4, 4, TIME), new DailyProgress(6, 6, TIME),
+            new DailyProgress(4, 4, TIME));
     private static final UserProgress USER_TWO_NEXT_PROGRESS = new UserProgress(USER_TWO, NEXT_DATE, 13,
-            new UserProgressTypeProgress(10, 11, NEXT_TIME), new UserProgressTypeProgress(4, 4, NEXT_TIME),
-            new UserProgressTypeProgress(6, 7, NEXT_TIME), new UserProgressTypeProgress(4, 4, NEXT_TIME));
+            new DailyProgress(10, 11, NEXT_TIME), new DailyProgress(4, 4, NEXT_TIME),
+            new DailyProgress(6, 7, NEXT_TIME), new DailyProgress(4, 4, NEXT_TIME));
 
     private static final List<UserProgress> SORTED_USER_PROGRESS = List.of(USER_ONE_PROGRESS, USER_ONE_NEXT_PROGRESS,
             USER_TWO_PROGRESS, USER_TWO_NEXT_PROGRESS);
@@ -93,9 +93,8 @@ public class UserProgressRepositoryIntegrationTest {
 
     @Test
     public void givenUserProgress_whenUpdate_thenUpdated() {
-        UserProgress userProgress = new UserProgress(USER_TWO, DATE, 10, new UserProgressTypeProgress(10, 10, TIME),
-                new UserProgressTypeProgress(4, 4, TIME), new UserProgressTypeProgress(6, 6, TIME),
-                new UserProgressTypeProgress(4, 4, TIME));
+        UserProgress userProgress = new UserProgress(USER_TWO, DATE, 10, new DailyProgress(10, 10, TIME),
+                new DailyProgress(4, 4, TIME), new DailyProgress(6, 6, TIME), new DailyProgress(4, 4, TIME));
         entityManager.persist(userProgress);
 
         userProgress.getIncrease().setCompleted(userProgress.getIncrease().getCompleted() + 1);

@@ -4,7 +4,7 @@ import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
 import org.joelson.turf.dailyinc.model.ProgressId;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
-import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
+import org.joelson.turf.dailyinc.model.DailyProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,35 +47,34 @@ public class UserProgressServiceTest {
 
     private static final ProgressId PROGRESS_ID = new ProgressId(USER.getId(), DATE);
 
-    private static final UserProgress USER_PROGRESS = new UserProgress(USER, DATE, 1,
-            new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME),
-            new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME));
+    private static final UserProgress USER_PROGRESS = new UserProgress(USER, DATE, 1, new DailyProgress(0, 1, TIME),
+            new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME), new DailyProgress(0, 1, TIME));
 
     private static final ProgressId NEXT_PROGRESS_ID = new ProgressId(USER.getId(), NEXT_DATE);
 
     private static final UserProgress NEXT_USER_PROGRESS = new UserProgress(USER, NEXT_DATE, 1,
-            new UserProgressTypeProgress(1, 1, NEXT_TIME), new UserProgressTypeProgress(1, 1, NEXT_TIME),
-            new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 1, NEXT_TIME));
+            new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME),
+            new DailyProgress(1, 1, NEXT_TIME));
 
     private static final Instant LATER_TIME = NEXT_TIME.plusSeconds(93);
 
     private static final UserProgress LATER_USER_PROGRESS = new UserProgress(USER, NEXT_DATE, 2,
-            new UserProgressTypeProgress(1, 2, LATER_TIME), new UserProgressTypeProgress(1, 1, NEXT_TIME),
-            new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 2, LATER_TIME));
+            new DailyProgress(1, 2, LATER_TIME), new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME),
+            new DailyProgress(1, 2, LATER_TIME));
 
     private static final Instant EVEN_LATER_TIME = LATER_TIME.plusSeconds(129);
 
     private static final UserProgress EVEN_LATER_USER_PROGRESS = new UserProgress(USER, NEXT_DATE, 3,
-            new UserProgressTypeProgress(1, 2, LATER_TIME), new UserProgressTypeProgress(1, 2, EVEN_LATER_TIME),
-            new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 2, LATER_TIME));
+            new DailyProgress(1, 2, LATER_TIME), new DailyProgress(1, 2, EVEN_LATER_TIME),
+            new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 2, LATER_TIME));
 
     private static UserProgress copyOf(UserProgress that) {
         return new UserProgress(that.getUser(), that.getDate(), that.getVisits(), copyOf(that.getIncrease()), copyOf(that.getAdd()),
                 copyOf(that.getFibonacci()), copyOf(that.getPowerOfTwo()));
     }
 
-    private static UserProgressTypeProgress copyOf(UserProgressTypeProgress that) {
-        return new UserProgressTypeProgress(that.getPrevious(), that.getCompleted(), that.getTime());
+    private static DailyProgress copyOf(DailyProgress that) {
+        return new DailyProgress(that.getPrevious(), that.getCompleted(), that.getTime());
     }
 
     @Test
