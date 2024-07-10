@@ -64,7 +64,7 @@ public class RangeRequestUtilTest {
 
     @Test
     public void givenValidParameters_whenHandleRequest_thenNothingToTest() {
-        // already tested by RangeRequestUtil and RangeRequestUtil
+        // already tested by RangeUtil and RangeResponseUtil
     }
 }
 

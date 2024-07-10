@@ -5,8 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
 public final class RangeResponseUtil {
 
@@ -14,13 +12,11 @@ public final class RangeResponseUtil {
         throw new InstantiationException("Should not be instantiated.");
     }
 
-    static <T> ResponseEntity<List<T>> createOKResponse(String rangeUnit, List<T> list, Function<T, Integer> getter) {
-        Objects.requireNonNull(getter);
+    static <T> ResponseEntity<List<T>> createOKResponse(String rangeUnit, List<T> list, int firstRow, int lastRow) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.ACCEPT_RANGES, RangeUtil.getAcceptRanges(rangeUnit));
         if (!list.isEmpty()) {
-            httpHeaders.add(HttpHeaders.CONTENT_RANGE,
-                    RangeUtil.getContentRange(rangeUnit, getter.apply(list.getFirst()), getter.apply(list.getLast())));
+            httpHeaders.add(HttpHeaders.CONTENT_RANGE, RangeUtil.getContentRange(rangeUnit, firstRow, lastRow));
         } else {
             httpHeaders.add(HttpHeaders.CONTENT_RANGE, RangeUtil.getUnsatisfiableContentRange(rangeUnit));
         }
@@ -28,15 +24,13 @@ public final class RangeResponseUtil {
     }
 
     static <T> ResponseEntity<List<T>> createPartialContentResponse(
-            String rangeUnit, List<T> list, Function<T, Integer> getter) {
-        Objects.requireNonNull(getter);
+            String rangeUnit, List<T> list, int firstRow, int lastRow) {
         if (list.isEmpty()) {
             return createRequestRangeNotSatisfiableResponse(rangeUnit);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.ACCEPT_RANGES, RangeUtil.getAcceptRanges(rangeUnit));
-        httpHeaders.add(HttpHeaders.CONTENT_RANGE,
-                RangeUtil.getContentRange(rangeUnit, getter.apply(list.getFirst()), getter.apply(list.getLast())));
+        httpHeaders.add(HttpHeaders.CONTENT_RANGE, RangeUtil.getContentRange(rangeUnit, firstRow, lastRow));
         return new ResponseEntity<>(list, httpHeaders, HttpStatus.PARTIAL_CONTENT);
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
 public class UserController {
 
     private static final String USERS_RANGE_UNIT = "users";
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     UserAPIService userAPIService;
@@ -85,13 +85,23 @@ public class UserController {
 
     @GetMapping({ "//visits", "/{userId}/visits" })
     public ResponseEntity<List<ZoneIdAndNameVisit>> getVisitsByIdentifier(
-            @PathVariable(required = false) String userId) {
+            @PathVariable(required = false) String userId,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
         logger.trace(String.format("getVisitsByIdentifier(%s)", userId));
         UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(visitAPIService.getSortedVisitsByUser(user.getId(), ZoneIdAndNameVisit.class));
+        if (range == null) {
+            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, ZoneIdAndNameVisit.class,
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByUser(user.getId(), firstRow,
+                            lastRow, type));
+        } else {
+            return RangeRequestUtil.handleRequest(VisitController.VISITS_RANGE_UNIT, range, ZoneIdAndNameVisit.class,
+                    (firstRow, lastRow, type) -> visitAPIService.getSortedVisitsBetweenByUser(user.getId(), firstRow,
+                            lastRow, type),
+                    (rows, type) -> visitAPIService.getLastSortedVisitsByUser(user.getId(), rows, type));
+        }
     }
 
     private UserIdAndName lookupUserByIdentifier(String identifier) {

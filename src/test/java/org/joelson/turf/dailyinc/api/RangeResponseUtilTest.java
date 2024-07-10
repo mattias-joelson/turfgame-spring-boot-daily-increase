@@ -11,6 +11,7 @@ import java.util.function.Function;
 import static org.joelson.turf.dailyinc.api.RangeResponseUtil.createOKResponse;
 import static org.joelson.turf.dailyinc.api.RangeResponseUtil.createPartialContentResponse;
 import static org.joelson.turf.dailyinc.api.RangeResponseUtil.createRequestRangeNotSatisfiableResponse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,36 +58,38 @@ public class RangeResponseUtilTest {
 
     @Test
     public void givenInvalidArguments_whenCreateOKResponse_thenSomeException() {
-        assertThrows(IllegalArgumentException.class, () -> createOKResponse(null, List.of(), Id::id));
-        assertThrows(IllegalArgumentException.class, () -> createOKResponse("unit=", List.of(), Id::id));
-        assertThrows(NullPointerException.class, () -> createOKResponse(UNIT_RANGE, null, Id::id));
-        assertThrows(NullPointerException.class, () -> createOKResponse(UNIT_RANGE, List.of(), null));
+        assertThrows(IllegalArgumentException.class, () -> createOKResponse(null, List.of(), 0, 0));
+        assertThrows(IllegalArgumentException.class, () -> createOKResponse("unit=", List.of(), 0, 0));
+        assertThrows(NullPointerException.class, () -> createOKResponse(UNIT_RANGE, null, 0, 0));
+        assertDoesNotThrow(() -> createOKResponse(UNIT_RANGE, List.of(), -1, -1));
     }
 
     @Test
     public void givenValidArguments_whenCreateOKResponse_thenCorrectOKResponse() {
-        verifyOKResponse(UNIT_RANGE, List.of(), Id::id, createOKResponse(UNIT_RANGE, List.of(), Id::id));
-        verifyOKResponse(UNIT_RANGE, UNIT_LIST, Id::id, createOKResponse(UNIT_RANGE, UNIT_LIST, Id::id));
+        verifyOKResponse(UNIT_RANGE, List.of(), Id::id, createOKResponse(UNIT_RANGE, List.of(), 0, 0));
+        verifyOKResponse(UNIT_RANGE, UNIT_LIST, Id::id,
+                createOKResponse(UNIT_RANGE, UNIT_LIST, UNIT_LIST.getFirst().id(), UNIT_LIST.getLast().id()));
     }
 
     @Test
     public void givenInvalidArguments_whenCreatePartialContentResponse_thenSomeException() {
-        assertThrows(IllegalArgumentException.class, () -> createPartialContentResponse(null, List.of(), Id::id));
-        assertThrows(IllegalArgumentException.class, () -> createPartialContentResponse("unit=", List.of(), Id::id));
-        assertThrows(NullPointerException.class, () -> createPartialContentResponse(UNIT_RANGE, null, Id::id));
-        assertThrows(NullPointerException.class, () -> createPartialContentResponse(UNIT_RANGE, List.of(), null));
+        assertThrows(IllegalArgumentException.class, () -> createPartialContentResponse(null, List.of(), 0, 0));
+        assertThrows(IllegalArgumentException.class, () -> createPartialContentResponse("unit=", List.of(), 0, 0));
+        assertThrows(NullPointerException.class, () -> createPartialContentResponse(UNIT_RANGE, null, 0, 0));
+        assertDoesNotThrow(() -> createPartialContentResponse(UNIT_RANGE, List.of(), -1, -1));
     }
 
     @Test
     public void givenValidArguments_whenCreatePartialContentResponse_thenCorrectPartialContentResponse() {
         verifyPartialContentResponse(UNIT_RANGE, UNIT_LIST, Id::id,
-                createPartialContentResponse(UNIT_RANGE, UNIT_LIST, Id::id));
+                createPartialContentResponse(UNIT_RANGE, UNIT_LIST, UNIT_LIST.getFirst().id(),
+                        UNIT_LIST.getLast().id()));
     }
 
     @Test
     public void givenNoContent_whenCreatePartialContentResponse_thenRequestRangeNotSatisfiableResponse() {
         verifyRequestRangeNotSatisfiableResponse(UNIT_RANGE,
-                createPartialContentResponse(UNIT_RANGE, List.of(), Id::id));
+                createPartialContentResponse(UNIT_RANGE, List.of(), 0, 0));
     }
 
     @Test

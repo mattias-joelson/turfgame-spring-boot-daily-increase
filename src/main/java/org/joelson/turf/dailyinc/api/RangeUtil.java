@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -25,8 +24,20 @@ public final class RangeUtil {
             if (!rangeUnit.equals(rangeRequest.getRangeUnit())) {
                 return RangeResponseUtil.createRequestRangeNotSatisfiableResponse(rangeUnit);
             }
-            return RangeResponseUtil.createPartialContentResponse(rangeUnit,
-                    rangeRequest.getRange(getBetween, getLast), getter);
+            List<T> list = rangeRequest.getRange(getBetween, getLast);
+            if (getter != null) {
+                if (!list.isEmpty()) {
+                    return RangeResponseUtil.createPartialContentResponse(rangeUnit,
+                            list, getter.apply(list.getFirst()), getter.apply(list.getLast()));
+                } else {
+                    return RangeResponseUtil.createPartialContentResponse(rangeUnit,
+                            list, 0, 0);
+                }
+            } else {
+                int startPos = (rangeRequest.firstPos != INVALID) ? rangeRequest.firstPos : 1000000000;
+                return RangeResponseUtil.createPartialContentResponse(rangeUnit, list, startPos,
+                        startPos + list.size() - 1);
+            }
         } catch (ParseException e) {
             return RangeResponseUtil.createRequestRangeNotSatisfiableResponse(rangeUnit);
         }
