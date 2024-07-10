@@ -57,14 +57,21 @@ public class UserController {
 
     @GetMapping({ "//user-progress", "/{userId}/user-progress" })
     public ResponseEntity<List<UserIdAndNameProgress>> getUserProgressByIdentifier(
-            @PathVariable(required = false) String userId) {
+            @PathVariable(required = false) String userId,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
         logger.trace(String.format("getUserProgressByIdentifier(%s)", userId));
         UserIdAndName user = lookupUserByIdentifier(userId);
         if (user == null) {
             return ControllerUtil.respondNotFound();
         }
-        return ControllerUtil.respondOk(
-                userProgressAPIService.getSortedUserProgressByUser(user.getId(), UserIdAndNameProgress.class));
+        if (range == null) {
+            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, UserIdAndNameProgress.class,
+                    (firstRow, lastRow, type) -> userProgressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
+        } else {
+            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, range, UserIdAndNameProgress.class,
+                    (firstRow, lastRow, type) -> userProgressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
+                    (rows, type) -> userProgressAPIService.getLastSortedByUser(user.getId(), rows, type));
+        }
     }
 
     @GetMapping({ "//visits", "/{userId}/visits" })

@@ -3,7 +3,6 @@ package org.joelson.turf.dailyinc.api;
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.UserProgress;
 import org.joelson.turf.dailyinc.model.UserProgressRepository;
-import org.joelson.turf.dailyinc.model.UserProgressType;
 import org.joelson.turf.dailyinc.model.UserProgressTypeProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +17,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,23 +69,54 @@ public class UserProgressAPIServiceTest {
             USER_TWO_NEXT_PROGRESS);
 
     @Test
-    public void getSortedUserProgressTest() {
-        when(userProgressRepository.findAllSorted(UserProgress.class)).thenReturn(SORTED_USER_PROGRESS);
+    public void givenUserProgress_whenGetSortedBetween_thenAllReturned() {
+        when(userProgressRepository.findSortedBetween(anyInt(), anyInt(), any())).thenReturn(List.of());
+        when(userProgressRepository.findSortedBetween(0, SORTED_USER_PROGRESS.size(), UserProgress.class)).thenReturn(SORTED_USER_PROGRESS);
 
-        List<UserProgress> userProgresses = userProgressAPIService.getSortedUserProgress(UserProgress.class);
-        assertEquals(SORTED_USER_PROGRESS, userProgresses);
-        verify(userProgressRepository).findAllSorted(UserProgress.class);
+        assertEquals(SORTED_USER_PROGRESS,
+                userProgressAPIService.getSortedBetween(0, SORTED_USER_PROGRESS.size() - 1, UserProgress.class));
+        verify(userProgressRepository).findSortedBetween(0, SORTED_USER_PROGRESS.size(), UserProgress.class);
     }
 
     @Test
-    public void getSortUserProgressByUserTest() {
-        when(userProgressRepository.findAllSortedByUser(anyLong(), eq(UserProgress.class))).thenReturn(List.of());
-        when(userProgressRepository.findAllSortedByUser(USER_ONE.getId(), UserProgress.class)).thenReturn(USER_ONE_SORTED_USER_PROGRESS);
-        when(userProgressRepository.findAllSortedByUser(USER_TWO.getId(), UserProgress.class)).thenReturn(USER_TWO_SORTED_USER_PROGRESS);
+    public void givenUserProgress_whenGetLastSorted_thenAllReturned() {
+        when(userProgressRepository.findLastSortedReversed(anyInt(), any())).thenReturn(List.of());
+        when(userProgressRepository.findLastSortedReversed(SORTED_USER_PROGRESS.size(), UserProgress.class)).thenReturn(SORTED_USER_PROGRESS.reversed());
 
-        assertEquals(USER_ONE_SORTED_USER_PROGRESS, userProgressAPIService.getSortedUserProgressByUser(USER_ONE.getId(), UserProgress.class));
-        assertEquals(USER_TWO_SORTED_USER_PROGRESS, userProgressAPIService.getSortedUserProgressByUser(USER_TWO.getId(), UserProgress.class));
-        assertEquals(List.of(), userProgressAPIService.getSortedUserProgressByUser(1003L, UserProgress.class));
-        verify(userProgressRepository,times(3)).findAllSortedByUser(anyLong(), eq(UserProgress.class));
+        assertEquals(SORTED_USER_PROGRESS,
+                userProgressAPIService.getLastSorted(SORTED_USER_PROGRESS.size(), UserProgress.class));
+        verify(userProgressRepository).findLastSortedReversed(SORTED_USER_PROGRESS.size(), UserProgress.class);
+    }
+
+    @Test
+    public void givenUserProgress_whenGetSortedBetweenByUser_thenAllReturned() {
+        when(userProgressRepository.findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(List.of());
+        when(userProgressRepository.findSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_USER_PROGRESS.size(), UserProgress.class))
+                .thenReturn(USER_ONE_SORTED_USER_PROGRESS);
+        when(userProgressRepository.findSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_USER_PROGRESS.size(), UserProgress.class))
+                .thenReturn(USER_TWO_SORTED_USER_PROGRESS);
+
+        assertEquals(USER_ONE_SORTED_USER_PROGRESS,
+                userProgressAPIService.getSortedBetweenByUser(USER_ONE.getId(), 0, USER_ONE_SORTED_USER_PROGRESS.size() - 1, UserProgress.class));
+        assertEquals(USER_TWO_SORTED_USER_PROGRESS,
+                userProgressAPIService.getSortedBetweenByUser(USER_TWO.getId(), 0, USER_TWO_SORTED_USER_PROGRESS.size() - 1, UserProgress.class));
+        assertEquals(List.of(), userProgressAPIService.getSortedBetweenByUser(1003L, 0, 100, UserProgress.class));
+        verify(userProgressRepository, times(3)).findSortedBetweenByUser(anyLong(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    public void givenUserProgress_whenGetLastSortedByUser_thenAllReturned() {
+        when(userProgressRepository.findLastSortedReversedByUser(anyLong(), anyInt(), any())).thenReturn(List.of());
+        when(userProgressRepository.findLastSortedReversedByUser(USER_ONE.getId(), USER_ONE_SORTED_USER_PROGRESS.size(), UserProgress.class))
+                .thenReturn(USER_ONE_SORTED_USER_PROGRESS.reversed());
+        when(userProgressRepository.findLastSortedReversedByUser(USER_TWO.getId(), USER_TWO_SORTED_USER_PROGRESS.size(), UserProgress.class))
+                .thenReturn(USER_TWO_SORTED_USER_PROGRESS.reversed());
+
+        assertEquals(USER_ONE_SORTED_USER_PROGRESS,
+                userProgressAPIService.getLastSortedByUser(USER_ONE.getId(), USER_ONE_SORTED_USER_PROGRESS.size(), UserProgress.class));
+        assertEquals(USER_TWO_SORTED_USER_PROGRESS,
+                userProgressAPIService.getLastSortedByUser(USER_TWO.getId(), USER_TWO_SORTED_USER_PROGRESS.size(), UserProgress.class));
+        assertEquals(List.of(), userProgressAPIService.getLastSortedByUser(1003L, 100, UserProgress.class));
+        verify(userProgressRepository, times(3)).findLastSortedReversedByUser(anyLong(), anyInt(), any());
     }
 }
