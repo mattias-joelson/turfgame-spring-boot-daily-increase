@@ -23,13 +23,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ProgressServiceTest {
+public class IncrementalProgressServiceTest {
 
     @Mock
     ProgressRepository progressRepository;
 
     @InjectMocks
-    ProgressService progressService;
+    IncrementalProgressService incrementalProgressService;
 
     private static Instant nowWithHour19TruncatedToSeconds() {
         Instant nowTruncatedToSeconds = Instant.now().truncatedTo(ChronoUnit.SECONDS);
@@ -80,7 +80,7 @@ public class ProgressServiceTest {
     public void givenEmptyRepository_whenIncreaseProgress_thenProgressCreated() {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
 
-        int maxDayCompleted = progressService.increaseProgress(USER, DATE, TIME);
+        int maxDayCompleted = incrementalProgressService.increaseProgress(USER, DATE, TIME);
         assertEquals(PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(PROGRESS_ID);
         verify(progressRepository).save(PROGRESS);
@@ -91,7 +91,7 @@ public class ProgressServiceTest {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseProgress(USER, DATE, TIME.plusSeconds(60));
+        int maxDayCompleted = incrementalProgressService.increaseProgress(USER, DATE, TIME.plusSeconds(60));
         assertEquals(PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(PROGRESS_ID);
         verify(progressRepository).save(any(Progress.class));
@@ -102,7 +102,7 @@ public class ProgressServiceTest {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(PROGRESS_ID)).thenReturn(Optional.of(copyOf(PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseProgress(USER, NEXT_DATE, NEXT_TIME);
+        int maxDayCompleted = incrementalProgressService.increaseProgress(USER, NEXT_DATE, NEXT_TIME);
         assertEquals(NEXT_PROGRESS.getFibonacci().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(PROGRESS_ID);
         verify(progressRepository).findById(NEXT_PROGRESS_ID);
@@ -123,7 +123,7 @@ public class ProgressServiceTest {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(NEXT_PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseProgress(USER, NEXT_DATE, LATER_TIME);
+        int maxDayCompleted = incrementalProgressService.increaseProgress(USER, NEXT_DATE, LATER_TIME);
         assertEquals(LATER_PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(NEXT_PROGRESS_ID);
         verify(progressRepository).save(LATER_PROGRESS);
@@ -134,7 +134,7 @@ public class ProgressServiceTest {
         when(progressRepository.findById(any(ProgressId.class))).thenReturn(Optional.empty());
         when(progressRepository.findById(NEXT_PROGRESS_ID)).thenReturn(Optional.of(copyOf(LATER_PROGRESS)));
 
-        int maxDayCompleted = progressService.increaseProgress(USER, NEXT_DATE, EVEN_LATER_TIME);
+        int maxDayCompleted = incrementalProgressService.increaseProgress(USER, NEXT_DATE, EVEN_LATER_TIME);
         assertEquals(EVEN_LATER_PROGRESS.getAdd().getCompleted(), maxDayCompleted);
         verify(progressRepository).findById(NEXT_PROGRESS_ID);
         verify(progressRepository).save(EVEN_LATER_PROGRESS);

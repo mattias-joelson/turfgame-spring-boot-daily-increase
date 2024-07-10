@@ -28,13 +28,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class FeedImporterServiceTest {
+public class IncrementalFeedImporterServiceTest {
 
     @Mock
     UserService userService;
 
     @Mock
-    ProgressService progressService;
+    IncrementalProgressService incrementalProgressService;
 
     @Mock
     VisitService visitService;
@@ -43,7 +43,7 @@ public class FeedImporterServiceTest {
     ZoneService zoneService;
 
     @InjectMocks
-    FeedImporterService feedImporterService;
+    IncrementalFeedImporterService incrementalFeedImporterService;
 
     private static org.joelson.turf.turfgame.apiv5.User createUser(int id, String name) {
         return new org.joelson.turf.turfgame.apiv5.User(id, name, null, null, -1, -1, null, -1, -1, null, -1, -1, -1, -1);
@@ -73,7 +73,7 @@ public class FeedImporterServiceTest {
 
     @Test
     public void givenServicesEmpty_whenHandleTakeoverNull_thenFailure() {
-        assertThrows(NullPointerException.class, () -> feedImporterService.handleTakeover(null));
+        assertThrows(NullPointerException.class, () -> incrementalFeedImporterService.handleTakeover(null));
     }
 
     @Test
@@ -92,12 +92,12 @@ public class FeedImporterServiceTest {
         when(visitService.create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType())).thenReturn(ASSIST_TOREKYRKA_BY_HAKSME);
         when(visitService.create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType())).thenReturn(ASSIST_TOREKYRKA_BY_TOREBIKER);
 
-        when(progressService.increaseProgress(any(User.class), any(Instant.class), any(Instant.class))).thenReturn(-1);
-        when(progressService.increaseProgress(USER_HAKSME, DATE, TIME)).thenReturn(1);
-        when(progressService.increaseProgress(USER_TOREBIKER, DATE, TIME)).thenReturn(1);
-        when(progressService.increaseProgress(USER_TOREHIKER, DATE, TIME)).thenReturn(1);
+        when(incrementalProgressService.increaseProgress(any(User.class), any(Instant.class), any(Instant.class))).thenReturn(-1);
+        when(incrementalProgressService.increaseProgress(USER_HAKSME, DATE, TIME)).thenReturn(1);
+        when(incrementalProgressService.increaseProgress(USER_TOREBIKER, DATE, TIME)).thenReturn(1);
+        when(incrementalProgressService.increaseProgress(USER_TOREHIKER, DATE, TIME)).thenReturn(1);
 
-        feedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
+        incrementalFeedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
 
         verify(zoneService).getUpdateOrCreate(ZONE_TOREKYRKA.getId(), ZONE_TOREKYRKA.getName(), ZONE_TOREKYRKA.getTime());
 
@@ -110,11 +110,11 @@ public class FeedImporterServiceTest {
         verify(visitService).create(ASSIST_TOREKYRKA_BY_HAKSME.getZone(), ASSIST_TOREKYRKA_BY_HAKSME.getUser(), ASSIST_TOREKYRKA_BY_HAKSME.getTime(), ASSIST_TOREKYRKA_BY_HAKSME.getType());
         verify(visitService).create(ASSIST_TOREKYRKA_BY_TOREBIKER.getZone(), ASSIST_TOREKYRKA_BY_TOREBIKER.getUser(), ASSIST_TOREKYRKA_BY_TOREBIKER.getTime(), ASSIST_TOREKYRKA_BY_TOREBIKER.getType());
 
-        verify(progressService).increaseProgress(USER_HAKSME, DATE, TIME);
-        verify(progressService).increaseProgress(USER_TOREBIKER, DATE, TIME);
-        verify(progressService).increaseProgress(USER_TOREHIKER, DATE, TIME);
+        verify(incrementalProgressService).increaseProgress(USER_HAKSME, DATE, TIME);
+        verify(incrementalProgressService).increaseProgress(USER_TOREBIKER, DATE, TIME);
+        verify(incrementalProgressService).increaseProgress(USER_TOREHIKER, DATE, TIME);
 
-        verifyNoMoreInteractions(zoneService, userService, visitService, progressService);
+        verifyNoMoreInteractions(zoneService, userService, visitService, incrementalProgressService);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class FeedImporterServiceTest {
         when(visitService.getVisit(any(Zone.class), any(User.class), any(Instant.class))).thenReturn(null);
         when(visitService.getVisit(REVISIT_TOREKYRKA_BY_TOREHIKER.getZone(), REVISIT_TOREKYRKA_BY_TOREHIKER.getUser(), REVISIT_TOREKYRKA_BY_TOREHIKER.getTime())).thenReturn(REVISIT_TOREKYRKA_BY_TOREHIKER);
 
-        feedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
+        incrementalFeedImporterService.handleTakeover(FEED_TOREKYRKA_REVISIT);
 
         verify(zoneService).getUpdateOrCreate(ZONE_TOREKYRKA.getId(), ZONE_TOREKYRKA.getName(), ZONE_TOREKYRKA.getTime());
 
@@ -136,6 +136,6 @@ public class FeedImporterServiceTest {
 
         verify(visitService).getVisit(REVISIT_TOREKYRKA_BY_TOREHIKER.getZone(), REVISIT_TOREKYRKA_BY_TOREHIKER.getUser(), REVISIT_TOREKYRKA_BY_TOREHIKER.getTime());
 
-        verifyNoMoreInteractions(zoneService, userService, visitService, progressService);
+        verifyNoMoreInteractions(zoneService, userService, visitService, incrementalProgressService);
     }
 }

@@ -1,6 +1,6 @@
 package org.joelson.turf.dailyinc;
 
-import org.joelson.turf.dailyinc.service.FeedImporterService;
+import org.joelson.turf.dailyinc.service.IncrementalFeedImporterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class TurfDailyIncreaseApplication {
     private static final Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
 
     @Autowired
-    FeedImporterService feedImporterService;
+    IncrementalFeedImporterService incrementalFeedImporterService;
 
     public static void main(String[] args) {
         SpringApplication.run(TurfDailyIncreaseApplication.class, args);
@@ -33,7 +33,7 @@ public class TurfDailyIncreaseApplication {
         return args -> {
             for (String filename : args) {
                 logger.info(String.format("Importing data from '%s'", filename));
-                feedImporterService.importFeed(filename);
+                incrementalFeedImporterService.importFeed(filename);
             }
             if (args.length > 0) {
                 logger.info("Done importing data.");

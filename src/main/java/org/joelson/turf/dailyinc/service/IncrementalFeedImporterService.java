@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-public class FeedImporterService {
+public class IncrementalFeedImporterService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FeedImporterService.class);
+    private static final Logger logger = LoggerFactory.getLogger(IncrementalFeedImporterService.class);
 
     private int filesHandled = 0;
     private final FeedsReader feedsReader;
@@ -35,7 +35,7 @@ public class FeedImporterService {
     UserService userService;
 
     @Autowired
-    ProgressService progressService;
+    IncrementalProgressService incrementalProgressService;
 
     @Autowired
     VisitService visitService;
@@ -43,7 +43,7 @@ public class FeedImporterService {
     @Autowired
     ZoneService zoneService;
 
-    public FeedImporterService() {
+    public IncrementalFeedImporterService() {
         feedsReader = new FeedsReader(Map.of("takeover", FeedTakeover.class));
     }
 
@@ -106,7 +106,7 @@ public class FeedImporterService {
     private void addVisit(Zone zone, User user, Instant time, VisitType type, Instant date) {
         Visit visit = visitService.create(zone, user, time, type);
         logger.trace(String.format("Added visit %s", visit));
-        int maxDayCompleted = progressService.increaseProgress(user, date, time);
+        int maxDayCompleted = incrementalProgressService.increaseProgress(user, date, time);
         logger.trace(String.format("Max day completed %d @ %s", maxDayCompleted, time));
     }
 }
