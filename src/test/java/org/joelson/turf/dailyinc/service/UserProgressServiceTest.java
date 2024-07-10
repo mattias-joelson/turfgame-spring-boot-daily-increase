@@ -48,30 +48,30 @@ public class UserProgressServiceTest {
 
     private static final UserProgressId USER_PROGRESS_ID = new UserProgressId(USER.getId(), DATE);
 
-    private static final UserProgress USER_PROGRESS = new UserProgress(USER, DATE,
+    private static final UserProgress USER_PROGRESS = new UserProgress(USER, DATE, 1,
             new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME),
             new UserProgressTypeProgress(0, 1, TIME), new UserProgressTypeProgress(0, 1, TIME));
 
     private static final UserProgressId NEXT_USER_PROGRESS_ID = new UserProgressId(USER.getId(), NEXT_DATE);
 
-    private static final UserProgress NEXT_USER_PROGRESS = new UserProgress(USER, NEXT_DATE,
+    private static final UserProgress NEXT_USER_PROGRESS = new UserProgress(USER, NEXT_DATE, 1,
             new UserProgressTypeProgress(1, 1, NEXT_TIME), new UserProgressTypeProgress(1, 1, NEXT_TIME),
             new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 1, NEXT_TIME));
 
     private static final Instant LATER_TIME = NEXT_TIME.plusSeconds(93);
 
-    private static final UserProgress LATER_USER_PROGRESS = new UserProgress(USER, NEXT_DATE,
+    private static final UserProgress LATER_USER_PROGRESS = new UserProgress(USER, NEXT_DATE, 2,
             new UserProgressTypeProgress(1, 2, LATER_TIME), new UserProgressTypeProgress(1, 1, NEXT_TIME),
             new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 2, LATER_TIME));
 
     private static final Instant EVEN_LATER_TIME = LATER_TIME.plusSeconds(129);
 
-    private static final UserProgress EVEN_LATER_USER_PROGRESS = new UserProgress(USER, NEXT_DATE,
+    private static final UserProgress EVEN_LATER_USER_PROGRESS = new UserProgress(USER, NEXT_DATE, 3,
             new UserProgressTypeProgress(1, 2, LATER_TIME), new UserProgressTypeProgress(1, 2, EVEN_LATER_TIME),
             new UserProgressTypeProgress(1, 2, NEXT_TIME), new UserProgressTypeProgress(1, 2, LATER_TIME));
 
     private static UserProgress copyOf(UserProgress that) {
-        return new UserProgress(that.getUser(), that.getDate(), copyOf(that.getIncrease()), copyOf(that.getAdd()),
+        return new UserProgress(that.getUser(), that.getDate(), that.getVisits(), copyOf(that.getIncrease()), copyOf(that.getAdd()),
                 copyOf(that.getFibonacci()), copyOf(that.getPowerOfTwo()));
     }
 
@@ -97,7 +97,7 @@ public class UserProgressServiceTest {
         int maxDayCompleted = userProgressService.increaseUserProgress(USER, DATE, 2, TIME.plusSeconds(60));
         assertEquals(USER_PROGRESS.getIncrease().getCompleted(), maxDayCompleted);
         verify(userProgressRepository).findById(USER_PROGRESS_ID);
-        verify(userProgressRepository, never()).save(any(UserProgress.class));
+        verify(userProgressRepository).save(any(UserProgress.class));
     }
 
     @Test

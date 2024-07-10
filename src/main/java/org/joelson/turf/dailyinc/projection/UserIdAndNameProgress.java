@@ -11,6 +11,8 @@ public interface UserIdAndNameProgress {
 
     Instant getDate();
 
+    Integer getVisits();
+
     UserProgressTypeProgress getIncrease();
 
     UserProgressTypeProgress getAdd();

@@ -26,15 +26,18 @@ public class UserProgressService {
     public int increaseUserProgress(User user, Instant date, int visits, Instant time) {
         UserProgress userProgress = getUserProgress(user, date);
         if (userProgress == null) {
+            if (visits != 1) {
+                throw new IllegalArgumentException(String.format("User progress existed for visits=%d > 0.", visits));
+            }
             Instant previousDate = date.minus(1, ChronoUnit.DAYS);
             UserProgress previousUserProgress = getUserProgress(user, previousDate);
             if (previousUserProgress == null) {
-                userProgressRepository.save(new UserProgress(user, date, new UserProgressTypeProgress(0, 1, time),
+                userProgressRepository.save(new UserProgress(user, date, visits,
                         new UserProgressTypeProgress(0, 1, time), new UserProgressTypeProgress(0, 1, time),
-                        new UserProgressTypeProgress(0, 1, time)));
+                        new UserProgressTypeProgress(0, 1, time), new UserProgressTypeProgress(0, 1, time)));
                 return 1;
             } else {
-                userProgressRepository.save(new UserProgress(user, date,
+                userProgressRepository.save(new UserProgress(user, date, visits,
                         new UserProgressTypeProgress(previousUserProgress.getIncrease().getCompleted(), 1, time),
                         new UserProgressTypeProgress(previousUserProgress.getAdd().getCompleted(), 1, time),
                         new UserProgressTypeProgress(previousUserProgress.getFibonacci().getCompleted(), 2, time),
@@ -43,47 +46,29 @@ public class UserProgressService {
             }
         } else {
             int maxDayCompleted;
-            boolean updated = false;
 
-            int increaseCompleted = increaseUserProgress(userProgress.getIncrease(), visits, time,
-                    UserProgressType.DAILY_INCREASE::getNeededVisits);
-            if (increaseCompleted > 0) {
-                updated = true;
-                maxDayCompleted = increaseCompleted;
-            } else {
-                maxDayCompleted = -increaseCompleted;
+            if (userProgress.getVisits() >= visits) {
+                throw new IllegalArgumentException(
+                        String.format("userProgress.getVisits()=%d >= visits=%d", userProgress.getVisits(), visits));
             }
+            userProgress.setVisits(visits);
 
-            int addCompleted = increaseUserProgress(userProgress.getAdd(), visits, time,
-                    UserProgressType.DAILY_ADD::getNeededVisits);
-            if (addCompleted > 0) {
-                updated = true;
-                maxDayCompleted = Math.max(maxDayCompleted, addCompleted);
-            } else {
-                maxDayCompleted = Math.max(maxDayCompleted, -addCompleted);
-            }
+            maxDayCompleted = Math.abs(increaseUserProgress(userProgress.getIncrease(), visits, time,
+                    UserProgressType.DAILY_INCREASE::getNeededVisits));
 
-            int fibonacciCompleted = increaseUserProgress(userProgress.getFibonacci(), visits, time,
-                    UserProgressType.DAILY_FIBONACCI::getNeededVisits);
-            if (fibonacciCompleted > 0) {
-                updated = true;
-                maxDayCompleted = Math.max(maxDayCompleted, fibonacciCompleted);
-            } else {
-                maxDayCompleted = Math.max(maxDayCompleted, -fibonacciCompleted);
-            }
+            maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
+                    increaseUserProgress(userProgress.getAdd(), visits, time,
+                            UserProgressType.DAILY_ADD::getNeededVisits)));
 
-            int powerCompleted = increaseUserProgress(userProgress.getPowerOfTwo(), visits, time,
-                    UserProgressType.DAILY_POWER_OF_TWO::getNeededVisits);
-            if (powerCompleted > 0) {
-                updated = true;
-                maxDayCompleted = Math.max(maxDayCompleted, powerCompleted);
-            } else {
-                maxDayCompleted = Math.max(maxDayCompleted, -powerCompleted);
-            }
+            maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
+                    increaseUserProgress(userProgress.getFibonacci(), visits, time,
+                            UserProgressType.DAILY_FIBONACCI::getNeededVisits)));
 
-            if (updated) {
-                userProgressRepository.save(userProgress);
-            }
+            maxDayCompleted = Math.max(maxDayCompleted, Math.abs(
+                    increaseUserProgress(userProgress.getPowerOfTwo(), visits, time,
+                            UserProgressType.DAILY_POWER_OF_TWO::getNeededVisits)));
+
+            userProgressRepository.save(userProgress);
             return maxDayCompleted;
         }
     }
@@ -100,6 +85,6 @@ public class UserProgressService {
                 return completed + 1;
             }
         }
-        return -userProgressTypeProgress.getCompleted();
+        return -completed;
     }
 }
