@@ -2,16 +2,16 @@ package org.joelson.turf.dailyinc.model;
 
 import java.util.function.Function;
 
-public enum UserProgressType {
+public enum DaylyProgressType {
 
     DAILY_INCREASE(integer -> integer),
-    DAILY_ADD(UserProgressType::getDailyAddVisits),
-    DAILY_FIBONACCI(UserProgressType::getDailyFibonacciVisits),
-    DAILY_POWER_OF_TWO(UserProgressType::getDailyPowerOfTwoVisits);
+    DAILY_ADD(DaylyProgressType::getDailyAddVisits),
+    DAILY_FIBONACCI(DaylyProgressType::getDailyFibonacciVisits),
+    DAILY_POWER_OF_TWO(DaylyProgressType::getDailyPowerOfTwoVisits);
 
     private final Function<Integer, Integer> visitsNeeded;
 
-    UserProgressType(Function<Integer, Integer> visitsNeeded) {
+    DaylyProgressType(Function<Integer, Integer> visitsNeeded) {
         this.visitsNeeded = visitsNeeded;
     }
 
