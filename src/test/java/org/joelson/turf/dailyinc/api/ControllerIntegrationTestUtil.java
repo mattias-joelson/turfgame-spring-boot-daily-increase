@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,6 +24,20 @@ public final class ControllerIntegrationTestUtil {
 
     private ControllerIntegrationTestUtil() throws InstantiationException {
         throw new InstantiationException("Should not be instantiated");
+    }
+
+    public static <T> void verifyOKContentResponse(
+            MockMvc mvc, String getUrl, Function<String, T> asObject, Predicate<T> equals) throws Exception {
+        String content = mvc.perform(MockMvcRequestBuilders.get(getUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header().doesNotExist(HttpHeaders.ACCEPT_RANGES))
+                .andExpect(header().doesNotExist(HttpHeaders.CONTENT_RANGE))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        T obj = asObject.apply(content);
+        assertTrue(equals.test(obj));
     }
 
     public static <T> void verifyOKListContentResponse(
@@ -78,6 +93,19 @@ public final class ControllerIntegrationTestUtil {
             String contentRange = response.getHeader(HttpHeaders.CONTENT_RANGE);
             assertTrue(contentRange != null && !contentRange.isEmpty());
         }
+    }
+
+    public static void verifyStatusNotFoundResponse(
+            MockMvc mvc, String getUrl) throws Exception {
+        String content = mvc.perform(MockMvcRequestBuilders.get(getUrl)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(header().doesNotExist(HttpHeaders.CONTENT_TYPE))
+                .andExpect(header().doesNotExist(HttpHeaders.ACCEPT_RANGES))
+                .andExpect(header().doesNotExist(HttpHeaders.CONTENT_RANGE))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals("", content);
     }
 
     public static void verifyStatusRangeNotSatisfiableResponse(
