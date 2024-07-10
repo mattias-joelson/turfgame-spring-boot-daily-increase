@@ -8,21 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Service
 public class UserVisitsService {
 
     @Autowired
     UserVisitsRepository userVisitsRepository;
-
-    public <T> List<T> getSortedUserVisits(Class<T> type) {
-        return userVisitsRepository.findAllSorted(type);
-    }
-
-    public <T> List<T> getSortedUserVisitsByUser(Long userId, Class<T> type) {
-        return userVisitsRepository.findAllSortedByUser(userId, type);
-    }
 
     private UserVisits findByUserAndDate(User user, Instant date) {
         return userVisitsRepository.findById(new UserVisitsId(user.getId(), date)).orElse(null);

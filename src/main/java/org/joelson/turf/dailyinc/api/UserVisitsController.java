@@ -1,7 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.projection.UserIdAndNameVisits;
-import org.joelson.turf.dailyinc.service.UserVisitsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +14,14 @@ import java.util.List;
 @RequestMapping("/api/user-visits")
 public class UserVisitsController {
 
-    private final Logger logger = LoggerFactory.getLogger(UserVisitsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserVisitsController.class);
 
     @Autowired
-    UserVisitsService userVisitsService;
+    UserVisitsAPIService userVisitsAPIService;
 
     @GetMapping("")
     public List<UserIdAndNameVisits> getUserVisits() {
         logger.trace("getUserVisits()");
-        return userVisitsService.getSortedUserVisits(UserIdAndNameVisits.class);
+        return userVisitsAPIService.getSortedUserVisits(UserIdAndNameVisits.class);
     }
 }

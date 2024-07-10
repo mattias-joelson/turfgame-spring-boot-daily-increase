@@ -1,7 +1,6 @@
 package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
-import org.joelson.turf.dailyinc.service.UserProgressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +14,15 @@ import java.util.List;
 @RequestMapping("/api/user-progress")
 public class UserProgressController {
 
-    private final Logger logger = LoggerFactory.getLogger(UserProgressController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserProgressController.class);
 
     @Autowired
-    UserProgressService userProgressService;
+    UserProgressAPIService userProgressAPIService;
 
     @GetMapping("")
     public List<UserIdAndNameProgress> getUserProgress() {
         logger.trace("getUserProgress()");
-        return userProgressService.getSortedUserProgress(UserIdAndNameProgress.class);
+        return userProgressAPIService.getSortedUserProgress(UserIdAndNameProgress.class);
     }
 
 }

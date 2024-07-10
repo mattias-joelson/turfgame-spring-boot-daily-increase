@@ -1,6 +1,8 @@
 package org.joelson.turf.dailyinc.model;
 
 import jakarta.persistence.EntityExistsException;
+import org.joelson.turf.dailyinc.util.ListTestUtil;
+import org.joelson.turf.dailyinc.util.TestEntityManagerUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 public class ZoneRepositoryIntegrationTest {
@@ -20,13 +23,22 @@ public class ZoneRepositoryIntegrationTest {
     private static final Instant TIME = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     private static final Zone ZONE_ONE = new Zone(1L, "ZoneOne", TIME);
     private static final Zone ZONE_TWO = new Zone(2L, "ZoneTwo", TIME);
-    private static final List<Zone> SORTED_ZONES = List.of(ZONE_ONE, ZONE_TWO);
 
     @Autowired
     ZoneRepository zoneRepository;
 
     @Autowired
     TestEntityManager entityManager;
+
+    private static void verifyZoneList(
+            List<Zone> zones, long minId, long maxId, long stepId, int minSize, int maxSize) {
+        ListTestUtil.verifyList(zones, minId, maxId, stepId, minSize, maxSize, Zone::getId);
+    }
+
+    private int persistZones(long minId, long maxId, long stepId) {
+        return TestEntityManagerUtil.persistList(entityManager, minId, maxId, stepId,
+                id -> new Zone(id, "Zone" + id, TIME)).size();
+    }
 
     @Test
     public void givenZones_whenFindByIdRaw_thenExistingReturned() {
@@ -59,11 +71,69 @@ public class ZoneRepositoryIntegrationTest {
     }
 
     @Test
-    public void givenZones_whenFindAllSorted_thenAllReturned() {
-        entityManager.persist(ZONE_TWO);
-        entityManager.persist(ZONE_ONE);
+    public void givenFewZonesInRange_whenFindSortedBetween_thenAllReturned() {
+        long minId = 1500L;
+        long maxId = 2500L;
+        long stepId = 100L;
+        int created = persistZones(minId, maxId, stepId);
+        int limit = 100;
+        assertTrue(created < limit);
 
-        assertEquals(SORTED_ZONES, zoneRepository.findAllSorted(Zone.class));
+        List<Zone> zones = zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class);
+        verifyZoneList(zones, minId, maxId, stepId, created, created);
+    }
+
+    @Test
+    public void givenMoreZonesInRangeThanLimit_whenFindSortedBetween_thenLimitReturned() {
+        long minId = 1001L;
+        long maxId = 3001L;
+        long stepId = 10L;
+        int created = persistZones(minId, maxId, stepId);
+        int limit = 100;
+        assertTrue(created > limit);
+
+        List<Zone> zones = zoneRepository.findSortedBetween(minId, maxId, limit, Zone.class);
+        verifyZoneList(zones, minId, maxId, stepId, limit, limit);
+    }
+
+    @Test
+    public void givenZonesOutsideOfRange_whenFindSortedBetween_thenNoneReturned() {
+        int created = persistZones(3001L, 4001L, 10);
+        assertTrue(created > 0);
+
+        List<Zone> zones = zoneRepository.findSortedBetween(1500L, 2500L, 100, Zone.class);
+        assertTrue(zones.isEmpty());
+    }
+
+    @Test
+    public void givenFewZones_whenFindLastSortedReversed_thenAllReturned() {
+        long minId = 1001L;
+        long maxId = 2001L;
+        long stepId = 100L;
+        int created = persistZones(minId, maxId, stepId);
+        assertTrue(created < 100);
+
+        List<Zone> zones = zoneRepository.findLastSortedReversed(100, Zone.class);
+        verifyZoneList(zones, minId, maxId, -stepId, created, created);
+    }
+
+    @Test
+    public void givenManyZones_whenFindLastSortedReversed_thenLimitReturned() {
+        long minId = 1001L;
+        long maxId = 2001L;
+        long stepId = 10L;
+        int created = persistZones(minId, maxId, stepId);
+        int limit = 10;
+        assertTrue(created > limit);
+
+        List<Zone> zones = zoneRepository.findLastSortedReversed(limit, Zone.class);
+        verifyZoneList(zones, minId, maxId, -stepId, limit, limit);
+    }
+
+    @Test
+    public void givenNoZones_whenFindLastSortedReversed_thenNoneReturned() {
+        List<Zone> zones = zoneRepository.findLastSortedReversed(10, Zone.class);
+        assertTrue(zones.isEmpty());
     }
 
     @Test

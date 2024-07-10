@@ -19,7 +19,7 @@ import java.util.Arrays;
 @ComponentScan({"org.joelson.turf.dailyinc"})
 public class TurfDailyIncreaseApplication {
 
-    private final Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(TurfDailyIncreaseApplication.class);
 
     @Autowired
     FeedImporterService feedImporterService;

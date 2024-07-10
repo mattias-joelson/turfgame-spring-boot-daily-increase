@@ -1,6 +1,9 @@
 package org.joelson.turf.dailyinc.model;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -15,10 +18,15 @@ import java.util.Objects;
 @Entity
 @IdClass(UserProgressId.class)
 @Table(name = "user_progress", indexes = { @Index(name = "index_user_progress_user_id", columnList = "user_id"),
-        @Index(name = "index_user_progress_type", columnList = "type"),
         @Index(name = "index_user_progress_date", columnList = "date"),
-        @Index(name = "index_user_progress_day_completed", columnList = "day_completed"),
-        @Index(name = "index_user_progress_time_completed", columnList = "time_completed") })
+        @Index(name = "index_user_progress_inc_comp", columnList = "inc_comp"),
+        @Index(name = "index_user_progress_inc_time", columnList = "inc_time"),
+        @Index(name = "index_user_progress_add_comp", columnList = "add_comp"),
+        @Index(name = "index_user_progress_add_time", columnList = "add_time"),
+        @Index(name = "index_user_progress_fib_comp", columnList = "fib_comp"),
+        @Index(name = "index_user_progress_fib_time", columnList = "fib_time"),
+        @Index(name = "index_user_progress_pow_comp", columnList = "pow_comp"),
+        @Index(name = "index_user_progress_pow_time", columnList = "pow_time") })
 public class UserProgress {
 
     @Id
@@ -28,68 +36,74 @@ public class UserProgress {
 
     @Id
     @Column(updatable = false, nullable = false)
-    private UserProgressType type;
-
-    @Id
-    @Column(updatable = false, nullable = false)
     private Instant date;
 
-    @Column(name = "previous_day_completed", updatable = false, nullable = false)
-    private Integer previousDayCompleted;
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "previous",
+            column = @Column(name = "inc_prev", updatable = false, nullable = false)),
+            @AttributeOverride(name = "completed", column = @Column(name = "inc_comp", nullable = false)),
+            @AttributeOverride(name = "time", column = @Column(name = "inc_time", nullable = false)) })
+    private UserProgressTypeProgress increase;
 
-    @Column(name = "day_completed", nullable = false)
-    private Integer dayCompleted;
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "previous",
+            column = @Column(name = "add_prev", updatable = false, nullable = false)),
+            @AttributeOverride(name = "completed", column = @Column(name = "add_comp", nullable = false)),
+            @AttributeOverride(name = "time", column = @Column(name = "add_time", nullable = false)) })
+    private UserProgressTypeProgress add;
 
-    @Column(name = "time_completed", nullable = false)
-    private Instant timeCompleted;
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "previous",
+            column = @Column(name = "fib_prev", updatable = false, nullable = false)),
+            @AttributeOverride(name = "completed", column = @Column(name = "fib_comp", nullable = false)),
+            @AttributeOverride(name = "time", column = @Column(name = "fib_time", nullable = false)) })
+    private UserProgressTypeProgress fibonacci;
+
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "previous",
+            column = @Column(name = "pow_prev", updatable = false, nullable = false)),
+            @AttributeOverride(name = "completed", column = @Column(name = "pow_comp", nullable = false)),
+            @AttributeOverride(name = "time", column = @Column(name = "pow_time", nullable = false)) })
+    private UserProgressTypeProgress powerOfTwo;
+
 
     protected UserProgress() {
     }
 
     public UserProgress(
-            User user, UserProgressType type, Instant date, Integer previousDayCompleted, Integer dayCompleted,
-            Instant timeCompleted) {
+            User user, Instant date, UserProgressTypeProgress increase, UserProgressTypeProgress add,
+            UserProgressTypeProgress fibonacci, UserProgressTypeProgress powerOfTwo) {
         this.user = Objects.requireNonNull(user);
-        this.type = Objects.requireNonNull(type);
         this.date = ModelConstraintsUtil.isTruncatedToDays(date);
-        this.previousDayCompleted = ModelConstraintsUtil.isEqualOrAboveZero(previousDayCompleted);
-        setDayCompleted(dayCompleted);
-        setTimeCompleted(timeCompleted);
+        this.increase = Objects.requireNonNull(increase);
+        this.add = Objects.requireNonNull(add);
+        this.fibonacci = Objects.requireNonNull(fibonacci);
+        this.powerOfTwo = Objects.requireNonNull(powerOfTwo);
     }
 
     public User getUser() {
         return user;
     }
 
-    public UserProgressType getType() {
-        return type;
-    }
-
     public Instant getDate() {
         return date;
     }
 
-    public Integer getPreviousDayCompleted() {
-        return previousDayCompleted;
+
+    public UserProgressTypeProgress getIncrease() {
+        return increase;
     }
 
-    public Integer getDayCompleted() {
-        return dayCompleted;
+    public UserProgressTypeProgress getAdd() {
+        return add;
     }
 
-    public void setDayCompleted(Integer dayCompleted) {
-        this.dayCompleted = ModelConstraintsUtil.isEqualOrBelow(
-                ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isAboveZero(dayCompleted), this.dayCompleted),
-                this.previousDayCompleted + 1);
+    public UserProgressTypeProgress getFibonacci() {
+        return fibonacci;
     }
 
-    public Instant getTimeCompleted() {
-        return timeCompleted;
-    }
-
-    public void setTimeCompleted(Instant timeCompleted) {
-        this.timeCompleted =
-                ModelConstraintsUtil.isEqualOrAbove(ModelConstraintsUtil.isTruncatedToSeconds(timeCompleted), this.timeCompleted);
+    public UserProgressTypeProgress getPowerOfTwo() {
+        return powerOfTwo;
     }
 
     @Override
@@ -98,23 +112,22 @@ public class UserProgress {
             return true;
         }
         if (o instanceof UserProgress that) {
-            return Objects.equals(user, that.user) && type == that.type && Objects.equals(date, that.date)
-                    && Objects.equals(previousDayCompleted, that.previousDayCompleted)
-                    && Objects.equals(dayCompleted, that.dayCompleted)
-                    && Objects.equals(timeCompleted, that.timeCompleted);
+            return Objects.equals(user, that.user) && Objects.equals(date, that.date)
+                    && Objects.equals(increase, that.increase) && Objects.equals(add, that.add)
+                    && Objects.equals(fibonacci, that.fibonacci) && Objects.equals(powerOfTwo, that.powerOfTwo);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, type, date);
+        return Objects.hash(user, date);
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "UserProgress[user=%s, type=%s, date=%s, previousDayCompleted=%d, dayCompleted=%s, timeCompleted=%s",
-                user, type, date, previousDayCompleted, dayCompleted, timeCompleted);
+        return String.format("UserProgress[user=%s, type=%s, %s, %s, %s, %s]", user, date,
+                increase.toInnerString("increase"), add.toInnerString("add"), fibonacci.toInnerString("fibonacci"),
+                powerOfTwo.toInnerString("powerOfTwo"));
     }
 }
