@@ -1,7 +1,7 @@
 package org.joelson.turf.dailyinc.api;
 
 import org.joelson.turf.dailyinc.projection.UserIdAndName;
-import org.joelson.turf.dailyinc.projection.UserIdAndNameProgress;
+import org.joelson.turf.dailyinc.projection.UserProgress;
 import org.joelson.turf.dailyinc.projection.ZoneIdAndNameVisit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @GetMapping({ "//user-progress", "/{userId}/user-progress" })
-    public ResponseEntity<List<UserIdAndNameProgress>> getUserProgressByIdentifier(
+    public ResponseEntity<List<UserProgress>> getUserProgressByIdentifier(
             @PathVariable(required = false) String userId,
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String range) {
         logger.trace(String.format("getUserProgressByIdentifier(%s)", userId));
@@ -65,10 +65,10 @@ public class UserController {
             return ControllerUtil.respondNotFound();
         }
         if (range == null) {
-            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, UserIdAndNameProgress.class,
+            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, UserProgress.class,
                     (firstRow, lastRow, type) -> userProgressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type));
         } else {
-            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, range, UserIdAndNameProgress.class,
+            return RangeRequestUtil.handleRequest(UserProgressController.PROGRESS_RANGE_UNIT, range, UserProgress.class,
                     (firstRow, lastRow, type) -> userProgressAPIService.getSortedBetweenByUser(user.getId(), firstRow, lastRow, type),
                     (rows, type) -> userProgressAPIService.getLastSortedByUser(user.getId(), rows, type));
         }

@@ -4,9 +4,7 @@ import org.joelson.turf.dailyinc.model.DailyProgress;
 
 import java.time.Instant;
 
-public interface UserIdAndNameProgress {
-
-    UserIdAndName getUser();
+public interface UserProgress {
 
     Instant getDate();
 
