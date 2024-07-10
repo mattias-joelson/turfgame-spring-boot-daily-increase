@@ -24,18 +24,18 @@ public final class RangeRequestUtil {
         return handleIdRequest(rangeUnit, rangeHeader, getBetweenOfType(getBetween, type), getLastOfType(getLast, type), getter);
     }
 
-    public static <T> ResponseEntity<List<T>> handleIdRequest(
+    private static <T> ResponseEntity<List<T>> handleIdRequest(
             String rangeUnit, BiFunction<Long, Long, List<T>> getBetween, Function<T, Long> getter) {
         return handleRequest(rangeUnit, getBetweenUsingLong(getBetween), integerGetter(getter));
     }
 
-    public static <T> ResponseEntity<List<T>> handleIdRequest(
+    private static <T> ResponseEntity<List<T>> handleIdRequest(
             String rangeUnit, String rangeHeader, BiFunction<Long, Long, List<T>> getBetween,
             Function<Integer, List<T>> getLast, Function<T, Long> getter) {
         return handleRequest(rangeUnit, rangeHeader, getBetweenUsingLong(getBetween), getLast, integerGetter(getter));
     }
 
-    public static <T> ResponseEntity<List<T>> handleRequest(
+    static <T> ResponseEntity<List<T>> handleRequest(
             String rangeUnit, BiFunction<Integer, Integer, List<T>> getBetween, Function<T, Integer> getter) {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
         Objects.requireNonNull(getBetween);
@@ -56,7 +56,7 @@ public final class RangeRequestUtil {
         return handleRequest(rangeUnit, getBetweenOfType(getBetween, type));
     }
 
-    public static <T> ResponseEntity<List<T>> handleRequest(
+    private static <T> ResponseEntity<List<T>> handleRequest(
             String rangeUnit, BiFunction<Integer, Integer, List<T>> getBetween) {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
         Objects.requireNonNull(getBetween);
@@ -64,7 +64,7 @@ public final class RangeRequestUtil {
         return RangeResponseUtil.createOKResponse(rangeUnit, body, 0, body.size());
     }
 
-    public static <T> ResponseEntity<List<T>> handleRequest(
+    static <T> ResponseEntity<List<T>> handleRequest(
             String rangeUnit, String rangeHeader, BiFunction<Integer, Integer, List<T>> getBetween,
             Function<Integer, List<T>> getLast, Function<T, Integer> getter) {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
@@ -85,7 +85,7 @@ public final class RangeRequestUtil {
         return handleRequest(rangeUnit, rangeHeader, getBetweenOfType(getBetween, type), getLastOfType(getLast, type));
     }
 
-    public static <T> ResponseEntity<List<T>> handleRequest(
+    private static <T> ResponseEntity<List<T>> handleRequest(
             String rangeUnit, String rangeHeader, BiFunction<Integer, Integer, List<T>> getBetween,
             Function<Integer, List<T>> getLast) {
         RangeUtil.requiresValidRangeUnit(rangeUnit);
@@ -95,38 +95,38 @@ public final class RangeRequestUtil {
         return RangeUtil.handleRangeRequest(rangeUnit, rangeHeader, getBetween, getLast, null);
     }
 
-    public static <N,T> BiFunction<N, N, List<T>> getBetweenOfType(
+    static <N,T> BiFunction<N, N, List<T>> getBetweenOfType(
             GetTypedBetweenFunction<N, T> getBetween, Class<T> type) {
         Objects.requireNonNull(getBetween);
         Objects.requireNonNull(type);
         return (minId, maxId) -> getBetween.apply(minId, maxId, type);
     }
 
-    public static <T> BiFunction<Integer, Integer, List<T>> getBetweenUsingLong(
+    static <T> BiFunction<Integer, Integer, List<T>> getBetweenUsingLong(
             BiFunction<Long, Long, List<T>> getBetween) {
         Objects.requireNonNull(getBetween);
         return (min, max) -> getBetween.apply(min.longValue(), max.longValue());
     }
 
-    public static <T> Function<Integer, List<T>> getLastOfType(
+    static <T> Function<Integer, List<T>> getLastOfType(
             GetTypedLastFunction<T> getLast, Class<T> type) {
         Objects.requireNonNull(getLast);
         Objects.requireNonNull(type);
         return last -> getLast.apply(last, type);
     }
 
-    public static <T> Function<T, Integer> integerGetter(Function<T, Long> getter) {
+    static <T> Function<T, Integer> integerGetter(Function<T, Long> getter) {
         Objects.requireNonNull(getter);
         return t -> Math.toIntExact(getter.apply(t));
     }
 
     @FunctionalInterface
-    public interface GetTypedBetweenFunction<N, T> {
+    interface GetTypedBetweenFunction<N, T> {
         List<T> apply(N minId, N maxId, Class<T> type);
     }
 
     @FunctionalInterface
-    public interface GetTypedLastFunction<T> {
+    interface GetTypedLastFunction<T> {
         List<T> apply(Integer last, Class<T> type);
     }
 }
