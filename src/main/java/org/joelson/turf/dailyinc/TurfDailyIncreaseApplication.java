@@ -35,14 +35,7 @@ public class TurfDailyIncreaseApplication {
             logArray("Program arguments:", "No program arguments.", args);
             //printContextBeans(ctx);
 
-            for (String filename : args) {
-                logger.info(String.format("Importing data from '%s'", filename));
-                bulkFeedImporterService.importFeed(filename);
-            }
-            if (args.length > 0) {
-                logger.info("Done importing data.");
-            }
-            bulkFeedImporterService.calculateProgress();
+            bulkFeedImporterService.importFeeds(args);
         };
     }
 
