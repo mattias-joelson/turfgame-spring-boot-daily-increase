@@ -32,4 +32,9 @@ public interface VisitRepository extends JpaRepository<Visit, VisitId> {
     @Query("select v from Visit v where v.zone.id = :zoneId order by v.time desc, v.type desc, v.user.id desc limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findLastSortedReversedByZone(Long zoneId, int limit, Class<T> type);
+
+    @Query("select distinct v.user.id from Visit v order by v.user.id")
+    List<Long> findDistinctUserIdOrderByUserId();
+
+    <T> List<T> findByUserOrderByTime(User user, Class<T> type);
 }

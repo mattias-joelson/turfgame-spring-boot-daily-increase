@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -25,5 +26,10 @@ public class UserService {
             return userRepository.save(user);
         }
         return user;
+    }
+
+    public <T> List<T> toUsers(List<Long> userIds, Class<T> type) {
+        return userIds.stream().map(id -> userRepository.findById(id, type)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown user id " + id))).toList();
     }
 }

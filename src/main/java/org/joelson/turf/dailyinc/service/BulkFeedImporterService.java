@@ -55,6 +55,9 @@ public class BulkFeedImporterService {
     @Autowired
     ZoneService zoneService;
 
+    @Autowired
+    BulkProgressService bulkProgressService;
+
     public BulkFeedImporterService() {
         feedsReader = new FeedsReader(Map.of("takeover", FeedTakeover.class), true);
     }
@@ -75,7 +78,7 @@ public class BulkFeedImporterService {
             logger.info("Importing data from {}", path);
             feedsReader.handleFeedObjectFile(path, this::logEvery100thPath, this::handleFeedObject);
         }
-        calculateProgress();
+        bulkProgressService.calculateProgress();
     }
 
     private void logEvery100thPath(Path path) {
@@ -174,10 +177,6 @@ public class BulkFeedImporterService {
     private void addVisit(Zone zone, User user, Instant time, VisitType type) {
         Visit visit = visitService.create(zone, user, time, type);
         logger.trace("Added visit {}", visit);
-    }
-
-    public void calculateProgress() {
-        logger.error("Code missing here!");
     }
 
     private static class Cache<K, V> {

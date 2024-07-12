@@ -24,4 +24,7 @@ public interface ProgressRepository extends JpaRepository<Progress, ProgressId> 
     @Query("select p from Progress p where p.user.id = :userId order by p.date desc limit :limit")
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "100"))
     <T> List<T> findLastSortedReversedByUser(Long userId, int limit, Class<T> type);
+
+    @Query("select (select count(1) from Progress) = 0")
+    boolean isEmpty();
 }
