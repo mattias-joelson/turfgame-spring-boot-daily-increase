@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,12 +45,15 @@ public class BulkFeedImporterService {
     private final Map<Integer, User> users = new HashMap<>();
     private int foundUsers = 0;
     private int insertedUsers = 0;
+    private int updatedUsers = 0;
     private final Map<Integer, Zone> zones = new HashMap<>();
     private int foundZones = 0;
     private int insertedZones = 0;
+    private int updatedZones = 0;
     private final Set<ZoneIdTime> visits = new HashSet<>();
     private int foundVisits = 0;
     private int insertedVisits = 0;
+    private int lackedVisits = 0;
 
     private final FeedsReader feedsReader;
 
@@ -77,7 +81,7 @@ public class BulkFeedImporterService {
             }
         }
         // sort reversed
-        paths.sort((p1, p2) -> p2.compareTo(p1));
+        paths.sort(Comparator.reverseOrder());
         for (Path path : paths) {
             logger.info("Importing data from {}", path);
             feedsReader.handleFeedObjectFile(path, this::logEvery100thPath, this::handleFeedObject);
@@ -91,8 +95,8 @@ public class BulkFeedImporterService {
             return;
         }
         if (filesHandled % 100 == 0) {
-            logger.info("Reading path {} (imported takes={}, revisits={}, assists={}, skipped takes={}, revisits={}, assists={}, visits.size()={}, found={}, inserted={}, zones.size()={}, found={}, inserted={}, users.size()={}, found={}, inserted={})",
-                    path, importedTakes, importedRevisits, importedAssists, skippedTakes, skippedRevisits, skippedAssists, visits.size(), foundVisits, insertedVisits, zones.size(), foundZones, insertedZones, users.size(), foundUsers, insertedUsers);
+            logger.info("Reading path {} (imported takes={}, revisits={}, assists={}, skipped takes={}, revisits={}, assists={}, visits.size()={}, found={}, inserted={}, lacked={}, zones.size()={}, found={}, inserted={}, updated={}, users.size()={}, found={}, inserted={}, updated={})",
+                    path, importedTakes, importedRevisits, importedAssists, skippedTakes, skippedRevisits, skippedAssists, visits.size(), foundVisits, insertedVisits, lackedVisits, zones.size(), foundZones, insertedZones, updatedZones, users.size(), foundUsers, insertedUsers, updatedUsers);
         }
         filesHandled += 1;
     }
@@ -111,7 +115,11 @@ public class BulkFeedImporterService {
         if (user == null || user.getTime().isBefore(time)) {
             User dbUser = userService.getUpdateOrCreate((long) feedUser.id(), feedUser.name(), time);
             users.put(feedUser.id(), dbUser);
-            insertedUsers += 1;
+            if (user == null) {
+                insertedUsers += 1;
+            } else {
+                updatedUsers += 1;
+            }
             return dbUser;
         } else {
             foundUsers += 1;
@@ -124,7 +132,11 @@ public class BulkFeedImporterService {
         if (zone == null || zone.getTime().isBefore(time)) {
             Zone dbZone = zoneService.getUpdateOrCreate((long) feedZone.id(), feedZone.name(), time);
             zones.put(feedZone.id(), dbZone);
-            insertedZones += 1;
+            if (zone == null) {
+                insertedZones += 1;
+            } else {
+                updatedZones += 1;
+            }
             return dbZone;
         } else {
             foundZones += 1;
@@ -157,10 +169,6 @@ public class BulkFeedImporterService {
         Visit existingVisit = visitService.getVisit(zone, user, time);
         FeedUser[] assists = feedTakeover.getAssists();
         if (existingVisit != null) {
-            if (foundVisits >= 0) {
-                logger.error("visits lacks {}, visitService contains {}", zoneIdTime, existingVisit);
-                throw new RuntimeException("Cache not working!");
-            }
             logger.trace("Skipping existing visit {}...", existingVisit);
             if (type == VisitType.TAKE) {
                 skippedTakes += 1;
@@ -170,6 +178,8 @@ public class BulkFeedImporterService {
             if (assists != null) {
                 skippedAssists += assists.length;
             }
+            visits.add(zoneIdTime);
+            lackedVisits += 1;
             return;
         }
         addVisit(zone, user, time, type);
