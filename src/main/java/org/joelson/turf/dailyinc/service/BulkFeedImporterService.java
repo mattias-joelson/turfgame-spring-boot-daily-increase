@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class BulkFeedImporterService {
@@ -42,18 +40,9 @@ public class BulkFeedImporterService {
     private int skippedRevisits = 0;
     private int skippedAssists = 0;
 
-    private final Map<Integer, User> users = new HashMap<>();
-    private int foundUsers = 0;
-    private int insertedUsers = 0;
-    private int updatedUsers = 0;
-    private final Map<Integer, Zone> zones = new HashMap<>();
-    private int foundZones = 0;
-    private int insertedZones = 0;
-    private int updatedZones = 0;
-    private final Set<ZoneIdTime> visits = new HashSet<>();
-    private int foundVisits = 0;
-    private int insertedVisits = 0;
-    private int lackedVisits = 0;
+    private final Cache<Integer, User> userCache = new Cache<>();
+    private final Cache<Integer, Zone> zoneCache = new Cache<>();
+    private final Cache<ZoneIdTime, ZoneIdTime> visitCache = new Cache<>();
 
     private final FeedsReader feedsReader;
 
@@ -95,8 +84,8 @@ public class BulkFeedImporterService {
             return;
         }
         if (filesHandled % 100 == 0) {
-            logger.info("Reading path {} (imported takes={}, revisits={}, assists={}, skipped takes={}, revisits={}, assists={}, visits.size()={}, found={}, inserted={}, lacked={}, zones.size()={}, found={}, inserted={}, updated={}, users.size()={}, found={}, inserted={}, updated={})",
-                    path, importedTakes, importedRevisits, importedAssists, skippedTakes, skippedRevisits, skippedAssists, visits.size(), foundVisits, insertedVisits, lackedVisits, zones.size(), foundZones, insertedZones, updatedZones, users.size(), foundUsers, insertedUsers, updatedUsers);
+            logger.info("Reading path {} (imported takes={}, revisits={}, assists={}, skipped takes={}, revisits={}, assists={}, visitCache={}, zoneCache={}, userCache={})",
+                    path, importedTakes, importedRevisits, importedAssists, skippedTakes, skippedRevisits, skippedAssists, visitCache, zoneCache, userCache);
         }
         filesHandled += 1;
     }
@@ -111,35 +100,23 @@ public class BulkFeedImporterService {
         if (feedUser == null) {
             return null;
         }
-        User user = users.get(feedUser.id());
+        User user = userCache.get(feedUser.id());
         if (user == null || user.getTime().isBefore(time)) {
             User dbUser = userService.getUpdateOrCreate((long) feedUser.id(), feedUser.name(), time);
-            users.put(feedUser.id(), dbUser);
-            if (user == null) {
-                insertedUsers += 1;
-            } else {
-                updatedUsers += 1;
-            }
+            userCache.put(feedUser.id(), dbUser);
             return dbUser;
         } else {
-            foundUsers += 1;
             return user;
         }
     }
 
     private Zone getUpdateOrCreate(FeedZone feedZone, Instant time) {
-        Zone zone = zones.get(feedZone.id());
+        Zone zone = zoneCache.get(feedZone.id());
         if (zone == null || zone.getTime().isBefore(time)) {
             Zone dbZone = zoneService.getUpdateOrCreate((long) feedZone.id(), feedZone.name(), time);
-            zones.put(feedZone.id(), dbZone);
-            if (zone == null) {
-                insertedZones += 1;
-            } else {
-                updatedZones += 1;
-            }
+            zoneCache.put(feedZone.id(), dbZone);
             return dbZone;
         } else {
-            foundZones += 1;
             return zone;
         }
     }
@@ -147,8 +124,7 @@ public class BulkFeedImporterService {
     void handleTakeover(FeedTakeover feedTakeover) {
         Instant time = TimeUtil.turfAPITimestampToInstant(feedTakeover.getTime());
         ZoneIdTime zoneIdTime = new ZoneIdTime(feedTakeover.getZone().id(), time);
-        if (visits.contains(zoneIdTime)) {
-            foundVisits += 1;
+        if (visitCache.get(zoneIdTime) != null) {
             if (feedTakeover.getZone().isTake()) {
                 skippedTakes += 1;
             } else {
@@ -178,8 +154,7 @@ public class BulkFeedImporterService {
             if (assists != null) {
                 skippedAssists += assists.length;
             }
-            visits.add(zoneIdTime);
-            lackedVisits += 1;
+            visitCache.put(zoneIdTime, zoneIdTime);
             return;
         }
         addVisit(zone, user, time, type);
@@ -193,8 +168,7 @@ public class BulkFeedImporterService {
                     .forEach(a -> addVisit(zone, a, time, VisitType.ASSIST));
             importedAssists += assists.length;
         }
-        visits.add(zoneIdTime);
-        insertedVisits += 1;
+        visitCache.put(zoneIdTime, zoneIdTime);
     }
 
     private void addVisit(Zone zone, User user, Instant time, VisitType type) {
@@ -204,6 +178,40 @@ public class BulkFeedImporterService {
 
     public void calculateProgress() {
         logger.error("Code missing here!");
+    }
+
+    private static class Cache<K, V> {
+
+        private final Map<K, V> cache = new HashMap<>();
+        private int found = 0;
+        private int lacked = 0;
+        private int inserted = 0;
+        private int updated = 0;
+
+        public V get(K key) {
+            V value = cache.get(key);
+            if (value != null) {
+                found += 1;
+            } else {
+                lacked += 1;
+            }
+            return value;
+        }
+
+        public void put(K key, V value) {
+            if (cache.containsKey(key)) {
+                updated += 1;
+            } else {
+                inserted += 1;
+            }
+            cache.put(key, value);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Cache[size=%d, found=%d, lacked=%d, inserted=%d, updated=%s]", cache.size(), found,
+                    lacked, inserted, updated);
+        }
     }
 
     private record ZoneIdTime(int zoneId, Instant time) {
