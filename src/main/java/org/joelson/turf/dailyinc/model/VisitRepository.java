@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface VisitRepository extends JpaRepository<Visit, VisitId> {
@@ -36,5 +37,6 @@ public interface VisitRepository extends JpaRepository<Visit, VisitId> {
     @Query("select distinct v.user.id from Visit v order by v.user.id")
     List<Long> findDistinctUserIdOrderByUserId();
 
-    <T> List<T> findByUserOrderByTime(User user, Class<T> type);
+    @Query("select v.time from Visit v where v.user = :user order by time")
+    List<Instant> findTimeByUserOrderByTime(User user);
 }

@@ -1,5 +1,6 @@
 package org.joelson.turf.dailyinc.model;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,51 +26,49 @@ public class DailyProgressVisitsCache {
         throw new InstantiationException("Should not be instantiated.");
     }
 
-    public static DailyProgress calcIncreaseDailyProgress(DailyProgress previousProgress, List<Visit> visits) {
-        if (visits == null || visits.isEmpty()) {
-            throw new IllegalArgumentException("visits is null or empty");
-        }
-        return INCREASE_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visits);
+    public static DailyProgress calcIncreaseDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes) {
+        testVisitTimes(visitTimes);
+        return INCREASE_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visitTimes);
     }
 
-    public static DailyProgress calcAddDailyProgress(DailyProgress previousProgress, List<Visit> visits) {
-        if (visits == null || visits.isEmpty()) {
-            throw new IllegalArgumentException("visits is null or empty");
-        }
-        return ADD_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visits);
+    public static DailyProgress calcAddDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes) {
+        testVisitTimes(visitTimes);
+        return ADD_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visitTimes);
     }
 
-    public static DailyProgress calcFibonacciDailyProgress(DailyProgress previousProgress, List<Visit> visits) {
-        if (visits == null || visits.isEmpty()) {
-            throw new IllegalArgumentException("visits is null or empty");
-        }
-        return FIBONACCI_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visits);
+    public static DailyProgress calcFibonacciDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes) {
+        testVisitTimes(visitTimes);
+        return FIBONACCI_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visitTimes);
     }
 
-    public static DailyProgress calcPowerOfTwoDailyProgress(DailyProgress previousProgress, List<Visit> visits) {
-        if (visits == null || visits.isEmpty()) {
-            throw new IllegalArgumentException("visits is null or empty");
+    public static DailyProgress calcPowerOfTwoDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes) {
+        testVisitTimes(visitTimes);
+        return POWER_OF_TWO_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visitTimes);
+    }
+
+    private static void testVisitTimes(List<Instant> visitTimes) {
+        if (visitTimes == null || visitTimes.isEmpty()) {
+            throw new IllegalArgumentException("visitTimes is null or empty");
         }
-        return POWER_OF_TWO_PROGRESS_VISITS_CACHE.calcDailyProgress(previousProgress, visits);
     }
 
     private interface DailyProgressVisitsCacheInterface {
 
-        DailyProgress calcDailyProgress(DailyProgress previousProgress, List<Visit> visits);
+        DailyProgress calcDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes);
     }
 
     private static class DailyProgressVisitsIncreaseCache implements DailyProgressVisitsCacheInterface {
 
         @Override
-        public DailyProgress calcDailyProgress(DailyProgress previousProgress, List<Visit> visits) {
+        public DailyProgress calcDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes) {
             if (previousProgress == null) {
-                return new DailyProgress(0, 1, visits.getFirst().getTime());
+                return new DailyProgress(0, 1, visitTimes.getFirst());
             }
 
-            int noVisits = visits.size();
+            int noVisits = visitTimes.size();
             int previousDay = previousProgress.getCompleted();
             int dayCompleted = Math.min(previousDay + 1, noVisits);
-            return new DailyProgress(previousDay, dayCompleted, visits.get(dayCompleted - 1).getTime());
+            return new DailyProgress(previousDay, dayCompleted, visitTimes.get(dayCompleted - 1));
         }
     }
 
@@ -86,16 +85,16 @@ public class DailyProgressVisitsCache {
         }
 
         @Override
-        public DailyProgress calcDailyProgress(DailyProgress previousProgress, List<Visit> visits) {
+        public DailyProgress calcDailyProgress(DailyProgress previousProgress, List<Instant> visitTimes) {
             if (previousProgress == null) {
-                return new DailyProgress(0, 1, visits.getFirst().getTime());
+                return new DailyProgress(0, 1, visitTimes.getFirst());
             }
 
-            int noVisits = visits.size();
+            int noVisits = visitTimes.size();
             int previousDay = previousProgress.getCompleted();
             int dayCompleted = calcDayCompleted(previousDay + 1, noVisits);
             int neededVisits = getNeededVisits(dayCompleted);
-            return new DailyProgress(previousDay, dayCompleted, visits.get(neededVisits - 1).getTime());
+            return new DailyProgress(previousDay, dayCompleted, visitTimes.get(neededVisits - 1));
         }
 
         private int calcDayCompleted(Integer maxDay, int visits) {

@@ -19,13 +19,10 @@ public class DailyProgressVisitsCacheTest {
 
     private static final Instant START_TIME = Instant.now().truncatedTo(ChronoUnit.DAYS);
     private static final Instant PREV_TIME = START_TIME.minusSeconds(4711);
-    private static final Zone ZONE = new Zone(1L, "Zone", START_TIME);
-    private static final User USER = new User(1001L, "User", START_TIME);
     private static final DailyProgress FIRST_DAILY_PROGRESS = new DailyProgress(0, 1, START_TIME);
 
-    private static List<Visit> createVisitListOfSize(int size) {
-        return ListTestUtil.createListOfSize(START_TIME, size, time -> new Visit(ZONE, USER, time, VisitType.TAKE),
-                instant -> instant.plusSeconds(60));
+    private static List<Instant> createVisitTimeListOfSize(int size) {
+        return ListTestUtil.createListOfSize(START_TIME, size, time -> time, instant -> instant.plusSeconds(60));
     }
 
     @Test
@@ -40,7 +37,7 @@ public class DailyProgressVisitsCacheTest {
     @Test
     public void givenNoPreviousProgress_whenCalcIncreaseDailyProgress_thenFirstDayCompletedProgress() {
         for (int i = 1; i <= 100; i += 1) {
-            assertEquals(FIRST_DAILY_PROGRESS, calcIncreaseDailyProgress(null, createVisitListOfSize(i)));
+            assertEquals(FIRST_DAILY_PROGRESS, calcIncreaseDailyProgress(null, createVisitTimeListOfSize(i)));
         }
     }
 
@@ -49,11 +46,11 @@ public class DailyProgressVisitsCacheTest {
         DailyProgress PREVIOUS_DAILY_PROGRESS = new DailyProgress(49, 50, PREV_TIME);
 
         for (int i = 1; i < 100; i += 1) {
-            List<Visit> visits = createVisitListOfSize(i);
-            DailyProgress dailyProgress = calcIncreaseDailyProgress(PREVIOUS_DAILY_PROGRESS, visits);
+            List<Instant> visitTimes = createVisitTimeListOfSize(i);
+            DailyProgress dailyProgress = calcIncreaseDailyProgress(PREVIOUS_DAILY_PROGRESS, visitTimes);
             assertEquals(PREVIOUS_DAILY_PROGRESS.getCompleted(), dailyProgress.getPrevious());
             assertEquals(Math.min(i, PREVIOUS_DAILY_PROGRESS.getCompleted() + 1), dailyProgress.getCompleted());
-            assertEquals(visits.get(dailyProgress.getCompleted() - 1).getTime(), dailyProgress.getTime());
+            assertEquals(visitTimes.get(dailyProgress.getCompleted() - 1), dailyProgress.getTime());
         }
     }
 
@@ -69,7 +66,7 @@ public class DailyProgressVisitsCacheTest {
     @Test
     public void givenNoPreviousProgress_whenCalcAddDailyProgress_thenFirstDayCompletedProgress() {
         for (int i = 1; i <= 100; i += 1) {
-            assertEquals(FIRST_DAILY_PROGRESS, calcAddDailyProgress(null, createVisitListOfSize(i)));
+            assertEquals(FIRST_DAILY_PROGRESS, calcAddDailyProgress(null, createVisitTimeListOfSize(i)));
         }
     }
 
@@ -77,17 +74,17 @@ public class DailyProgressVisitsCacheTest {
     public void givenPreviousProgress_whenCalcAddDailyProgress_thenDailyProgress() {
         DailyProgress PREVIOUS_DAILY_PROGRESS = new DailyProgress(7, 8, PREV_TIME);
         int UPPER_LIMIT_VISITS = DailyProgressType.DAILY_ADD.getNeededVisits(10) + 10;
-        calcAddDailyProgress(new DailyProgress(10, 11, PREV_TIME), createVisitListOfSize(1));
+        calcAddDailyProgress(new DailyProgress(10, 11, PREV_TIME), createVisitTimeListOfSize(1));
 
         for (int i = 1; i <= UPPER_LIMIT_VISITS; i += 1) {
-            List<Visit> visits = createVisitListOfSize(i);
-            DailyProgress dailyProgress = calcAddDailyProgress(PREVIOUS_DAILY_PROGRESS, visits);
+            List<Instant> visitTimes = createVisitTimeListOfSize(i);
+            DailyProgress dailyProgress = calcAddDailyProgress(PREVIOUS_DAILY_PROGRESS, visitTimes);
             assertEquals(PREVIOUS_DAILY_PROGRESS.getCompleted(), dailyProgress.getPrevious());
             int completed = dailyProgress.getCompleted();
             assertEquals(Math.min(completed, PREVIOUS_DAILY_PROGRESS.getCompleted() + 1), completed);
             int neededVisist = DailyProgressType.DAILY_ADD.getNeededVisits(completed);
-            assertTrue(visits.size() >= neededVisist);
-            assertEquals(visits.get(neededVisist - 1).getTime(), dailyProgress.getTime());
+            assertTrue(visitTimes.size() >= neededVisist);
+            assertEquals(visitTimes.get(neededVisist - 1), dailyProgress.getTime());
         }
     }
 
@@ -103,7 +100,7 @@ public class DailyProgressVisitsCacheTest {
     @Test
     public void givenNoPreviousProgress_whenCalcFibonacciDailyProgress_thenFirstDayCompletedProgress() {
         for (int i = 1; i <= 100; i += 1) {
-            assertEquals(FIRST_DAILY_PROGRESS, calcFibonacciDailyProgress(null, createVisitListOfSize(i)));
+            assertEquals(FIRST_DAILY_PROGRESS, calcFibonacciDailyProgress(null, createVisitTimeListOfSize(i)));
         }
     }
 
@@ -111,17 +108,17 @@ public class DailyProgressVisitsCacheTest {
     public void givenPreviousProgress_whenCalcFibonacciDailyProgress_thenDailyProgress() {
         DailyProgress PREVIOUS_DAILY_PROGRESS = new DailyProgress(7, 8, PREV_TIME);
         int UPPER_LIMIT_VISITS = DailyProgressType.DAILY_FIBONACCI.getNeededVisits(10) + 10;
-        calcFibonacciDailyProgress(new DailyProgress(10, 11, PREV_TIME), createVisitListOfSize(1));
+        calcFibonacciDailyProgress(new DailyProgress(10, 11, PREV_TIME), createVisitTimeListOfSize(1));
 
         for (int i = 1; i <= UPPER_LIMIT_VISITS; i += 1) {
-            List<Visit> visits = createVisitListOfSize(i);
-            DailyProgress dailyProgress = calcFibonacciDailyProgress(PREVIOUS_DAILY_PROGRESS, visits);
+            List<Instant> visitTimes = createVisitTimeListOfSize(i);
+            DailyProgress dailyProgress = calcFibonacciDailyProgress(PREVIOUS_DAILY_PROGRESS, visitTimes);
             assertEquals(PREVIOUS_DAILY_PROGRESS.getCompleted(), dailyProgress.getPrevious());
             int completed = dailyProgress.getCompleted();
             assertEquals(Math.min(completed, PREVIOUS_DAILY_PROGRESS.getCompleted() + 1), completed);
             int neededVisist = DailyProgressType.DAILY_FIBONACCI.getNeededVisits(completed);
-            assertTrue(visits.size() >= neededVisist);
-            assertEquals(visits.get(neededVisist - 1).getTime(), dailyProgress.getTime());
+            assertTrue(visitTimes.size() >= neededVisist);
+            assertEquals(visitTimes.get(neededVisist - 1), dailyProgress.getTime());
         }
     }
 
@@ -137,7 +134,7 @@ public class DailyProgressVisitsCacheTest {
     @Test
     public void givenNoPreviousProgress_whenCalcPowerOfTwoDailyProgress_thenFirstDayCompletedProgress() {
         for (int i = 1; i <= 100; i += 1) {
-            assertEquals(FIRST_DAILY_PROGRESS, calcPowerOfTwoDailyProgress(null, createVisitListOfSize(i)));
+            assertEquals(FIRST_DAILY_PROGRESS, calcPowerOfTwoDailyProgress(null, createVisitTimeListOfSize(i)));
         }
     }
 
@@ -145,17 +142,17 @@ public class DailyProgressVisitsCacheTest {
     public void givenPreviousProgress_whenCalcPowerOfTwoDailyProgress_thenDailyProgress() {
         DailyProgress PREVIOUS_DAILY_PROGRESS = new DailyProgress(7, 8, PREV_TIME);
         int UPPER_LIMIT_VISITS = DailyProgressType.DAILY_POWER_OF_TWO.getNeededVisits(10) + 10;
-        calcPowerOfTwoDailyProgress(new DailyProgress(10, 11, PREV_TIME), createVisitListOfSize(1));
+        calcPowerOfTwoDailyProgress(new DailyProgress(10, 11, PREV_TIME), createVisitTimeListOfSize(1));
 
         for (int i = UPPER_LIMIT_VISITS; i >= 1; i -= 1) {
-            List<Visit> visits = createVisitListOfSize(i);
-            DailyProgress dailyProgress = calcPowerOfTwoDailyProgress(PREVIOUS_DAILY_PROGRESS, visits);
+            List<Instant> visitTimes = createVisitTimeListOfSize(i);
+            DailyProgress dailyProgress = calcPowerOfTwoDailyProgress(PREVIOUS_DAILY_PROGRESS, visitTimes);
             assertEquals(PREVIOUS_DAILY_PROGRESS.getCompleted(), dailyProgress.getPrevious());
             int completed = dailyProgress.getCompleted();
             assertEquals(Math.min(completed, PREVIOUS_DAILY_PROGRESS.getCompleted() + 1), completed);
             int neededVisist = DailyProgressType.DAILY_POWER_OF_TWO.getNeededVisits(completed);
-            assertTrue(visits.size() >= neededVisist);
-            assertEquals(visits.get(neededVisist - 1).getTime(), dailyProgress.getTime());
+            assertTrue(visitTimes.size() >= neededVisist);
+            assertEquals(visitTimes.get(neededVisist - 1), dailyProgress.getTime());
         }
     }
 }

@@ -44,44 +44,44 @@ public class BulkProgressService {
     }
 
     private void calculateProgressForUser(User user, int count) {
-        List<Visit> allVisits = visitService.findAllVisitsSortedByTimeForUser(user);
-        if (allVisits.isEmpty()) {
-            logger.error("No visits to handle for user {}", user);
+        List<Instant> allVisitTimes = visitService.findAllVisitsSortedByTimeForUser(user);
+        if (allVisitTimes.isEmpty()) {
+            logger.error("No visit times to handle for user {}", user);
             return;
         }
 
         Progress previousProgress = null;
-        int firstVisitIndexOfDate = 0;
+        int firstVisitTimeIndexOfDate = 0;
         int noDates = 0;
-        while (firstVisitIndexOfDate < allVisits.size()) {
-            Visit firstVisitOfDate = allVisits.get(firstVisitIndexOfDate);
-            Instant date = firstVisitOfDate.getTime().truncatedTo(ChronoUnit.DAYS);
+        while (firstVisitTimeIndexOfDate < allVisitTimes.size()) {
+            Instant firstVisitTimeOfDate = allVisitTimes.get(firstVisitTimeIndexOfDate);
+            Instant date = firstVisitTimeOfDate.truncatedTo(ChronoUnit.DAYS);
             noDates += 1;
-            int firstVisitIndexOfNextDate = firstVisitIndexOfDate + 1;
-            while (firstVisitIndexOfNextDate < allVisits.size()) {
-                Visit lastVisit = allVisits.get(firstVisitIndexOfNextDate);
-                if (lastVisit.getTime().truncatedTo(ChronoUnit.DAYS).isAfter(date)) {
+            int firstVisitTimeIndexOfNextDate = firstVisitTimeIndexOfDate + 1;
+            while (firstVisitTimeIndexOfNextDate < allVisitTimes.size()) {
+                Instant lastVisitTime = allVisitTimes.get(firstVisitTimeIndexOfNextDate);
+                if (lastVisitTime.truncatedTo(ChronoUnit.DAYS).isAfter(date)) {
                     break;
                 }
-                firstVisitIndexOfNextDate += 1;
+                firstVisitTimeIndexOfNextDate += 1;
             }
-            int visits = firstVisitIndexOfNextDate - firstVisitIndexOfDate;
+            int visits = firstVisitTimeIndexOfNextDate - firstVisitTimeIndexOfDate;
             Progress progress;
             if (previousProgress != null && previousProgress.getDate().equals(date.minus(1, ChronoUnit.DAYS))) {
-                List<Visit> dateVisits = allVisits.subList(firstVisitIndexOfDate, firstVisitIndexOfNextDate);
-                DailyProgress incProgress = calcIncreaseDailyProgress(previousProgress.getIncrease(), dateVisits);
-                DailyProgress addProgress = calcAddDailyProgress(previousProgress.getAdd(), dateVisits);
-                DailyProgress fibProgress = calcFibonacciDailyProgress(previousProgress.getFibonacci(), dateVisits);
-                DailyProgress powProgress = calcPowerOfTwoDailyProgress(previousProgress.getPowerOfTwo(), dateVisits);
+                List<Instant> dateVisitTimes = allVisitTimes.subList(firstVisitTimeIndexOfDate, firstVisitTimeIndexOfNextDate);
+                DailyProgress incProgress = calcIncreaseDailyProgress(previousProgress.getIncrease(), dateVisitTimes);
+                DailyProgress addProgress = calcAddDailyProgress(previousProgress.getAdd(), dateVisitTimes);
+                DailyProgress fibProgress = calcFibonacciDailyProgress(previousProgress.getFibonacci(), dateVisitTimes);
+                DailyProgress powProgress = calcPowerOfTwoDailyProgress(previousProgress.getPowerOfTwo(), dateVisitTimes);
                 progress = new Progress(user, date, visits, incProgress, addProgress, fibProgress, powProgress);
             } else {
-                DailyProgress dailyProgress = new DailyProgress(0, 1, allVisits.get(firstVisitIndexOfDate).getTime());
+                DailyProgress dailyProgress = new DailyProgress(0, 1, allVisitTimes.get(firstVisitTimeIndexOfDate));
                 progress = new Progress(user, date, visits, dailyProgress, dailyProgress, dailyProgress, dailyProgress);
             }
             progressRepository.save(progress);
             previousProgress = progress;
 
-            firstVisitIndexOfDate = firstVisitIndexOfNextDate;
+            firstVisitTimeIndexOfDate = firstVisitTimeIndexOfNextDate;
         }
         logger.info("[{}] {} dates for {}", count, noDates, user);
     }
