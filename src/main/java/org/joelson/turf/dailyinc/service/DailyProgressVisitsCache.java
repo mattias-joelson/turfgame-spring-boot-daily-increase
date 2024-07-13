@@ -5,7 +5,6 @@ import org.joelson.turf.dailyinc.model.DailyProgressType;
 import org.joelson.turf.dailyinc.model.Visit;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -101,8 +100,28 @@ public class DailyProgressVisitsCache {
 
         private int calcDayCompleted(Integer maxDay, int visits) {
             expandVisitsList(maxDay);
-            int day = Collections.binarySearch(visitsList.subList(0, maxDay), visits);
-            return (day >= 0) ? day + 1 : -day - 1;
+            return binarySearch(maxDay, visits);
+        }
+
+        // from Collections.indexedBinarySearch()
+        private int binarySearch(int maxDay, int visits) {
+            int low = 0;
+            int high = maxDay - 1;
+
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                int neededVisits = visitsList.get(mid);
+                int cmp = Integer.compare(neededVisits, visits);
+
+                if (cmp == 0) {
+                    return mid + 1;
+                } else if (cmp < 0) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            return low;
         }
 
         private void expandVisitsList(Integer maxDay) {
