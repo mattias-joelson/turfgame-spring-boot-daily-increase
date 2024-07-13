@@ -33,29 +33,34 @@ public class BulkProgressService {
         if (!progressRepository.isEmpty()) {
             logger.error("ProgressRepository is not empty!");
         }
-        int count = 0;
         List<User> allUsersWithVisits = visitService.findDistinctUserOrderById();
         logger.info("Number of users to process: {}", allUsersWithVisits.size());
+        Instant nextLogInstant = Instant.now().plusSeconds(30);
+        int handledUsers = 0;
+        int handledDates = 0;
         for (User user : allUsersWithVisits) {
-            calculateProgressForUser(user, count++);
+            if (nextLogInstant.isBefore(Instant.now())) {
+                logger.info("Handled {} users, {} progress dates.", handledUsers, handledDates);
+                nextLogInstant = nextLogInstant.plusSeconds(30);
+            }
+            handledDates += calculateProgressForUser(user);
+            handledUsers += 1;
         }
-        logger.error("Code missing here!");
+        logger.info("Done, handled {} users, {} progress dates.", handledUsers, handledDates);
     }
 
-    void calculateProgressForUser(User user, int count) {
+    int calculateProgressForUser(User user) {
         List<Instant> allVisitTimes = visitService.findAllSortedVisitTimesByUser(user);
         if (allVisitTimes.isEmpty()) {
-            logger.error("No visit times to handle for user {}", user);
-            return;
+            throw new IllegalArgumentException("No visit times to handle for user " + user);
         }
 
         Progress previousProgress = null;
         int firstVisitTimeIndexOfDate = 0;
-        int noDates = 0;
+        int handledDates = 0;
         while (firstVisitTimeIndexOfDate < allVisitTimes.size()) {
             Instant firstVisitTimeOfDate = allVisitTimes.get(firstVisitTimeIndexOfDate);
             Instant date = firstVisitTimeOfDate.truncatedTo(ChronoUnit.DAYS);
-            noDates += 1;
             int firstVisitTimeIndexOfNextDate = firstVisitTimeIndexOfDate + 1;
             while (firstVisitTimeIndexOfNextDate < allVisitTimes.size()) {
                 Instant lastVisitTime = allVisitTimes.get(firstVisitTimeIndexOfNextDate);
@@ -78,10 +83,11 @@ public class BulkProgressService {
                 progress = new Progress(user, date, visits, dailyProgress, dailyProgress, dailyProgress, dailyProgress);
             }
             progressRepository.save(progress);
+            handledDates += 1;
             previousProgress = progress;
 
             firstVisitTimeIndexOfDate = firstVisitTimeIndexOfNextDate;
         }
-        logger.info("[{}] {} dates for {}", count, noDates, user);
+        return handledDates;
     }
 }

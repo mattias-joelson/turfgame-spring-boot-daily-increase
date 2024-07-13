@@ -82,7 +82,7 @@ public class BulkProgressServiceTest {
         when(progressRepository.save(SECOND_PROGRESS)).thenReturn(SECOND_PROGRESS);
         when(progressRepository.save(THIRD_PROGRESS)).thenReturn(THIRD_PROGRESS);
 
-        bulkProgressService.calculateProgressForUser(USER, 3);
+        bulkProgressService.calculateProgressForUser(USER);
         verify(visitService).findAllSortedVisitTimesByUser(USER);
         verify(progressRepository).save(FIRST_PROGRESS);
         verify(progressRepository).save(SECOND_PROGRESS);
