@@ -34,7 +34,7 @@ public class VisitService {
         return userService.toUsers(distinctUserId, User.class);
     }
 
-    public List<Visit> findAllVisitsSortedByTimeForUser(User user) {
-        return visitRepository.findByUserOrderByTime(user, Visit.class);
+    public List<Instant> findAllSortedVisitTimesByUser(User user) {
+        return visitRepository.findTimeByUserOrderByTime(user);
     }
 }

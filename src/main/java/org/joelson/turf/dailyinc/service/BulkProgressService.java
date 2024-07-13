@@ -4,7 +4,6 @@ import org.joelson.turf.dailyinc.model.DailyProgress;
 import org.joelson.turf.dailyinc.model.Progress;
 import org.joelson.turf.dailyinc.model.ProgressRepository;
 import org.joelson.turf.dailyinc.model.User;
-import org.joelson.turf.dailyinc.model.Visit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,8 @@ public class BulkProgressService {
         logger.error("Code missing here!");
     }
 
-    private void calculateProgressForUser(User user, int count) {
-        List<Instant> allVisitTimes = visitService.findAllVisitsSortedByTimeForUser(user);
+    void calculateProgressForUser(User user, int count) {
+        List<Instant> allVisitTimes = visitService.findAllSortedVisitTimesByUser(user);
         if (allVisitTimes.isEmpty()) {
             logger.error("No visit times to handle for user {}", user);
             return;

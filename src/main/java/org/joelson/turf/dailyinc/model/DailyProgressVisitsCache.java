@@ -99,12 +99,13 @@ public class DailyProgressVisitsCache {
 
         private int calcDayCompleted(Integer maxDay, int visits) {
             expandVisitsList(maxDay);
-            Integer mappedDay = visitsDayMap.get(visits);
+            int maxVisits = Math.min(visits, getNeededVisits(maxDay));
+            Integer mappedDay = visitsDayMap.get(maxVisits);
             if (mappedDay != null) {
                 return mappedDay;
             }
-            int day = binarySearch(maxDay, visits);
-            visitsDayMap.put(visits, day);
+            int day = binarySearch(maxDay, maxVisits);
+            visitsDayMap.put(maxVisits, day);
             return day;
         }
 
