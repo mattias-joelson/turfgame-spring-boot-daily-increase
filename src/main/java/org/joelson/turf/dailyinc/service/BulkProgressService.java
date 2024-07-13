@@ -1,5 +1,7 @@
 package org.joelson.turf.dailyinc.service;
 
+import org.joelson.turf.dailyinc.model.DailyProgress;
+import org.joelson.turf.dailyinc.model.Progress;
 import org.joelson.turf.dailyinc.model.ProgressRepository;
 import org.joelson.turf.dailyinc.model.User;
 import org.joelson.turf.dailyinc.model.Visit;
@@ -12,19 +14,13 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcAddDailyProgress;
+import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcFibonacciDailyProgress;
+import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcIncreaseDailyProgress;
+import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcPowerOfTwoDailyProgress;
+
 @Service
 public class BulkProgressService {
-
-    // for each distinct(user_id) from visits
-    // for each distinct(date(time)) as date_time, count(1) as vis from visits where user_id = :user_id order by
-    // date_time, group by date_time;
-    // select time from visits where user_id = :user_id and date(time) = :date_time order by time;
-
-    // create first
-    // create new
-    //   improve on previous if possible
-
-    // binary-search on visits
 
     private static final Logger logger = LoggerFactory.getLogger(BulkProgressService.class);
 
@@ -54,6 +50,7 @@ public class BulkProgressService {
             return;
         }
 
+        Progress previousProgress = null;
         int firstVisitIndexOfDate = 0;
         int noDates = 0;
         while (firstVisitIndexOfDate < allVisits.size()) {
@@ -68,9 +65,22 @@ public class BulkProgressService {
                 }
                 firstVisitIndexOfNextDate += 1;
             }
-//            logger.info("    {} {} visits from {} to {} exclusive (size={})", date,
-//                    (firstVisitIndexOfNextDate - firstVisitIndexOfDate), firstVisitIndexOfDate,
-//                    firstVisitIndexOfNextDate, allVisits.size());
+            int visits = firstVisitIndexOfNextDate - firstVisitIndexOfDate;
+            Progress progress;
+            if (previousProgress != null && previousProgress.getDate().equals(date.minus(1, ChronoUnit.DAYS))) {
+                List<Visit> dateVisits = allVisits.subList(firstVisitIndexOfDate, firstVisitIndexOfNextDate);
+                DailyProgress incProgress = calcIncreaseDailyProgress(previousProgress.getIncrease(), dateVisits);
+                DailyProgress addProgress = calcAddDailyProgress(previousProgress.getAdd(), dateVisits);
+                DailyProgress fibProgress = calcFibonacciDailyProgress(previousProgress.getFibonacci(), dateVisits);
+                DailyProgress powProgress = calcPowerOfTwoDailyProgress(previousProgress.getPowerOfTwo(), dateVisits);
+                progress = new Progress(user, date, visits, incProgress, addProgress, fibProgress, powProgress);
+            } else {
+                DailyProgress dailyProgress = new DailyProgress(0, 1, allVisits.get(firstVisitIndexOfDate).getTime());
+                progress = new Progress(user, date, visits, dailyProgress, dailyProgress, dailyProgress, dailyProgress);
+            }
+            progressRepository.save(progress);
+            previousProgress = progress;
+
             firstVisitIndexOfDate = firstVisitIndexOfNextDate;
         }
         logger.info("[{}] {} dates for {}", count, noDates, user);
