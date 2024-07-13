@@ -25,10 +25,11 @@ public enum DailyProgressType {
 
     private static int getDailyFibonacciVisits(int forDay) {
         if (forDay <= 2) {
-            return 1;
+            return forDay;
         }
         int[] visits = new int[forDay];
-        visits[0] = visits[1] = 1;
+        visits[0] = 1;
+        visits[1] = 2;
         for (int day = 2; day < forDay; day += 1) {
             visits[day] = visits[day - 2] + visits[day - 1];
         }
@@ -43,7 +44,10 @@ public enum DailyProgressType {
         return visits;
     }
 
-    public int getNeededVisits(int day) {
-        return visitsNeeded.apply(day);
+    public int getNeededVisits(int forDay) {
+        if (forDay < 1) {
+            throw new IllegalArgumentException("forDay must be at least 1");
+        }
+        return visitsNeeded.apply(forDay);
     }
 }

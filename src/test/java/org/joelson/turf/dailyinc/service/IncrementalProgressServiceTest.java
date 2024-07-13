@@ -53,19 +53,19 @@ public class IncrementalProgressServiceTest {
     private static final ProgressId NEXT_PROGRESS_ID = new ProgressId(USER.getId(), NEXT_DATE);
 
     private static final Progress NEXT_PROGRESS = new Progress(USER, NEXT_DATE, 1, new DailyProgress(1, 1, NEXT_TIME),
-            new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 1, NEXT_TIME));
+            new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 1, NEXT_TIME));
 
     private static final Instant LATER_TIME = NEXT_TIME.plusSeconds(93);
 
     private static final Progress LATER_PROGRESS = new Progress(USER, NEXT_DATE, 2, new DailyProgress(1, 2, LATER_TIME),
-            new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 2, NEXT_TIME),
+            new DailyProgress(1, 1, NEXT_TIME), new DailyProgress(1, 2, LATER_TIME),
             new DailyProgress(1, 2, LATER_TIME));
 
     private static final Instant EVEN_LATER_TIME = LATER_TIME.plusSeconds(129);
 
     private static final Progress EVEN_LATER_PROGRESS = new Progress(USER, NEXT_DATE, 3,
             new DailyProgress(1, 2, LATER_TIME), new DailyProgress(1, 2, EVEN_LATER_TIME),
-            new DailyProgress(1, 2, NEXT_TIME), new DailyProgress(1, 2, LATER_TIME));
+            new DailyProgress(1, 2, LATER_TIME), new DailyProgress(1, 2, LATER_TIME));
 
     private static Progress copyOf(Progress that) {
         return new Progress(that.getUser(), that.getDate(), that.getVisits(), copyOf(that.getIncrease()),

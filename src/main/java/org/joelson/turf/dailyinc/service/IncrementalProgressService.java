@@ -32,15 +32,14 @@ public class IncrementalProgressService {
                 progressRepository.save(
                         new Progress(user, date, 1, new DailyProgress(0, 1, time), new DailyProgress(0, 1, time),
                                 new DailyProgress(0, 1, time), new DailyProgress(0, 1, time)));
-                return 1;
             } else {
                 progressRepository.save(new Progress(user, date, 1,
                         new DailyProgress(previousProgress.getIncrease().getCompleted(), 1, time),
                         new DailyProgress(previousProgress.getAdd().getCompleted(), 1, time),
-                        new DailyProgress(previousProgress.getFibonacci().getCompleted(), 2, time),
+                        new DailyProgress(previousProgress.getFibonacci().getCompleted(), 1, time),
                         new DailyProgress(previousProgress.getPowerOfTwo().getCompleted(), 1, time)));
-                return 2;
             }
+            return 1;
         } else {
             int maxDayCompleted;
 
