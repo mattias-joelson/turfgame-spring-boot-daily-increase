@@ -5,7 +5,9 @@ import org.joelson.turf.dailyinc.model.DailyProgressType;
 import org.joelson.turf.dailyinc.model.Visit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -79,10 +81,12 @@ public class DailyProgressVisitsCache {
 
         private final Function<Integer, Integer> neededVisits;
         private final List<Integer> visitsList;
+        private final Map<Integer, Integer> visitsDayMap;
 
         public DailyProgressVisitsListCache(Function<Integer, Integer> neededVisits) {
             this.neededVisits = Objects.requireNonNull(neededVisits);
             visitsList = new ArrayList<>();
+            visitsDayMap = new HashMap<>();
         }
 
         @Override
@@ -100,7 +104,13 @@ public class DailyProgressVisitsCache {
 
         private int calcDayCompleted(Integer maxDay, int visits) {
             expandVisitsList(maxDay);
-            return binarySearch(maxDay, visits);
+            Integer mappedDay = visitsDayMap.get(visits);
+            if (mappedDay != null) {
+                return mappedDay;
+            }
+            int day = binarySearch(maxDay, visits);
+            visitsDayMap.put(visits, day);
+            return day;
         }
 
         // from Collections.indexedBinarySearch()
