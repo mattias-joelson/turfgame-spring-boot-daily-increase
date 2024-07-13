@@ -1,8 +1,4 @@
-package org.joelson.turf.dailyinc.service;
-
-import org.joelson.turf.dailyinc.model.DailyProgress;
-import org.joelson.turf.dailyinc.model.DailyProgressType;
-import org.joelson.turf.dailyinc.model.Visit;
+package org.joelson.turf.dailyinc.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

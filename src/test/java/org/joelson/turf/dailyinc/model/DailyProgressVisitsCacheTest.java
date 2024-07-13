@@ -1,11 +1,5 @@
-package org.joelson.turf.dailyinc.service;
+package org.joelson.turf.dailyinc.model;
 
-import org.joelson.turf.dailyinc.model.DailyProgress;
-import org.joelson.turf.dailyinc.model.DailyProgressType;
-import org.joelson.turf.dailyinc.model.User;
-import org.joelson.turf.dailyinc.model.Visit;
-import org.joelson.turf.dailyinc.model.VisitType;
-import org.joelson.turf.dailyinc.model.Zone;
 import org.joelson.turf.dailyinc.util.ListTestUtil;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +7,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcAddDailyProgress;
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcFibonacciDailyProgress;
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcIncreaseDailyProgress;
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcPowerOfTwoDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcAddDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcFibonacciDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcIncreaseDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcPowerOfTwoDailyProgress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

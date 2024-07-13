@@ -14,10 +14,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcAddDailyProgress;
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcFibonacciDailyProgress;
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcIncreaseDailyProgress;
-import static org.joelson.turf.dailyinc.service.DailyProgressVisitsCache.calcPowerOfTwoDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcAddDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcFibonacciDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcIncreaseDailyProgress;
+import static org.joelson.turf.dailyinc.model.DailyProgressVisitsCache.calcPowerOfTwoDailyProgress;
 
 @Service
 public class BulkProgressService {
